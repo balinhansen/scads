@@ -320,6 +320,21 @@ module lego_antenna(height){
      }
 }
 
+module twobytwo_centerknob(height){
+    union(){
+        difference(){
+        xbyy_block(2,2,height);
+        xbyy_cutout(2,2,height);
+        }
+        translate([lego_length/2,lego_length/2,0])
+        xbyy_knobs(1,1,height);
+        
+        
+        xbyy_tubes(2,2,height);
+        xbyy_pads(2,2,height);
+    }
+}
+
 module xbyy_knobrow(width,length,knob_offset,height){
     difference(){   
         xbyy_block(width,length,height);
@@ -1039,8 +1054,8 @@ difference(){
     
         //x_technic_brick(1,lego_block_height);
         //xbyy_brick(1,1,lego_block_height/3);
-        xbyy_brick(2,2,lego_block_height/3);
-        
+        //xbyy_brick(2,2,lego_block_height/3);
+        twobytwo_centerknob(lego_block_height/3);
         /*
         xbyy_knobs(2,2,0);
         translate([lego_length/2,lego_length/2,0])
