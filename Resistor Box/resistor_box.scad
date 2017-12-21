@@ -1,37 +1,20 @@
 inch=25.4;
+kerf=0.0035*inch;
 
-kerf_inches=0.0035;
-void_length_inches=1.125;
-void_width_inches=0.1581;
-void_depth_inches=0.1182;
-bevel_width_inches=0.1875;
-wall_thickness_inches=0.09375;
-holder_width_inches=0.0625;
-resister_width_mm=3.7;
-connector_width_inches=0.125;
-wire_width_mm=2.25;
-lock_size_mm=0.9;
-post_width_inches=0.125;
-support_clearance_mm=0.2;
-connector_clearance_mm=0.1;
+void_length=9/8*inch;
+void_width=2.25+2/32*inch+kerf*2;//1/4*inch;
+void_depth=3;//1/4*inch;
+bevel_width=3/16*inch;
+wall_thickness=3/32*inch;
+holder_width=1/16*inch;
 
-kerf=kerf_inches*inch;
-void_length=void_length_inches*inch; // 9/8*inch;
-void_width=void_width_inches*inch;  //  2.25+2/32*inch+kerf*2;//1/4*inch;
-void_depth=void_depth_inches*inch;  //    3;//1/4*inch;
-bevel_width=bevel_width_inches*inch;    //  3/16*inch;
-wall_thickness=wall_thickness_inches*inch;   // 3/32*inch;
-holder_width=holder_width_inches*inch;  //   1/16*inch;
-
-resister_width=resister_width_mm;   //  3.7;
-connector_width=connector_width_inches*inch; // 1/8*inch;
-wire_width=wire_width_mm;   //    2.25;
-lock_size=lock_size_mm; //  0.9;
-post_width=post_width_inches*inch;    //  4/32*inch;
-support_clearance=support_clearance_mm; //  0.2;
-connector_clearance=connector_clearance_mm; // 0.1;
-
-
+resister_width=3.7;
+connector_width=1/8*inch;
+wire_width=2.25;
+lock_size=.9;
+post_width=4/32*inch;
+support_clearance=0.2;
+connector_clearance=0.1;
 
 module shell(){
     translate([bevel_width,bevel_width,bevel_width])
@@ -285,14 +268,14 @@ module box_close_test(){
 //bottom_half();
 //top_half();
 
-box_open();  
+//box_open();  
 //box_close();
 
-/*
+
 difference(){    
     box_close();
     cube([(void_length+bevel_width*2)/2,void_width+bevel_width*2,void_depth+bevel_width*2]);
 }
-*/
+
 
 //box_close_test();
