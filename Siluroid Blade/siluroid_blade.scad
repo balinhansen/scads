@@ -34,7 +34,7 @@ module propeller(){
                     translate([0,0,-0.001])
                     linear_extrude(7.501,convexity=10)
                     rotate([0,0,30])
-                    polygon(ngon(6,6.5/2));
+                    polygon(ngon(6,6.1/2));
                 }
                 cylinder(6,5,5,$fn=100);
                 blade();
