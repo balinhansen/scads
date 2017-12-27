@@ -51,5 +51,5 @@ module propeller(){
 }
 
 translate([0,0,12])
-rotate([180,0,45])
+rotate([180,0,-45])
 propeller();
