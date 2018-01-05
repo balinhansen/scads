@@ -19,7 +19,7 @@ layer_height=0.30625;
 hole_stl_fineness=90;
 hole_low_fineness=8;
 
-holes=5;
+holes=3;
 
 taper_pc=0.75;
 
