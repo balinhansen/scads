@@ -3,7 +3,7 @@ gold=1.61803398875;
 
 build_stl=0;
 gold_overrides=1;
-inch_overrides=0;
+inch_overrides=1;
 shell_mm_overrides=1;
 shell_fdm_overrides=1;
 match_base_override=1;
@@ -17,7 +17,7 @@ nozzle_size=0.4;
 layer_height=0.30625;
 
 hole_stl_fineness=90;
-hole_low_fineness=8;
+hole_low_fineness=6;
 
 holes=3;
 
@@ -25,14 +25,14 @@ taper_pc=0.75;
 
 width_mm=40;
 height_mm=40;
-cup_height_mm=10;
-cup_width_mm=10;
+cup_height_mm=20;
+cup_width_mm=20;
 hole_size_mm=8;
 wall_thickness_mm=1.6;
 floor_thickness_mm=1.53125;
 
 width_inches=1.75;
-height_inches=width_inches*gold;
+height_inches=2.75;
 cup_height_inches=0.375;
 cup_width_inches=0.5;
 hole_size_inches=0.25;
