@@ -1,6 +1,11 @@
 inch=25.4;
 gold=1.61803398875;
+
 build_stl=0;
+gold_overrides=1;
+inch_overrides=1;
+shell_overrides=1;
+halve=0;
 
 stl_fineness=210;
 low_fineness=21;
@@ -17,20 +22,22 @@ height_mm=42;
 cup_height_mm=10;
 cup_width_mm=10;
 hole_size_mm=8;
+wall_thickness_mm=1.2;
+floor_thickness_mm=1.225;
 
 width_inches=1.75;
 height_inches=1.75;
 cup_height_inches=0.375;
 cup_width_inches=0.5;
 hole_size_inches=0.25;
-
-gold_overrides=1;
-inch_overrides=1;
-
+wall_thickness_inches=0.0625;
+floor_thickness_inches=0.0625;
 
 
-wall_thickness=1.2;//1/16*inch;
-floor_thickness=1.225;//1/16*inch;
+wall_thickness=inch_overrides&&!shell_overrides?wall_thickness_inches*inch:wall_thickness_mm;
+
+floor_thickness=inch_overrides&&!shell_overrides?floor_thickness_inches*inch:floor_thickness_mm;
+
 //cup_volume=1.5*15;
 
 width=inch_overrides?width_inches*inch:width_mm;
@@ -75,19 +82,20 @@ difference(){
         cylinder(hole_depth+0.002,hole_size,hole_size,$fn=hole_fineness);
     }
 
-    
-    //translate([0,-width/2-(1+cup_height/height)*taper*width/2,-0.001])
-    //cube([cup_width/2+width/2+wall_thickness+(1+cup_height/height)*taper*width/2,cup_width+width+(1+cup_height/height)*taper*width+wall_thickness*2,height+0.002]);
+    if (halve){
+        translate([0,-width/2-(1+cup_height/height)*taper*width/2,-0.001])
+        cube([cup_width/2+width/2+wall_thickness+(1+cup_height/height)*taper*width/2,cup_width+width+(1+cup_height/height)*taper*width+wall_thickness*2,height+0.002]);
+    }
 }
 
 difference(){
     cylinder(cup_height,taper*width/2+cup_width/2,taper*width/2+(cup_height/height)*(1-taper)*width/2+cup_width/2,$fn=fineness);
     
     translate([0,0,floor_thickness])
-    cylinder(cup_height+0.001-floor_thickness,(1+floor_thickness/height)*width*taper/2-wall_thickness+cup_width/2-wall_thickness,
+    cylinder(cup_height+0.001-floor_thickness,(1+floor_thickness/height)*width*taper/2+cup_width/2-wall_thickness,taper*width/2+(cup_height/height)*(width*(1-taper)/2)+cup_width/2-wall_thickness,$fn=fineness);
     
-    taper*width/2+(cup_height/height)*(width*(1-taper)/2)+cup_width/2-wall_thickness,$fn=fineness);
-    
-    //translate([0,-width/2-(1+cup_height/height)*taper*width/2,-0.001])
-    //cube([cup_width/2+width/2+wall_thickness+(1+cup_height/height)*taper*width/2,cup_width+width+(1+cup_height/height)*taper*width+wall_thickness*2,height+0.002]);
+    if (halve){
+        translate([0,-width/2-(1+cup_height/height)*taper*width/2,-0.001])
+        cube([cup_width/2+width/2+wall_thickness+(1+cup_height/height)*taper*width/2,cup_width+width+(1+cup_height/height)*taper*width+wall_thickness*2,height+0.002]);
+    }
 }
