@@ -1,17 +1,22 @@
 inch=25.4;
 gold=1.61803398875;
 
-build_stl=1;
-gold_overrides=0;
-inch_overrides=1;
-shell_overrides=1;
+build_stl=0;
+gold_overrides=1;
+inch_overrides=0;
+shell_mm_overrides=1;
+shell_fdm_overrides=1;
 match_base_override=1;
+
 halve_override=0;
 
-stl_fineness=210*2;
-low_fineness=21;
+stl_fineness=210;
+low_fineness=15;
 
-hole_stl_fineness=90*2;
+nozzle_size=0.4;
+layer_height=0.30625;
+
+hole_stl_fineness=90;
 hole_low_fineness=8;
 
 holes=5;
@@ -19,7 +24,7 @@ holes=5;
 taper_pc=0.75;
 
 width_mm=40;
-height_mm=42;
+height_mm=40;
 cup_height_mm=10;
 cup_width_mm=10;
 hole_size_mm=8;
@@ -34,16 +39,19 @@ hole_size_inches=0.25;
 wall_thickness_inches=0.0625;
 floor_thickness_inches=0.0625;
 
+wall_thickness_multiple=4;
+floor_thickness_multiple=5;
 
-wall_thickness=inch_overrides&&!shell_overrides?wall_thickness_inches*inch:wall_thickness_mm;
+wall_thickness=shell_fdm_overrides?wall_thickness_multiple*nozzle_size:inch_overrides&&!shell_mm_overrides?wall_thickness_inches*inch:wall_thickness_mm;
 
-floor_thickness=inch_overrides&&!shell_overrides?floor_thickness_inches*inch:floor_thickness_mm;
+floor_thickness=shell_fdm_overrides?floor_thickness_multiple*layer_height:inch_overrides&&!shell_mm_overrides?floor_thickness_inches*inch:floor_thickness_mm;
 
 //cup_volume=1.5*15;
 
 width=inch_overrides?width_inches*inch:width_mm;
 
 height=gold_overrides?1/gold*width:inch_overrides?height_inches*inch:height_mm;
+
 
 taper=gold_overrides?1/gold:taper_pc;
 
