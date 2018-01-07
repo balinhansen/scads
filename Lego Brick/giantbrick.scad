@@ -1021,6 +1021,35 @@ rotate([-90,0,0])
 
 }
 
+module print_test_full(){
+    space=5/8*lego_length;
+    
+xbyy_brick(1,1,lego_block_height/3);
+    
+    translate([lego_length+space,0,0])
+xbyy_brick(2,1,lego_block_height/3);
+    
+    translate([0,lego_length+space,0])
+xbyy_brick(2,2,lego_block_height/3);
+    
+    translate([lego_length*2+space,lego_length+space,0])
+    lego_round_brick(lego_block_height/3,1);
+    
+    translate([lego_length*2+space,lego_length*2+space*2,0])
+    x_technic_brick(1,lego_block_height);
+    
+    translate([0,lego_length*3+space*2,0])
+    lego_antenna(lego_block_height*2);
+    
+    translate([lego_length*3+space*2,0,0])
+    xbyy_brick(2,4,lego_block_height/3);
+    
+    translate([lego_length*1+space,lego_length*3+space*3,0])
+    xbyy_brick(4,1,lego_block_height/3);
+    
+}
+
+
 /*
 // CROSS SECTION TESTS
 //color([1,0,0,0.5])
@@ -1055,7 +1084,7 @@ difference(){
         //x_technic_brick(1,lego_block_height);
         //xbyy_brick(1,1,lego_block_height/3);
         //xbyy_brick(2,2,lego_block_height/3);
-        twobytwo_centerknob(lego_block_height/3);
+        //twobytwo_centerknob(lego_block_height/3);
         /*
         xbyy_knobs(2,2,0);
         translate([lego_length/2,lego_length/2,0])
@@ -1075,3 +1104,4 @@ difference(){
 //brick_test();
 //technic_test();
 //brick_test_print();
+print_test_full();

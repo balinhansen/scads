@@ -1,54 +1,40 @@
 use <JetsonTK1.scad>;
 
 build_stl=1;
-big_overrides=0;
 
 inch=25.4;
-// kerf=0.007*25.4;  // Too Tight at 5:1 @ 0.3mm layer height
-//kerf=(0.007*25.4+0.05); // Attempt for 5:1 @ 0.3mm could be better!
-kerf=big_overrides?(0.007*25.4):0; // Attempt for 5:1 @ 0.3mm GOODish! Testing!
-round_kerf_adj=big_overrides?0.1:0.0035*inch;
-accessory_kerf_adj=big_overrides?(kerf+0.05):0;
-flat_kerf_adj=big_overrides?-0.075:0;
+kerf=0.0035*25.4;
+xy_shrink=1; // PLA == 128/127;
 
-//kerf=0.2;
+nub_fineness_stl=0.5*240;
+nub_fineness_low=16;
+nub_adjustment=0.1; // 0.1 for Shaxon PLA
 
-
-//xy_shrink=128/127; //1; // PLA == 128/127;
-xy_shrink=1;
-
-echo(kerf);
-knob_fineness_stl=0.5*240;
-knob_fineness_low=16;
-knob_adjustment=0.0; // 0.1 for Shaxon PLA
-
-knob_fineness=build_stl?knob_fineness_stl:knob_fineness_low;
-technic_hole_adjustment=0.00;
+nub_fineness=build_stl?nub_fineness_stl:nub_fineness_low;
+technic_hole_adjustment=0.05;
 
 lego_length=8; // 8/8*50;
 lego_height=0.4*lego_length;
 lego_block_height=1.2*lego_length;
 
-lego_knob_height=1.8/8*lego_length;
-lego_knob_width=(4.9+knob_adjustment)/8*lego_length;
-lego_tube_hole=(4.9+technic_hole_adjustment)/8*lego_length+(kerf+round_kerf_adj)*2;
+lego_nub_height=1.8/8*lego_length;
+lego_nub_width=(4.8+nub_adjustment)/8*lego_length;
+lego_tube_hole=(4.8+technic_hole_adjustment)/8*lego_length+kerf*2;
 
-lego_tube=6.4137/8*lego_length-kerf; // 6.51371/8*lego_length; //6.51371/8*lego_length;
+lego_tube=6.51371/8*lego_length; //6.51371/8*lego_length;
 
-lego_accessory_hole=(3.1)/8*lego_length+(round_kerf_adj+accessory_kerf_adj)*2;
-lego_accessory_peg=3.1/8*lego_length-(kerf)*2;
-
-lego_changer_height=5.7/8*lego_length;
+lego_accessory_hole=(3+0.15)/8*lego_length;
+lego_accessory_peg=3/8*lego_length;
 
 lego_technic_hole_height=5.8/8*lego_length;
-lego_technic_hole=(4.9+technic_hole_adjustment)/8*lego_length+(kerf+round_kerf_adj)*2;
+lego_technic_hole=(4.8+technic_hole_adjustment)/8*lego_length+kerf*2;
 lego_technic_hole_support=7.2/8*lego_length;
-lego_technic_bevel=(6.2+technic_hole_adjustment)/8*lego_length+(kerf+round_kerf_adj)*2;
+lego_technic_bevel=(6.2+technic_hole_adjustment)/8*lego_length+kerf*2;
 lego_technic_bevel_depth=0.8/8*lego_length;
-lego_technic_axle_width=4.8/8*lego_length;
+lego_technic_axle_width=4.8/8*lego_length-kerf*2;
 lego_technic_axle_tooth=2/8*lego_length;
 lego_technic_axle_stop=1.6/8*lego_length;
-lego_technic_axle_stop_width=6.1/8*lego_length;
+lego_technic_axle_stop_width=6.2/8*lego_length;
 
 lego_technic_beam_width=7.4/8*lego_length;
 
@@ -56,62 +42,57 @@ lego_pad_width_spec=0.6;
 lego_pad_width_adj=0.2;
 lego_pad_width=(lego_pad_width_spec+lego_pad_width_adj)/8*lego_length;
 
+lego_pad_depth_spec=0.3;
+lego_pad_depth_adj=0.05;
+lego_pad_depth=(lego_pad_depth_spec+lego_pad_depth_adj)/8*lego_length;
+
 lego_wall_thickness=1.2;
-
-lego_pad_depth_spec=(8-4.9)/2-lego_wall_thickness; //0.3;
-lego_pad_depth_adj=0.0;
-lego_pad_depth=(lego_pad_depth_spec+lego_pad_depth_adj);
-
 
 module knob(){
     translate([lego_length/2,lego_length/2,-0.001])
-    cylinder(lego_knob_height+0.001,lego_knob_width/2,lego_knob_width/2,$fn=knob_fineness);
+    cylinder(lego_nub_height+0.001,lego_nub_width/2,lego_nub_width/2,$fn=nub_fineness);
 }
 
 module peg(height){
-    cylinder(height-1/8*lego_length+0.001,lego_accessory_peg/2,lego_accessory_peg/2,$fn=knob_fineness);
+    cylinder(height-1/8*lego_length+0.001,lego_accessory_peg/2,lego_accessory_peg/2,$fn=nub_fineness);
 }
 
 module tube(height){
     difference(){
-        cylinder(height-1/8*lego_length+0.001,lego_tube/2,lego_tube/2,$fn=knob_fineness);
+        cylinder(height-1/8*lego_length+0.001,lego_tube/2,lego_tube/2,$fn=nub_fineness);
         translate([0,0,-0.001])
-        cylinder(height-1/8*lego_length+0.003,lego_tube_hole/2,lego_tube_hole/2,$fn=knob_fineness);
+        cylinder(height-1/8*lego_length+0.003,lego_nub_width/2+kerf,lego_nub_width/2+kerf,$fn=nub_fineness);
     }
-}
-
-module technic_brick_hole(height){
-    cylinder(height+0.003,lego_tube_hole/2,lego_tube_hole/2,$fn=knob_fineness);
 }
 
 module technic_hole_support(){
     translate([0,0,lego_technic_hole_height])
     rotate([-90,0,0])
     translate([0,0,0.1+lego_technic_bevel_depth])
-        cylinder(lego_length-0.2-lego_technic_bevel_depth*2,lego_technic_hole_support/2,lego_technic_hole_support/2,$fn=knob_fineness);
+        cylinder(lego_length-0.2-lego_technic_bevel_depth*2,lego_technic_hole_support/2,lego_technic_hole_support/2,$fn=nub_fineness);
 }
 
 module technic_hole_shape(){
-     cylinder(lego_length,lego_technic_hole/2,lego_technic_hole/2,$fn=knob_fineness);
+     cylinder(lego_length,lego_technic_hole/2,lego_technic_hole/2,$fn=nub_fineness);
         
         translate([0,0,0.1-0.001])
-        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=knob_fineness);
+        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=nub_fineness);
         
         translate([0,0,lego_length-0.1-lego_technic_bevel_depth])
-        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=knob_fineness);
+        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=nub_fineness);
 }
 
 module technic_hole(){
     translate([0,0,lego_technic_hole_height])
     rotate([-90,0,0])
     {
-        cylinder(lego_length,lego_technic_hole/2,lego_technic_hole/2,$fn=knob_fineness);
+        cylinder(lego_length,lego_technic_hole/2,lego_technic_hole/2,$fn=nub_fineness);
         
         translate([0,0,0.1-0.001])
-        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=knob_fineness);
+        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=nub_fineness);
         
         translate([0,0,lego_length-0.1-lego_technic_bevel_depth])
-        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=knob_fineness);
+        cylinder(lego_technic_bevel_depth+0.001,lego_technic_bevel/2,lego_technic_bevel/2,$fn=nub_fineness);
     }
 }
 
@@ -120,12 +101,10 @@ module technic_knob(){
     difference(){
         knob();
         translate([lego_length/2,lego_length/2,-0.002])
-        cylinder(lego_knob_height+0.003,lego_accessory_hole/2,lego_accessory_hole/2,$fn=knob_fineness);
+        cylinder(lego_nub_height+0.003,lego_accessory_hole/2+kerf,lego_accessory_hole/2+kerf,$fn=nub_fineness);
     }
     
 }
-
-
 
 module xbyy_block(length,width,height){
     translate([0.1,0.1,0])
@@ -137,16 +116,13 @@ module xbyy_cutout(length,width,height){
     
     if (length == 1 || width == 1){
         
-        translate([(lego_wall_thickness+lego_pad_depth)/8*lego_length-(kerf+flat_kerf_adj),(lego_wall_thickness+lego_pad_depth)/8*lego_length-(kerf+flat_kerf_adj),-0.001])
-        cube(size=[
-        lego_length*length-(((lego_wall_thickness+lego_pad_depth)*2)/8*lego_length)+(kerf+flat_kerf_adj)*2,
-        lego_length*width-(((lego_wall_thickness+lego_pad_depth)*2)/8*lego_length)+(kerf+flat_kerf_adj)*2,
-        height-1/8*lego_length+0.001]);
+        translate([0.1+(lego_wall_thickness+lego_pad_depth_spec)/8*lego_length,0.1+(lego_wall_thickness+lego_pad_depth_spec)/8*lego_length,-0.001])
+        cube(size=[lego_length*length-0.2-(((lego_wall_thickness+lego_pad_depth_spec)*2)/8*lego_length),lego_length*width-0.2-(((lego_wall_thickness+lego_pad_depth_spec)*2)/8*lego_length),height-1/8*lego_length+0.001]);
         
     }else{
         
-        translate([lego_wall_thickness/8*lego_length,lego_wall_thickness/8*lego_length,-0.001])
-        cube(size=[lego_length*length-((lego_wall_thickness*2)/8*lego_length),lego_length*width-((lego_wall_thickness*2)/8*lego_length),height-1/8*lego_length+0.001]);
+        translate([0.1+lego_wall_thickness/8*lego_length,0.1+lego_wall_thickness/8*lego_length,-0.001])
+        cube(size=[lego_length*length-0.2-((lego_wall_thickness*2)/8*lego_length),lego_length*width-0.2-((lego_wall_thickness*2)/8*lego_length),height-1/8*lego_length+0.001]);
         
     }
 }
@@ -186,32 +162,22 @@ module xbyy_tubes(length,width,height){
     }
 }
 
-module xbyy_technic_holes(length,width,height){
-    for (x=[1:length-1]){
-        for (y=[1:width-1]){
-            
-            translate([lego_length*x,lego_length*y,0])
-            technic_brick_hole(height);
-        }
-    }
-}
-
 module xbyy_pads(length,width,height){
     for (x=[0:length-1]){
-        translate([lego_length/2+lego_length*x-lego_pad_width/2,(lego_wall_thickness/8*lego_length)-0.001,0])
-        cube(size=[lego_pad_width,lego_pad_depth/8*lego_length-(kerf+flat_kerf_adj)+0.001,height-1+0.001]);
+        translate([lego_length/2+lego_length*x-lego_pad_width/2,(lego_wall_thickness/8*lego_length)+0.1-0.001,0])
+        cube(size=[lego_pad_width,lego_pad_depth+0.001,height-1+0.001]);
         
-        translate([lego_length/2+lego_length*x-lego_pad_width/2,lego_length*width-(lego_wall_thickness/8*lego_length)-lego_pad_depth/8*lego_length+(kerf+flat_kerf_adj),0])
-        cube(size=[lego_pad_width,lego_pad_depth/8*lego_length+0.001-(kerf+flat_kerf_adj),height-1+0.001]);
+        translate([lego_length/2+lego_length*x-lego_pad_width/2,lego_length*width-0.1-(lego_wall_thickness/8*lego_length)-lego_pad_depth,0])
+        cube(size=[lego_pad_width,lego_pad_depth+0.001,height-1+0.001]);
         
     }
     
     for (y=[0:width-1]){
-        translate([(lego_wall_thickness/8*lego_length)-0.001,lego_length/2+lego_length*y-lego_pad_width/2,0])
-        cube(size=[lego_pad_depth/8*lego_length+0.001-(kerf+flat_kerf_adj),lego_pad_width,height-1+0.001]);
+        translate([(lego_wall_thickness/8*lego_length)+0.1-0.001,lego_length/2+lego_length*y-lego_pad_width/2,0])
+        cube(size=[lego_pad_depth+0.001,lego_pad_width,height-1+0.001]);
         
-        translate([lego_length*length-(lego_wall_thickness/8*lego_length)-lego_pad_depth/8*lego_length+(kerf+flat_kerf_adj),lego_length/2+lego_length*y-lego_pad_width/2,0])
-        cube(size=[lego_pad_depth/8*lego_length-(kerf+flat_kerf_adj)+0.001,lego_pad_width,height-1+0.001]);
+        translate([lego_length*length-(lego_wall_thickness/8*lego_length)-lego_pad_depth-0.1,lego_length/2+lego_length*y-lego_pad_width/2,0])
+        cube(size=[lego_pad_depth+0.001,lego_pad_width,height-1+0.001]);
         
     }
 }
@@ -220,19 +186,19 @@ module xbyy_pads(length,width,height){
 module lego_outer_pads(length,width,height){
     for (x=[0:length-1]){
             translate([lego_length/2+lego_length*x-lego_pad_width/2,(lego_wall_thickness/8*lego_length)+width*lego_length+0.1-0.001,0])
-            cube(size=[lego_pad_width,lego_pad_depth/8*lego_length+0.001,height-1+0.001]);
+            cube(size=[lego_pad_width,lego_pad_depth+0.001,height-1+0.001]);
             
-            translate([lego_length/2+lego_length*x-lego_pad_width/2,-0.1-(lego_wall_thickness/8*lego_length)-lego_pad_depth/8*lego_length,0])
-            cube(size=[lego_pad_width,lego_pad_depth/8*lego_length+0.001,height-1+0.001]);
+            translate([lego_length/2+lego_length*x-lego_pad_width/2,-0.1-(lego_wall_thickness/8*lego_length)-lego_pad_depth,0])
+            cube(size=[lego_pad_width,lego_pad_depth+0.001,height-1+0.001]);
             
         }
         
         for (y=[0:width-1]){
             translate([(lego_wall_thickness/8*lego_length)+length*lego_length+0.1-0.001,lego_length/2+lego_length*y-lego_pad_width/2,0])
-            cube(size=[lego_pad_depth/8*lego_length+0.001,lego_pad_width,height-1+0.001]);
+            cube(size=[lego_pad_depth+0.001,lego_pad_width,height-1+0.001]);
             
-            translate([-(lego_wall_thickness/8*lego_length)-lego_pad_depth/8*lego_length-0.1,lego_length/2+lego_length*y-lego_pad_width/2,0])
-            cube(size=[lego_pad_depth/8*lego_length+0.001,lego_pad_width,height-1+0.001]);
+            translate([-(lego_wall_thickness/8*lego_length)-lego_pad_depth-0.1,lego_length/2+lego_length*y-lego_pad_width/2,0])
+            cube(size=[lego_pad_depth+0.001,lego_pad_width,height-1+0.001]);
             
         }
        
@@ -273,105 +239,6 @@ module xbyy_brick(width,length,height){
             xbyy_tubes(width,length,height);
             xbyy_pads(width,length,height);
         }
-    }
-}
-
-module technic_xbyy_brick(width,length,height){
-    union(){
-        difference(){
-        xbyy_block(width,length,height);
-        xbyy_cutout(width,length,height);
-            xbyy_technic_holes(width,length,height);
-        }
-        xbyy_knobs(width,length,height);
-        
-        if (width > 1 && length == 1){
-            xbyy_pegs(width,0,height);
-        }
-        
-        if (width == 1 && length > 1){
-            xbyy_pegs(length,1,height);
-        }
-        
-        if (width > 1 && length > 1){
-            xbyy_tubes(width,length,height);
-            xbyy_pads(width,length,height);
-        }
-    }
-}
-
-module lego_round_brick(height,technic){
-    difference(){
-        union(){
-            translate([lego_length/2,lego_length/2,0]){
-            translate([0,0,2.2/8*lego_length])
-            cylinder(height-2.2/8*lego_length,(lego_length-0.2)/2,(lego_length-0.2)/2,$fn=knob_fineness);
-            
-            cylinder(2.2/8*lego_length,lego_tube/2,lego_tube/2,$fn=knob_fineness);
-            }
-            translate([0,0,height-0.001])
-            knob();
-        }
-        translate([lego_length/2,lego_length/2,-0.001])
-        cylinder(height-1/8*lego_length+0.002,lego_tube_hole/2,lego_tube_hole/2,$fn=knob_fineness);
-        
-        if (technic){
-            
-            translate([lego_length/2,lego_length/2,height-1/8*lego_length-0.001])
-            cylinder(lego_knob_height+1/8*lego_length+0.002,lego_accessory_hole/2,lego_accessory_hole/2,$fn=knob_fineness);
-            
-        }else{
-            
-            translate([lego_length/2,lego_length/2,height-1/8*lego_length-0.001])
-            cylinder(1.8/8*lego_length+0.001,lego_accessory_hole/2,lego_accessory_hole/2,$fn=knob_fineness);
-            
-        }
-        
-    }
-}
-
-
-module lego_antenna(height){
-    difference(){
-        union(){
-            translate([lego_length/2,lego_length/2,0]){
-            cylinder(3.2/8*lego_length,lego_tube/2,lego_tube/2,$fn=knob_fineness);
-                
-                
-            translate([0,0,3.2/8*lego_length-0.001])
-            cylinder(1.8/8*lego_length+0.001,lego_knob_width/2,lego_knob_width/2,$fn=knob_fineness);
-                
-            translate([0,0,5/8*lego_length-0.001])
-            cylinder(height-5/8*lego_length-lego_accessory_peg/2+0.001,lego_accessory_peg/2,lego_accessory_peg/2,$fn=knob_fineness);
-            
-            
-            translate([0,0,height-lego_accessory_peg/2])
-            sphere(lego_accessory_peg/2,$fn=knob_fineness);
-            }
-        }
-        translate([lego_length/2,lego_length/2,0]){
-            translate([0,0,-0.001])
-        cylinder(2.2/8*lego_length+0.002,lego_tube_hole/2,lego_tube_hole/2,$fn=knob_fineness);
-        
-        translate([0,0,2.2/8*lego_length-0.001])
-            cylinder(1.8/8*lego_length,lego_accessory_hole/2,lego_accessory_hole/2,$fn=knob_fineness);
-        
-        }
-     }
-}
-
-module twobytwo_centerknob(height){
-    union(){
-        difference(){
-        xbyy_block(2,2,height);
-        xbyy_cutout(2,2,height);
-        }
-        translate([lego_length/2,lego_length/2,0])
-        xbyy_knobs(1,1,height);
-        
-        
-        xbyy_tubes(2,2,height);
-        xbyy_pads(2,2,height);
     }
 }
 
@@ -528,17 +395,17 @@ module xbyy_knobedge_corner_stand(width,length,corner,height){
     
     translate([lego_length+5,lego_length+5,lego_block_height/3-0.001])
     difference(){
-    cylinder(lego_block_height/3*2-1/16*inch+0.001,3.5,3.5,$fn=knob_fineness);
+    cylinder(lego_block_height/3*2-1/16*inch+0.001,3.5,3.5,$fn=nub_fineness);
         translate([0,0,-0.001])
-        cylinder(lego_block_height/3*2-1/16*inch+0.002-1,1.9,1.9,$fn=knob_fineness);
+        cylinder(lego_block_height/3*2-1/16*inch+0.002-1,1.9,1.9,$fn=nub_fineness);
     }
     
     translate([lego_length+5,lego_length+5,lego_block_height-1/16*inch-0.001])
-    cylinder(0.001+1/16*inch,1.375,1.375,$fn=knob_fineness);
+    cylinder(0.001+1/16*inch,1.375,1.375,$fn=nub_fineness);
     
     
     translate([lego_length+5,lego_length+5,lego_block_height])
-    sphere(1.375,$fn=knob_fineness);
+    sphere(1.375,$fn=nub_fineness);
 }
 
 
@@ -763,13 +630,13 @@ module lego_nvidia_jetson_rear_panel(){
 module nvidia_logo(){
     
     translate([6.5,28.5,lego_block_height/3-0.001])
-linear_extrude(height=lego_knob_height+0.001, convexity=10)
+linear_extrude(height=lego_nub_height+0.001, convexity=10)
     translate([0.001,0.001,0])
 //import(file="nvidia.dxf",convexity=7,$fn=10);
 import(file="nvidia_a.dxf",convexity=7,$fn=10);
         
 translate([6.5+32.35,28.5+26.55,lego_block_height/3-0.001])
-linear_extrude(height=lego_knob_height+0.001, convexity=10)
+linear_extrude(height=lego_nub_height+0.001, convexity=10)
     translate([0.001,0.001,0])
 import(file="nvidia_b.dxf",convexity=7,$fn=10);
     
@@ -849,7 +716,7 @@ module lego_nvidia_logo(length,width,height){
            
             
             translate([19.5,11,lego_block_height/3-0.001])
-            linear_extrude(height=lego_knob_height+0.001,convexity=10)
+            linear_extrude(height=lego_nub_height+0.001,convexity=10)
             text("Jetson TK1", font = "Liberation Sans:style=Bold");
             
     //cube([1,1,1]);
@@ -886,10 +753,7 @@ module lego_nvidia_logo(length,width,height){
     
     //xbyy_knobedge_corner_stand(3,3,0,lego_block_height/3);
     //xbyy_brick(1,12,lego_block_height/3);
-    //for (i=[0:3]){
-    //translate([i*(lego_length+5),0,0])    
-    //xbyy_brick(1,6,lego_block_height/3);
-    //}
+
 
 
 
@@ -917,7 +781,7 @@ module lego_nvidia_logo(length,width,height){
 
 
 
-//translate([0,0,lego_block_height/4+lego_knob_height*1.25])
+//translate([0,0,lego_block_height/4+lego_nub_height*1.25])
 //xbyy_brick(2,3,lego_block_height/3);
 
 
@@ -927,9 +791,9 @@ module lego_nvidia_logo(length,width,height){
 module lego_technic_beam(length){
     difference(){
         hull(){
-            cylinder(lego_length-0.2,lego_technic_beam_width/2,lego_technic_beam_width/2,$fn=knob_fineness);
+            cylinder(lego_length-0.2,lego_technic_beam_width/2,lego_technic_beam_width/2,$fn=nub_fineness);
             translate([(length-1)*lego_length,0,0])
-            cylinder(lego_length-0.2,lego_technic_beam_width/2,lego_technic_beam_width/2,$fn=knob_fineness);
+            cylinder(lego_length-0.2,lego_technic_beam_width/2,lego_technic_beam_width/2,$fn=nub_fineness);
         }
         for (i=[0:length-1]){
             translate([lego_length*i,0,-0.1])
@@ -939,11 +803,11 @@ module lego_technic_beam(length){
 }
 
 module lego_technic_axle_shape(){
-    offset(r=0.2/8*lego_length,$fn=knob_fineness)
-    offset(r=-0.4/8*lego_length,$fn=knob_fineness)
-    offset(r=0.2/8*lego_length,$fn=knob_fineness)
+    offset(r=0.2/8*lego_length,$fn=nub_fineness)
+    offset(r=-0.4/8*lego_length,$fn=nub_fineness)
+    offset(r=0.2/8*lego_length,$fn=nub_fineness)
     difference(){
-        circle(lego_technic_axle_width/2,lego_length,$fn=knob_fineness);
+        circle(lego_technic_axle_width/2,lego_length,$fn=nub_fineness);
         for (i=[0:3]){
             rotate([0,0,360/4*i])
             translate([lego_technic_axle_tooth/2,lego_technic_axle_tooth/2,0])
@@ -959,7 +823,7 @@ module lego_technic_axle_end(){
         linear_extrude(lego_technic_axle_stop+0.001,convexity=10)
         lego_technic_axle_shape();
         scale([1,1,2*(lego_technic_axle_stop)/lego_technic_axle_width])
-        sphere(lego_technic_axle_width/2,$fn=knob_fineness);
+        sphere(lego_technic_axle_width/2,$fn=nub_fineness);
     }
 }
 
@@ -983,32 +847,9 @@ module lego_technic_axle_stopped(length,stop){
     
     lego_technic_axle(length);
     translate([0,0,lego_length*stop-(lego_technic_axle_stop)/2])
-    cylinder(lego_technic_axle_stop,lego_technic_axle_stop_width/2,lego_technic_axle_stop_width/2,$fn=knob_fineness);
+    cylinder(lego_technic_axle_stop,lego_technic_axle_stop_width/2,lego_technic_axle_stop_width/2,$fn=nub_fineness);
 }
 
-//xbyy_brick(1,1,lego_block_height/3);
-//translate([-lego_length/2,0,1.5*lego_block_height/3])
-//xbyy_brick(2,1,lego_block_height/3);
-
-//translate([0,0,-1.5*lego_block_height/3])
-//xbyy_brick(2,2,lego_block_height/3);
-
-//lego_badge(8,8,lego_block_height/3);
-
-
-//x_technic_brick(4,lego_block_height);
-
-//lego_technic_axle_stopped(3,1);
-
-//minkowski(){
-  //  lego_technic_axle_end();
-   // sphere(0.1/8*lego_length,$fn=knob_fineness);
-//}
-
-//lego_technic_beam(3);
-
-
-//xbyy_brick(2,2,lego_block_height/3);
 
 // BRICK KERF TEST
 
@@ -1029,134 +870,22 @@ xbyy_brick(2,2,lego_block_height/3);
 translate([0,0,4.5*lego_block_height/3])
 xbyy_brick(1,1,lego_block_height/3);
 
-translate([-lego_length/2,-3*lego_length/2,6*lego_block_height/3])
-xbyy_brick(2,3,lego_block_height/3);
+translate([-lego_length/2,-lego_length/2,6*lego_block_height/3])
+xbyy_brick(2,2,lego_block_height/3);
 
 translate([lego_length/2,0,-3*lego_block_height/3])
 xbyy_brick(1,1,lego_block_height/3);
-
-translate([0,0,7*lego_block_height/3])
-    lego_antenna(lego_block_height*2);
-    
-translate([0,0,8.5*lego_block_height/3])
-    lego_round_brick(lego_block_height/3,1);
-    
-    
-translate([-lego_length/2,-3*lego_length/2,11*lego_block_height/3])
-technic_xbyy_brick(2,3,lego_block_height/3);
 }
 
-module brick_test_print(){
-    
-xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([lego_length+5,0,0])
-xbyy_brick(2,1,lego_block_height/3);
-    
-    translate([0,lego_length+5,0])
-xbyy_brick(2,2,lego_block_height/3);
-    
-}
+brick_test();
 
-module technic_test(){
-    
+//lego_technic_axle_stopped(3,1);
 
-    x_technic_brick(2,lego_block_height);
-    
-    translate([0,0,5.8/8*lego_length+0.5*lego_length])
-    rotate([-90,0,0])
-    translate([lego_length/2,0,-1.1*lego_block_height/3])
-    xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([lego_length,0,5.8/8*lego_length])
-rotate([-90,0,0])
-    lego_technic_axle_stopped(3,1);
+//minkowski(){
+  //  lego_technic_axle_end();
+   // sphere(0.1/8*lego_length,$fn=nub_fineness);
+//}
 
-}
+//lego_technic_beam(2);
 
-module print_test_full(){
-    space=5/8*lego_length;
-    
-xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([lego_length+space,0,0])
-xbyy_brick(2,1,lego_block_height/3);
-    
-    translate([0,lego_length+space,0])
-technic_xbyy_brick(2,2,lego_block_height/3);
-    
-    translate([lego_length*2+space,lego_length+space,0])
-    lego_round_brick(lego_block_height/3,1);
-    
-    translate([lego_length*2+space,lego_length*2+space*2,0])
-    x_technic_brick(1,lego_block_height);
-    
-    translate([0,lego_length*3+space*2,0])
-    lego_antenna(lego_block_height);
-    
-    translate([lego_length*3+space*2,0,0])
-    xbyy_brick(2,4,lego_block_height/3);
-    
-    translate([lego_length*1+space,lego_length*3+space*3,0])
-    xbyy_brick(4,1,lego_block_height/3);
-    
-}
-
-
-/*
-// CROSS SECTION TESTS
-//color([1,0,0,0.5])
-difference(){
-    union(){
-        //x_technic_brick(1,lego_block_height);
-        //translate([0,0,5.8/8*lego_length+.5*lego_length])
-        //rotate([-90,0,0])
-        //translate([0,0,-lego_block_height/3])
-        //lego_round_brick(lego_block_height/3,0);
-                
-        translate([0,0,lego_block_height/3])
-        lego_round_brick(lego_block_height/3,1);
-        
-        translate([0,0,lego_block_height/3*2])
-        xbyy_brick(1,2,lego_block_height/3);
-        //lego_round_brick(lego_block_height/3,1);
-        
-        lego_antenna(lego_block_height*2);
-        //translate([0,0,lego_block_height/3*4])
-        //lego_round_brick(lego_block_height/3,1);
-        
-        translate([0,0,lego_block_height])
-        xbyy_brick(1,1,lego_block_height/3);
-        
-    }
-    cube([lego_length/2,lego_length,lego_block_height*2]);
-    
-    }
-*/
-    
-        //x_technic_brick(1,lego_block_height);
-        //xbyy_brick(1,1,lego_block_height/3);
-        //xbyy_brick(2,2,lego_block_height/3);
-        //twobytwo_centerknob(lego_block_height/3);
-        /*
-        xbyy_knobs(2,2,0);
-        translate([lego_length/2,lego_length/2,0])
-        knob();
-        */
-        
-        //lego_antenna(lego_block_height*2);
-        //lego_round_brick(lego_block_height/3,1);
-//translate([0,0,-1.5*lego_block_height/3])
-//lego_round_brick(lego_block_height/3,0);
-//translate([0,0,1.5*lego_block_height/3])
 //xbyy_brick(1,1,lego_block_height/3);
-
-
-//xbyy_brick(2,2,lego_block_height/3);
-
-//brick_test();
-//technic_test();
-//brick_test_print();
-
-scale([xy_shrink,xy_shrink,1])
-print_test_full();
