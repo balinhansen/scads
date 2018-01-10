@@ -1,10 +1,10 @@
-stl_output=1;
+stl_output=0;
 fineness=100;
 
 view_fineness=18;
 render_fineness=100;
 
-finesness=stl_output?render_fineness:view_fineness;
+fineness=stl_output?render_fineness:view_fineness;
 
 difference(){
     minkowski(){

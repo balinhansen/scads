@@ -1,0 +1,17 @@
+bricks:
+
+xbyy_brick(w,l,h);
+lego_antenna(h);
+lego_round_brick(h);
+x_technic_brick(l,h);
+technic_xbyy_brick(l,h);
+twobytwo_centerknob(h);
+
+tests:
+
+brick_test();
+brick_test_print();
+technic_test();
+print_test_full();
+print_callibration_test();
+
