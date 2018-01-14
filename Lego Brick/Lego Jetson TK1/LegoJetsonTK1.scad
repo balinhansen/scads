@@ -148,11 +148,18 @@ module tegra_rear_panel(){
     }
 }
 
+module jetson_cutouts(){
+    rotate([90,0,0])
+    tegra_front_panel();
 
-//tegra_front_panel();
-//tegra_jtag_panel();
-tegra_rear_panel();
+    translate([0,5*25.4,0])
+    rotate([90,0,-90])
+    tegra_jtag_panel();
 
+    translate([5*25.4,5*25.4,0])
+    rotate([90,0,180])
+    tegra_rear_panel();
+}
 
 
 module serial_shape(){
@@ -210,4 +217,5 @@ module serial_test(){
     }
 }
 
+//jetson_cutouts();
 //serial_test();

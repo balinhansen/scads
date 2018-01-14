@@ -1,6 +1,9 @@
 include <../libraries/legobrick_lib.scad>;
 include <../Lego Jetson TK1/LegoJetsonTK1.scad>;
 
+big_overrides=1;
+
+lego_length=8;
 
 module lego_nvidia_jetson_io_panel(){
     
@@ -66,19 +69,32 @@ module lego_nvidia_jetson_rear_panel(){
 
 
 
-module nvidia_logo(){
+module nvidia_logo(scale){
     
-    translate([6.5,28.5,lego_block_height/3-0.001])
+    scale([scale?scale/14:1,scale?scale/14:1,1]){
+    translate([6.5,28.5,-0.001])
 linear_extrude(height=lego_knob_height+0.001, convexity=10)
     translate([0.001,0.001,0])
 //import(file="nvidia.dxf",convexity=7,$fn=10);
-import(file="nvidia_a.dxf",convexity=7,$fn=10);
+import(file="../Lego Jetson TK1/nvidia_a.dxf",convexity=7,$fn=10);
         
-translate([6.5+32.35,28.5+26.55,lego_block_height/3-0.001])
+translate([6.5+32.35,28.5+26.55,-0.001])
 linear_extrude(height=lego_knob_height+0.001, convexity=10)
     translate([0.001,0.001,0])
-import(file="nvidia_b.dxf",convexity=7,$fn=10);
+import(file="../Lego Jetson TK1/nvidia_b.dxf",convexity=7,$fn=10);
     
+    
+            translate([19.5,16,-0.001])
+            linear_extrude(height=lego_knob_height+0.001,convexity=10)
+            text("Jetson TK1", font = "Liberation Sans:style=Bold");
+            
+            
+            translate([4,5,-0.001])
+            linear_extrude(height=lego_knob_height+0.001,convexity=10)
+            text("Legobrick.scad Edition",size=7, font = "Liberation Sans:style=Bold Italic");
+            
+        
+    }
 }
 
 module lego_nvidia_logo(length,width,height){
@@ -149,14 +165,19 @@ module lego_nvidia_logo(length,width,height){
         
         
         
-        
         union(){
-            nvidia_logo();
+            translate([0,2,0])
+            nvidia_logo(8*lego_length);
            
             
-            translate([19.5,11,lego_block_height/3-0.001])
+            translate([19.5,17,lego_block_height/3-0.001])
             linear_extrude(height=lego_knob_height+0.001,convexity=10)
             text("Jetson TK1", font = "Liberation Sans:style=Bold");
+            
+            
+            translate([8,5,lego_block_height/3-0.001])
+            linear_extrude(height=lego_knob_height+0.001,convexity=10)
+            text("Legobrick.scad Edition",size=7, font = "Liberation Sans:style=Italic");
             
     //cube([1,1,1]);
         }
@@ -165,6 +186,17 @@ module lego_nvidia_logo(length,width,height){
     
 }
 
+module logo_vectors(){
+    
+    union(){
+            translate([0,2,0])
+            nvidia_logo(10);
+           
+            
+    //cube([1,1,1]);
+        }
+        
+    }
 
 
 
@@ -184,6 +216,10 @@ module lego_nvidia_logo(length,width,height){
 //lego_nvidia_jetson_jtag_panel();
 //lego_nvidia_jetson_rear_panel();
 
+lego_badge(10,10,lego_block_height/3);
+    
+    translate([0,0,lego_block_height/3])
+    logo_vectors();
 
 //lego_nvidia_logo(14,14,lego_block_height/3);
 
