@@ -20,16 +20,17 @@ battery_text="AAA";
 battery_bank=1;
 battery_count=8; 
 battery_length=44.5;    // 18650 65.2;    // 50.5 AA;  // 28: 21/23
-battery_width=10.5;     // 18650 18;       // AA   14.5;   // 10: 21/23
+battery_width=10.5;     // 18650 18;       // 14.5 AA;   // 10: 21/23
 battery_spacing=1;
 battery_holder_shell=1.6;
-battery_clip_shell=1.2;
+battery_clip_shell=2;
 battery_clip_length=battery_length/4;
-battery_knob=1;
+battery_knob=1.5;
 battery_knob_width=3.5;
 battery_clip_angle=15;
 battery_clip_space=1;
 battery_hover=1;
+battery_wire=1;
 
 battery_bank_length=105;
 battery_bank_width=(battery_width+battery_spacing)*(battery_count/2)+battery_width/2;
@@ -409,7 +410,7 @@ module light_box(){
 module battery(){
     translate([0,battery_width/2,battery_width/2])
     rotate([0,90,0]){
-    cylinder(battery_length-battery_knob/2,battery_width/2,battery_width/2,$fn=fineness);
+    cylinder(battery_length-battery_knob,battery_width/2,battery_width/2,$fn=fineness);
     
         translate([0,0,battery_length-battery_knob-0.001])
         cylinder(battery_knob+0.001,battery_knob_width/2,battery_knob_width/2,$fn=fineness);    
@@ -608,7 +609,7 @@ module battery_holder(){
     battery_cutout();
     }
     
-    centered_battery();
+    //centered_battery();
     
     translate([0,0,-0.001]){
         
@@ -641,57 +642,77 @@ module battery_holder(){
     translate([0,0,-0.001]){
         
     // Positive Terminal
-    
+    difference(){
+        union(){
     translate([battery_length/2+comfort+battery_clip_shell+battery_clip_space,-battery_width/4,0])
     cube(size=[battery_clip_shell,battery_width/2,battery_width+battery_hover+battery_clip_shell+comfort]);
     
-    translate([battery_length/2+comfort-comfort-battery_knob+0.001,-battery_width/4,battery_width+battery_hover-battery_clip_shell+battery_clip_shell+comfort])
-    cube(size=[comfort+battery_knob+comfort+battery_clip_shell+battery_clip_space+0.001,battery_width/2,battery_clip_shell]);
+    translate([battery_length/2-comfort*2-battery_knob+0.001,-battery_width/4,battery_width+battery_hover-battery_clip_shell+battery_clip_shell+comfort])
+    cube(size=[comfort*2+battery_knob+comfort+battery_clip_shell+battery_clip_space+0.001,battery_width/2,battery_clip_shell]);
    
     translate([battery_length/2+comfort,-battery_width/4,battery_hover])
     cube(size=[battery_clip_shell,battery_width/2,battery_width-battery_clip_shell+battery_clip_shell+comfort+0.001]);
   
     
-    translate([battery_length/2,-battery_width/4,battery_width/2+battery_hover+battery_knob_width/2+comfort])
-    cube(size=[battery_knob+comfort+0.001,battery_width/2,battery_clip_shell]);
+    translate([battery_length/2-battery_knob/2+comfort,-battery_width/4,battery_width/2+battery_hover+battery_knob_width/2+comfort])
+    cube(size=[battery_knob/2+comfort+0.001,battery_width/2,battery_clip_shell]);
     
-    translate([battery_length/2,-battery_width/4,battery_width/2+battery_hover-battery_knob_width/2-battery_clip_shell-comfort])
-    cube(size=[battery_knob+comfort+0.001,battery_width/2,battery_clip_shell]);
-    
-        
-        
-    // Negative Terminal 
-        
-        // Stand
-    translate([-1*(battery_length/2+comfort+battery_clip_shell+battery_clip_space)-battery_clip_shell,-battery_width/4,0])
-    cube(size=[battery_clip_shell,battery_width/2,battery_width+battery_hover+battery_clip_shell+comfort]);
-    
-        // Plate Knuckle
-    translate([-1*(battery_length/2+comfort)-battery_clip_shell-battery_clip_space-0.001,-battery_width/4,battery_width+battery_hover-battery_clip_shell+battery_clip_shell+comfort])
-    cube(size=[battery_clip_shell+battery_clip_space+comfort*2+0.001,battery_width/2,battery_clip_shell]);
-   
-        // Plate
-    translate([-1*(battery_length/2+comfort)-battery_clip_shell,-battery_width/4,battery_hover+battery_clip_space])
-    cube(size=[battery_clip_shell,battery_width/2,battery_width+comfort+battery_hover-battery_clip_shell+0.001]);
-}  
-    
-    translate([0,0,-0.001])
-    linear_extrude(0.4+0.001,convexity=10)
-    text(battery_text,3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
+    translate([battery_length/2-battery_knob/2+comfort,-battery_width/4,battery_width/2+battery_hover-battery_knob_width/2-battery_clip_shell-comfort])
+    cube(size=[battery_knob/2+comfort+0.001,battery_width/2,battery_clip_shell]);
+            
+            
 
     translate([battery_length/2+(-battery_knob-comfort+comfort+battery_clip_shell+battery_clip_space+battery_clip_shell)/2,0,battery_hover+battery_width+comfort+battery_clip_shell-0.001])
     linear_extrude(0.4+0.001,convexity=10)
     text("+",3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
 
-    translate([-battery_length/2+comfort-(comfort*2+battery_clip_shell+battery_clip_space+battery_clip_shell)/2,0,battery_hover+battery_width+comfort+battery_clip_shell-0.001])
-    linear_extrude(0.4+0.001,convexity=10)
-    text("G",3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
-
-    // Base 
-    translate([0,0,-battery_clip_shell/2])
-    cube(size=[battery_length+comfort*2+battery_clip_shell*2+battery_clip_space*2+battery_clip_shell*2,battery_width+comfort*2+battery_clip_shell*2,battery_clip_shell],center=true);
+        }
+        
+        translate([battery_length/2,0,battery_clip_shell])
+        linear_extrude(battery_width+battery_hover+comfort+battery_clip_shell,convexity=10)
+        circle(battery_wire/2+kerf,$fn=fineness); //polygon(points=[[0,-1],[0,1],[1,0]],paths=[[0,1,2]]);
     }
+        
+        
+    // Negative Terminal 
+        
+    difference(){
+        union(){
+        // Stand
+            translate([-1*(battery_length/2+comfort+battery_clip_shell+battery_clip_space)-battery_clip_shell,-battery_width/4,0])
+            cube(size=[battery_clip_shell,battery_width/2,battery_width+battery_hover+battery_clip_shell+comfort]);
+            
+                // Plate Knuckle
+            translate([-1*(battery_length/2+comfort)-battery_clip_shell-battery_clip_space-0.001,-battery_width/4,battery_width+battery_hover-battery_clip_shell+battery_clip_shell+comfort])
+            cube(size=[battery_clip_shell+battery_clip_space+comfort*2+0.001,battery_width/2,battery_clip_shell]);
+           
+                // Plate
+            translate([-1*(battery_length/2+comfort)-battery_clip_shell,-battery_width/4,battery_hover+battery_clip_space])
+            cube(size=[battery_clip_shell,battery_width/2,battery_width+comfort+battery_hover-battery_clip_shell+0.001]);
+                    
+            translate([-battery_length/2+comfort-(comfort*2+battery_clip_shell+battery_clip_space+battery_clip_shell)/2,0,battery_hover+battery_width+comfort+battery_clip_shell-0.001])
+            linear_extrude(0.4+0.001,convexity=10)
+            text("G",3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
+
+        }  
     
+    
+        translate([-battery_length/2-comfort,0,battery_clip_shell])
+        linear_extrude(battery_width+battery_hover+comfort+battery_clip_shell,convexity=10)
+        circle(battery_wire/2+kerf,$fn=fineness); //polygon(points=[[0,-battery_wire],[0,battery_wire],[-battery_wire,0]],paths=[[0,1,2]]);
+    }
+
+        
+        translate([0,0,-0.001])
+        linear_extrude(0.4+0.001,convexity=10)
+        text(battery_text,3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
+
+        // Base 
+        translate([0,0,-battery_clip_shell/2])
+        cube(size=[battery_length+comfort*2+battery_clip_shell*2+battery_clip_space*2+battery_clip_shell*2,battery_width+comfort*2+battery_clip_shell*2,battery_clip_shell],center=true);
+    
+}
+}
 }
 
 module centered_holder_cutout(){
