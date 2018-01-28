@@ -1,15 +1,15 @@
 inch=25.4;
 
-light_length=50;
+light_length=100;
 light_width=7.5;
 
-rings=4;
+rings=3;
 ring_spacing=1;
 
 fineness=90;
 shell=1;
 
-module light_mount(){
+module light_mount(rings){
     difference(){
         cylinder(rings*light_width+(rings+1)*ring_spacing,light_length/PI/2-1/16*inch,light_length/PI/2-1/16*inch,$fn=fineness);
 
@@ -42,8 +42,46 @@ module light_mount(){
 
 }
 
+    light_mount(1);
+
+translate([-light_width/2-ring_spacing,0,light_width+ring_spacing*2])
+rotate([0,90,0])
 difference(){
-    light_mount();
-    //translate([0,0,-0.001])
-    //cube([10,10,10+0.001]);
+    light_mount(1);
+    translate([0,-20,-0.001])
+    cube([20,40,10+0.001]);
+}
+
+rotate([0,180,0])
+translate([-light_width/2-ring_spacing,0,0])
+rotate([0,90,0])
+difference(){
+    light_mount(1);
+    translate([0,-20,-0.001])
+    cube([20,40,10+0.001]);
+}
+
+
+
+translate([light_width/2+ring_spacing,0,light_width/2+ring_spacing])
+rotate([0,90,0])
+rotate([0,0,90])
+translate([-light_width/2-ring_spacing,0,0])
+rotate([0,90,0])
+difference(){
+    light_mount(1);
+    translate([0,-20,-0.001])
+    cube([20,40,10+0.001]);
+}
+
+
+translate([-light_width/2-ring_spacing,0,light_width/2+ring_spacing])
+rotate([0,-90,0])
+rotate([0,0,90])
+translate([-light_width/2-ring_spacing,0,0])
+rotate([0,90,0])
+difference(){
+    light_mount(1);
+    translate([0,-20,-0.001])
+    cube([20,40,10+0.001]);
 }

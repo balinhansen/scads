@@ -1,7 +1,11 @@
 inch=25.4;
 fineness=48;
-kerf=0.007*inch;
+kerf=0.007*inch*1.25;
 comfort=0.25;
+echo(kerf);
+
+cross_section=0;
+glass_override=0;
 
 width=inch/2;
 height=inch/2;
@@ -38,16 +42,18 @@ battery_bank_depth=battery_width+sin(60)*battery_width+battery_spacing/2;
 
 wire=2;
 wire_shell=1;
+wires_is_one=1;
 
 screw_is_wire=0;
 screw_shell=1;
 
 
-screw_hole_diameter=2;
+screw_hole_diameter=5;
 screw_head=10;
 screw_head_height=0;//1/2*inch;
 
-screw_in_glass=0;
+screw_in_glass=1;
+screw_is_one=1;
 screw_outside_glass=0;
 
 light_board=1;
@@ -60,7 +66,7 @@ box_shell=2;
 
 prevailing_width=((screw_head>light_board_width && screw_in_glass)?screw_head:light_board_width);
 
-glass_length=light_board_length+comfort*2+wire*2+wire_shell*4+comfort*2+(screw_in_glass?screw_head*2:0+comfort*2);
+glass_length=light_board_length+comfort*2+(screw_is_wire?0:(!wires_is_one?wire*2+wire_shell*4:wire+wire_shell*2))+comfort*2+(screw_in_glass?(screw_is_one?screw_head:screw_head*2):0+comfort*2);
 
 glass_width=prevailing_width+comfort*2+glass_connector_holder_shell*2+comfort*2;
 
@@ -74,6 +80,7 @@ controller_board_height=1.2*inch;
 
 
 module glass(){
+    
     union(){
         translate([0,0,prevailing_height])
         rotate([0,90,0])
@@ -214,9 +221,10 @@ module light_base(){
         translate([shell+comfort+glass_connector_holder_shell+comfort+glass_width/4,shell+comfort+glass_connector_holder_shell+comfort+screw_head/2,0])
         screw_hole();
             
+            if (!screw_is_one){
         translate([shell+comfort+glass_connector_holder_shell+comfort+glass_width/4+screw_head+wire+wire_shell*2+comfort+light_board_length+comfort+wire+wire_shell*2+prevailing_width/2,shell+comfort+glass_connector_holder_shell+comfort+screw_head/2,0])
         screw_hole();
-        
+            }
         }
             translate([
             shell+comfort+glass_connector_holder_shell+comfort+glass_width/4+(screw_in_glass?screw_head:0),
@@ -433,6 +441,9 @@ module batteries(){
 
 
 module centered_glass(){
+    center_lightboard()
+    //translate([(screw_is_one && !screw_is_wire && wires_is_one)?screw_head-wire_shell*2-wire-glass_width/4:(screw_is_one && !wires_is_one)?screw_head/2:0,0,0])
+    
     translate([-glass_length/2-glass_width/2-comfort,-shell-glass_width/2,0])
     glass();
 }
@@ -449,11 +460,15 @@ module centered_wire(length=1){
 };
 
 module centered_wires(length){
-    translate([-light_board_length/2-comfort-wire_shell-wire/2,0,0])
-    centered_wire(length);
-
-    translate([light_board_length/2+comfort+wire_shell+wire/2,0,0])
-    centered_wire(length);
+    if (!screw_is_wire){
+        translate([-light_board_length/2-comfort-wire_shell-wire/2,0,0])
+        centered_wire(length);
+        
+        if (!wires_is_one){
+            translate([light_board_length/2+comfort+wire_shell+wire/2,0,0])
+            centered_wire(length);
+        }
+    }
 }
 
 module centered_wire_shell(){
@@ -462,11 +477,15 @@ module centered_wire_shell(){
 }
 
 module centered_wire_shells(){
-    translate([-light_board_length/2-comfort-wire_shell-wire/2,0,0])
-    centered_wire_shell();
-    
-    translate([light_board_length/2+comfort+wire_shell+wire/2,0,0])
-    centered_wire_shell();
+    if (!screw_is_wire){
+        translate([-light_board_length/2-comfort-wire_shell-wire/2,0,0])
+        centered_wire_shell();
+
+        if (!wires_is_one){
+            translate([light_board_length/2+comfort+wire_shell+wire/2,0,0])
+            centered_wire_shell();
+        }
+    }
 }
 
 module centered_lightboard(){
@@ -475,18 +494,22 @@ module centered_lightboard(){
 }
 
 module screw_holes(length=1){
-    translate([-light_board_length/2-comfort-wire_shell*2-wire-comfort-screw_head/2,0,0])
+    if (!screw_is_one){
+    translate([-light_board_length/2-comfort-(!screw_is_wire?wire_shell*2+wire+comfort:0)-screw_head/2,0,0])
     screw_hole(length);
-
-    translate([light_board_length/2+comfort+wire_shell*2+wire+comfort+screw_head/2,0,0])
+    }
+    
+    translate([light_board_length/2+comfort+((!screw_is_wire && !wires_is_one)?wire_shell*2+wire+comfort:0)+screw_head/2,0,0])
     screw_hole(length);
 }
 
 module screw_hole_pads(){
-    translate([-light_board_length/2-comfort-wire_shell*2-wire-comfort-screw_head/2,0,0])
+    if (!screw_is_one){
+    translate([-light_board_length/2-comfort-(!screw_is_wire?wire_shell*2+wire+comfort:0)-screw_head/2,0,0])
     screw_hole_pad();
+    }
 
-    translate([light_board_length/2+comfort+wire_shell*2+wire+comfort+screw_head/2,0,0])
+    translate([light_board_length/2+comfort+((!screw_is_wire && !wires_is_one)?wire_shell*2+wire+comfort:0)+screw_head/2,0,0])
     screw_hole_pad();
 }
 
@@ -515,6 +538,9 @@ module centered_base_plate(){
 }
 
 module light(){
+    center_light()
+    //translate([(screw_is_one && !screw_is_wire && wires_is_one)?-(screw_head-wire_shell*2-wire-glass_width/4):(screw_is_one && !wires_is_one)?-(screw_head/2):0,0,0])
+    
     difference(){
         
         union(){
@@ -523,10 +549,11 @@ module light(){
             
 
             color([0.9,0.85,0.8,1]){
+                    center_lightboard()
+                   // translate([(screw_is_one && !screw_is_wire && wires_is_one)?screw_head-wire_shell*2-wire-glass_width/4:(screw_is_one && !wires_is_one)?screw_head/2:0,0,0])
                     centered_holder();
-                            
+                    
                     centered_lightboard();
-
                     //centered_wires(4);
 
                     centered_wire_shells();
@@ -537,11 +564,14 @@ module light(){
                             screw_holes();
                         }
                     }
+                    
                 }
                 
             }
             color([0.9,0.85,0.8,1]){
                 difference(){
+                    
+                    center_lightboard()
                     centered_base_plate();
                     centered_wires(4);
                     if (screw_in_glass){
@@ -550,13 +580,13 @@ module light(){
                 }
             }
             
-            
-            translate([0,0,glass_connector_holder_shell-0.001])
-            color([0.4,0.4,0.8,0.6])
-            translate([+comfort/2+kerf,0,connector_float])
-            centered_glass();
-               
-            
+            if (!glass_override){
+                translate([0,0,glass_connector_holder_shell-0.001])
+                color([0.4,0.4,0.8,0.6])
+                translate([+comfort/2+kerf,0,connector_float])
+                centered_glass();
+                   
+            }
         }
     }
 }
@@ -722,9 +752,22 @@ module centered_holder_cutout(){
     glass_connector_holder_cutout();
 }
 
+//glass();
 
-//light();
+module center_lightboard(){
+translate([(screw_is_one && !screw_is_wire && wires_is_one)?screw_head-wire_shell*2-wire-glass_width/4:(screw_is_one && !wires_is_one)?screw_head/2:(screw_is_wire && screw_is_one)?screw_head/2:(!screw_in_glass && wires_is_one)?-wire_shell-wire/2-comfort:0,0])
+    children();
+
+}
+
+module center_light(){
+    translate([(screw_is_one && !screw_is_wire && wires_is_one)?-(screw_head-wire_shell*2-wire-glass_width/4):(screw_is_one && !wires_is_one)?-screw_head/2:(screw_is_wire && screw_is_one)?-screw_head/2:(!screw_in_glass && wires_is_one)?+wire_shell+wire/2+comfort:0,0,0])
+    children();
+}
+
+light();
+
 //rotate([0,180,0])
 //color([0.9,0.85,0.8,1])
-battery_holder();
+//battery_holder();
 //light();
