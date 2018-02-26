@@ -82,11 +82,11 @@ translate([0,0,box_depth-box_corner-box_corner-lock_hover-(box_connector+lock)/2
             hull(){
                 for (i=[0:debug_points-1]){
                     rotate([0,0,360/debug_points*i])
-                    translate([debug_post/2+bug_width+debug_post+bug_width/4-box_shell,0,0])
+                    translate([debug_post/2+bug_width+debug_post+bug_width/2-box_corner,0,0])
                     cylinder(lock/2,bug_width/2,bug_width/2,$fn=bug_fineness);
                 }
             }
-            cylinder(lock/2+kerf*2,box_corner+lock_depth,box_corner+lock_depth,$fn=box_fineness);
+            cylinder(lock/2+kerf*2,box_corner-box_shell+lock_depth,box_corner-box_shell+lock_depth,$fn=box_fineness);
         }
    
         
@@ -105,11 +105,11 @@ module bug_bowl_lid(){
                 hull(){
                     for (i=[0:debug_points-1]){
                         rotate([0,0,360/debug_points*i])
-                        translate([debug_post/2+bug_width+debug_post+bug_width/4-box_shell,0,0])
+                        translate([debug_post/2+bug_width+debug_post+bug_width/2-box_corner,0,0])
                         cylinder(lock/2,bug_width/2,bug_width/2,$fn=bug_fineness);
                     }
                 }
-                cylinder(lock/2,box_corner+lock_depth-kerf,box_corner+lock_depth-kerf,$fn=box_fineness);
+                cylinder(lock/2,box_corner-box_shell-kerf+lock_depth,box_corner-box_shell-kerf+lock_depth,$fn=box_fineness);
             }
             
             // Connector
@@ -198,10 +198,11 @@ debug_posts();
 difference(){
 union(){
     bowl();
+    
     //rotate([0,180,0])
-    //translate([0,0,-box_depth])
+    translate([0,0,-box_depth])
     translate([0,0,box_depth])
     bug_bowl_lid();
 }
-    //bug_bowl_crosssection();
+    bug_bowl_crosssection();
 }

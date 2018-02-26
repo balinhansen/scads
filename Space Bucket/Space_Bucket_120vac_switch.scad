@@ -8,7 +8,7 @@ ounces=640;
 
 build_stl=1;
 
-accessory_shell=1/16*inch;
+accessory_shell=1.2;//3/32*inch;
 
 body_fineness_lowres=128;
 hole_fineness_lowres=32;
@@ -183,32 +183,53 @@ module bucket(){
 
 //bucket();
 
+switch_x=5*inch;
+switch_height=6*inch;
+switch_bevel=0;
+switch_void_depth=0.75*inch;
+switch_void_width=2*inch;
+switch_screw_width=5;
+switch_screw_offset=(2+5/16)*inch;
+switch_cutout_width=3/8*inch+.5;
+switch_cutout_height=15/16*inch+.5;
+
 difference(){
-    translate([5*inch,0,6*inch])
+    translate([switch_x,0,switch_height])
     
     difference(){
-        translate([3,-1*inch+3,3])
+        translate([switch_bevel,-switch_void_width/2+switch_bevel,switch_bevel])
         minkowski(){
-            sphere(3,$fn=hole_fineness);
-            cube(size=[2*inch-6,2*inch-6,4.5*inch-6]);
+            sphere(switch_bevel+accessory_shell,$fn=hole_fineness);
+            cube(size=[switch_void_depth-switch_bevel*2,switch_void_width-switch_bevel*2,4.5*inch-switch_bevel*2]);
         }
         
-        translate([0,0,(4.5*inch-(2+5/16)*inch)*0.5])
+        translate([0,0,(4.5*inch-switch_screw_offset)*0.5])
         rotate([0,90,0])
         translate([0,0,-0.001])
-        cylinder(2*inch+0.002,1/16*inch,1/16*inch,$fn=hole_fineness);
+        cylinder(switch_void_depth+accessory_shell+0.002,switch_screw_width/2,switch_screw_width/2,$fn=hole_fineness);
         
-        translate([0,0,(4.5*inch+(2+5/16)*inch)*0.5])
+        translate([0,0,(4.5*inch+switch_screw_offset)*0.5])
         rotate([0,90,0])
         translate([0,0,-0.001])
-        cylinder(2*inch+0.002,1/16*inch,1/16*inch,$fn=hole_fineness);
+        cylinder(switch_void_depth+accessory_shell+0.002,switch_screw_width/2,switch_screw_width/2,$fn=hole_fineness);
         
-        translate([3,-1*inch+3,3])
+
+        translate([0,0,(4.5*inch)*0.5])
+        rotate([0,90,0])
+        translate([0,0,switch_void_depth/2+accessory_shell-0.001])
+        cube(size=[switch_cutout_height,switch_cutout_width,switch_void_depth+accessory_shell*2+0.002],$fn=hole_fineness,center=true);
+
+        
+        
+        
+        translate([switch_bevel,-switch_void_width/2+switch_bevel,switch_bevel])
         minkowski(){
-            sphere(3-accessory_shell,$fn=hole_fineness);
-            cube(size=[2*inch-3*2,2*inch-3*2,4.5*inch-3*2]);
+            sphere(switch_bevel,$fn=hole_fineness);
+            cube(size=[switch_void_depth-switch_bevel*2,switch_void_width-switch_bevel*2,4.5*inch-switch_bevel*2]);
         }
     }
     
    bucket_shape();
 }  
+
+//bucket();
