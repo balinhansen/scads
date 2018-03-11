@@ -20,11 +20,11 @@ lock_depth=0.1;//kerf*1.5;
 
 shell=1.6;
 
-battery_text="AAA";
+battery_text="21/23";
 battery_bank=1;
 battery_count=8; 
-battery_length=44.5;    // 18650 65.2;    // 50.5 AA;  // 28: 21/23
-battery_width=10.5;     // 18650 18;       // 14.5 AA;   // 10: 21/23
+battery_length=28; //44.5; //AAA    // 18650 65.2;    // 50.5 AA;  // 28: 21/23
+battery_width=10; //10.5; / AAA     // 18650 18;       // 14.5 AA;   // 10: 21/23
 battery_spacing=1;
 battery_holder_shell=1.6;
 battery_clip_shell=2;
@@ -34,7 +34,7 @@ battery_knob_width=3.5;
 battery_clip_angle=15;
 battery_clip_space=1;
 battery_hover=1;
-battery_wire=1;
+battery_wire=0.8;
 
 battery_bank_length=105;
 battery_bank_width=(battery_width+battery_spacing)*(battery_count/2)+battery_width/2;
@@ -722,7 +722,7 @@ module battery_holder(){
                     
             translate([-battery_length/2+comfort-(comfort*2+battery_clip_shell+battery_clip_space+battery_clip_shell)/2,0,battery_hover+battery_width+comfort+battery_clip_shell-0.001])
             linear_extrude(0.4+0.001,convexity=10)
-            text("G",3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
+            text("-",3,font = "Liberation Sans:style=Bold",halign="center",valign="center");
 
         }  
     
@@ -765,9 +765,20 @@ module center_light(){
     children();
 }
 
+module light_with_battery(){
+
+rotate([90,0,0])
+translate([0,0,-battery_clip_shell-0.004])
+difference(){
+color([0.9,0.85,0.8,1])
+battery_holder();
+    translate([0,0,battery_clip_shell/2])
+    cube(size=[100,100,battery_clip_shell+0.004],center=true);
+}
+rotate([-90,0,0])
 light();
 
-//rotate([0,180,0])
-//color([0.9,0.85,0.8,1])
-//battery_holder();
-//light();
+}
+
+light_with_battery();
+//centered_glass();

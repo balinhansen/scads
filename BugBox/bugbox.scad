@@ -193,16 +193,17 @@ module bug_bowl_crosssection(){
 
 
       
-debug_posts();
+//debug_posts();
     
 difference(){
 union(){
-    bowl();
+    //bowl();
     
-    //rotate([0,180,0])
+    rotate([0,180,0])
     translate([0,0,-box_depth])
-    translate([0,0,box_depth])
+    //translate([0,0,box_depth])
     bug_bowl_lid();
+    
 }
-    bug_bowl_crosssection();
+    //bug_bowl_crosssection();
 }
