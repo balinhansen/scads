@@ -14,7 +14,9 @@ cap_height=2*inch;
 corner=0.25*inch;
 finger=0.5*inch;
 tray_width=0.25*inch;
-tray_height=0.5*inch;
+tray_height=0.375*inch;
+
+hole=0.25*inch;
 
 module cup(){
     rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
@@ -51,15 +53,25 @@ module finger_cup(){
         cup();
 
         for (i=[0:2]){
-            rotate([0,0,360/3*i])
+            rotate([0,0,360/3*i-atan(finger/(width/2))/2])
             
             translate([0,0,corner/2+thickness])
             rotate_extrude(angle=atan(finger/(width/2)),convexity=10,$fn=large_fineness)
             square(size=[width/2+thickness+1,height-corner/2+0.001]);
-            //cube(size=[width/2+thickness,finger,height-corner/2]);
+                    
+            rotate([0,0,360/3*i])
+            translate([0,0,thickness+0.001])
+            rotate([90,0,-90])
+            linear_extrude(width/2+thickness+0.001,convexity=10)
+            difference(){
+                circle(hole/2,$fn=fineness);
+                translate([0,-hole/2-0.001])
+                square(size=[hole,hole/2+0.001]);
+            }
+           
         }
 
-    }
+    } 
 }
 
 
@@ -97,7 +109,7 @@ module finger_cap(){
         cap();
         
         for (i=[0:2]){
-            rotate([0,0,360/3*i+atan((finger-kerf)/(width/2))])
+            rotate([0,0,360/3*i+atan((finger-kerf)/(width/2))-atan(finger/(width/2))/2])
             
             translate([0,0,corner/2+thickness-0.001])
             rotate_extrude(angle=360/3-atan((finger-kerf*2)/(width/2)),convexity=10,$fn=large_fineness)
@@ -113,26 +125,31 @@ module tray(){
 
     difference(){
         union(){
-            square(size=[width/2-corner/2+tray_width,corner+thickness]);
+            square(size=[width/2-corner/2+tray_width+thickness,corner+thickness]);
             
             translate([0,corner/2+thickness])
-            square(size=[width/2+thickness+tray_width,tray_height-corner/2]);
+            square(size=[width/2+thickness+tray_width+thickness,tray_height-corner/2]);
 
-            translate([width/2-corner/2+tray_width,corner/2+thickness])
+            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
             circle(corner/2+thickness,$fn=fineness);
         }
         
         union(){
             translate([-0.001,thickness])
-            square(size=[width/2-corner/2+tray_width+0.001,corner+0.001]);
+            square(size=[width/2-corner/2+tray_width+thickness+0.001,corner+0.001]);
             
             translate([-0.001,corner/2+thickness+0.001])
-            square(size=[width/2+tray_width+0.001,tray_height-corner/2+0.001]);
+            square(size=[width/2+tray_width+thickness+0.001,tray_height-corner/2+0.001]);
 
-            translate([width/2-corner/2+tray_width,corner/2+thickness])
+            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
             circle(corner/2,$fn=fineness);
         }
     }
+}
+
+module preview(){
+    finger_tray_cup();
+    finger_cap();
 }
 
 module finger_tray_cup(){
@@ -147,5 +164,8 @@ module print_finger_cap(){
     
 }
 
+
+preview();
+
 //finger_tray_cup();
-print_finger_cap();
+//print_finger_cap();
