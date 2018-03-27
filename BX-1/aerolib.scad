@@ -383,6 +383,21 @@ module wing_shape_inset(){
     }
 }
 
+module wing_shape_innerkerf(){
+    offset(r=-kerf)
+    wing_shape_inset();
+}
+
+module wing_shape_connector(){
+    offset(r=-kerf-hull_thickness)
+    wing_shape_inset();
+}
+
+module wing_shape_lockpad(){
+    offset(r=-kerf-hull_thickness-wing_lock_depth)
+    wing_shape_inset();
+}
+
 module wing_shape_block(){
     offset(r=-wing_connector_block)
     wing_shape_inset();
@@ -394,14 +409,87 @@ module wing_shape_lock(){
 }
 
 module wing_shape_lock_cutout(){
-    
+    offset(r=-wing_lock_depth-kerf)
+    wing_shape_inset();
 }
+
+
+
+
+module wing_connector_insert(){
+    difference(){
+        union(){
+            
+            // Insert 
+            
+            translate([0,0,-0.001])
+            linear_extrude(wing_connector_length+0.001,convexity=10)
+            difference(){
+                wing_shape_innerkerf();
+                wing_shape_connector();
+            }
+            //wing_shape_lock_cutout();
+            
+            // Lock padding
+            
+            translate([0,0,wing_connector_length/2-wing_lock/2-hull_thickness+wing_connector_float])
+            linear_extrude(wing_lock+hull_thickness*2,convexity=10)
+            difference(){
+                offset(r=-hull_thickness/2)
+                wing_shape_innerkerf();
+                wing_shape_lockpad();
+            }
+        }
+        
+        // Lock Cutout
+        
+        translate([0,0,wing_connector_length/2-wing_lock/2-kerf+wing_connector_float])
+        linear_extrude(wing_lock+kerf*2,convexity=10)
+        difference(){
+            wing_shape_outset();
+            wing_shape_lock_cutout();
+        }
+    }
+}
+
+module wing_connector(){
+    translate([0,0,wing_connector_float]){
+        translate([0,0,hull_thickness])
+        wing_connector_insert();
+
+        linear_extrude(hull_thickness,convexity=10)
+        difference(){
+            wing_shape_outset();
+            wing_shape_connector();
+        }
+
+        mirror([0,0,1])
+        wing_connector_insert();
+    }
+}
+
 
 module wing_segment(){
     linear_extrude(wing_segment,convexity=10)
     difference(){
         wing_shape_outset();
         wing_shape_inset();
+    }
+    
+    translate([0,0,wing_connector_length/2-wing_lock/2])
+    linear_extrude(wing_lock,convexity=10)
+    difference(){
+        offset(r=-hull_thickness/2)
+        wing_shape_outset();
+        wing_shape_lock();
+    }
+
+    translate([0,0,wing_segment-wing_connector_length/2-wing_lock/2])
+    linear_extrude(wing_lock,convexity=10)
+    difference(){
+        offset(r=-hull_thickness/2)
+        wing_shape_outset();
+        wing_shape_lock();
     }
 
 }
@@ -610,6 +698,7 @@ module airframe_assembled(){
     
 }
 
+
 module airframe_test(){
 difference(){
     union(){
@@ -627,9 +716,9 @@ difference(){
         airframe_connector();
 */
 //translate([0,0,10])
-airframe_wing_mount();
-
-
+//airframe_wing_mount();
+//wing_connector();
+wing_segment();
         
 //rotate([0,0,-wing_angle_of_attack])
 //wing_segment();
