@@ -24,14 +24,13 @@ battery_text="21/23";
 battery_bank=1;
 battery_count=8; 
 battery_length=28; //44.5; //AAA    // 18650 65.2;    // 50.5 AA;  // 28: 21/23
-battery_width=10; //10.5; // AAA     // 18650 18;       // 14.5 AA;   // 10: 21/23
-battery_knob_width=5.75; // NM21/23                 // 3.5 // AAA; 
-battery_knob=1.5;
-
+battery_width=10; //10.5; / AAA     // 18650 18;       // 14.5 AA;   // 10: 21/23
 battery_spacing=1;
 battery_holder_shell=1.6;
 battery_clip_shell=2;
 battery_clip_length=battery_length/4;
+battery_knob=1.5;
+battery_knob_width=3.5;
 battery_clip_angle=15;
 battery_clip_space=1;
 battery_hover=1;

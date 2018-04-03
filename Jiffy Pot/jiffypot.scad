@@ -16,7 +16,17 @@ finger=0.5*inch;
 tray_width=0.25*inch;
 tray_height=0.375*inch;
 
+adapter_length=10;
+teeth=6;
+teeth_length=2;
+
+extension_length=6;
+
+
 hole=0.25*inch;
+
+
+    tooth=(width*PI)/(teeth*2);
 
 module cup(){
     rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
@@ -45,33 +55,60 @@ module cup(){
     }
 }
 
-
+module fingers(){
+    for (i=[0:2]){
+        rotate([0,0,360/3*i-atan(finger/(width/2))/2])
+        
+        translate([0,0,corner/2+thickness])
+        rotate_extrude(angle=atan(finger/(width/2)),convexity=10,$fn=large_fineness)
+        square(size=[width/2+thickness+1,height-corner/2+0.001]);
+                
+        rotate([0,0,360/3*i])
+        translate([0,0,thickness+0.001])
+        rotate([90,0,-90])
+        linear_extrude(width/2+thickness+0.001,convexity=10)
+        difference(){
+            circle(hole/2,$fn=fineness);
+            translate([0,-hole/2-0.001])
+            square(size=[hole,hole/2+0.001]);
+        }
+       
+    }
+}
 
 module finger_cup(){
     difference(){
-        
         cup();
-
-        for (i=[0:2]){
-            rotate([0,0,360/3*i-atan(finger/(width/2))/2])
-            
-            translate([0,0,corner/2+thickness])
-            rotate_extrude(angle=atan(finger/(width/2)),convexity=10,$fn=large_fineness)
-            square(size=[width/2+thickness+1,height-corner/2+0.001]);
-                    
-            rotate([0,0,360/3*i])
-            translate([0,0,thickness+0.001])
-            rotate([90,0,-90])
-            linear_extrude(width/2+thickness+0.001,convexity=10)
-            difference(){
-                circle(hole/2,$fn=fineness);
-                translate([0,-hole/2-0.001])
-                square(size=[hole,hole/2+0.001]);
-            }
-           
-        }
-
+        fingers();
     } 
+}
+
+
+module tray(){
+        rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
+
+    difference(){
+        union(){
+            square(size=[width/2-corner/2+tray_width+thickness,corner+thickness]);
+            
+            translate([0,corner/2+thickness])
+            square(size=[width/2+thickness+tray_width+thickness,tray_height-corner/2]);
+
+            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
+            circle(corner/2+thickness,$fn=fineness);
+        }
+        
+        union(){
+            translate([-0.001,thickness])
+            square(size=[width/2-corner/2+tray_width+thickness+0.001,corner+0.001]);
+            
+            translate([-0.001,corner/2+thickness+0.001])
+            square(size=[width/2+tray_width+thickness+0.001,tray_height-corner/2+0.001]);
+
+            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
+            circle(corner/2,$fn=fineness);
+        }
+    }
 }
 
 
@@ -104,48 +141,96 @@ module cap(){
     }
 }
 
-module finger_cap(){
-    difference(){
-        cap();
-        
-        for (i=[0:2]){
+module fingervoids(){
+    for (i=[0:2]){
             rotate([0,0,360/3*i+atan((finger-kerf)/(width/2))-atan(finger/(width/2))/2])
             
             translate([0,0,corner/2+thickness-0.001])
             rotate_extrude(angle=360/3-atan((finger-kerf*2)/(width/2)),convexity=10,$fn=large_fineness)
             square(size=[width/2+thickness+1,height-corner/2+kerf+0.001]);
-            //cube(size=[width/2+thickness,finger,height-corner/2]);
         }
-        
-    }
 }
 
-module tray(){
-        rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
-
+module finger_cap(){
     difference(){
-        union(){
-            square(size=[width/2-corner/2+tray_width+thickness,corner+thickness]);
-            
-            translate([0,corner/2+thickness])
-            square(size=[width/2+thickness+tray_width+thickness,tray_height-corner/2]);
-
-            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
-            circle(corner/2+thickness,$fn=fineness);
-        }
-        
-        union(){
-            translate([-0.001,thickness])
-            square(size=[width/2-corner/2+tray_width+thickness+0.001,corner+0.001]);
-            
-            translate([-0.001,corner/2+thickness+0.001])
-            square(size=[width/2+tray_width+thickness+0.001,tray_height-corner/2+0.001]);
-
-            translate([width/2-corner/2+tray_width+thickness,corner/2+thickness])
-            circle(corner/2,$fn=fineness);
-        }
+        cap();
+        fingervoids();
     }
 }
+
+module teethvoids(){
+    for (i=[0:teeth-1]){
+        rotate([0,0,360/teeth*i+atan(kerf/(width/2))/2])
+        
+        rotate_extrude(angle=360/(teeth*2)+atan(kerf/(width/2)),convexity=10,$fn=large_fineness)
+        square(size=[width/2+thickness+1,teeth_length+0.001]);
+    }
+}
+
+module adapter(){
+    difference(){
+        rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
+        translate([0,corner/2+thickness+kerf,0])
+        difference(){
+            square(size=[width/2+thickness,height-corner/2+adapter_length]);
+            translate([-0.001,-0.001,0])
+            square(size=[width/2+0.001,height-corner/2+adapter_length+0.002]);
+        }
+        fingervoids();
+        translate([0,0,thickness+height+kerf+adapter_length-teeth_length])
+        teethvoids();
+    }
+}
+
+
+module extension(){
+    difference(){
+        rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
+        difference(){
+            square(size=[width/2+thickness,extension_length]);
+            translate([-0.001,-0.001,0])
+            square(size=[width/2+0.001,extension_length+0.002]);
+        }
+        translate([0,0,-0.001])
+        rotate([0,0,360/(teeth*2)])
+        teethvoids();
+        
+        translate([0,0,extension_length-teeth_length])
+        teethvoids();
+    }
+}
+
+function parabola(width, height, x, y, fine, i = 0, result = []) = i <= fine
+    ? parabola(width, height, x, y, fine, i + 1, concat(result, [[ width/fine*i, pow(2/fine*i,2)/4*height]]))
+    : result;
+
+
+function parabola_reverse(width, height, x, y, fine, i, result = []) = i >= 0
+    ? parabola_reverse(width, height, x, y, fine, i - 1, concat(result, [[ x+width/fine*i, y+pow(2/fine*i,2)/4*height]]))
+    : result;
+
+function parabola_reverse_shell(width, height, x, y, shell, fine, i, result = []) = i >= 0
+    ? parabola_reverse_shell(width, height, x, y, shell, fine, i - 1, concat(result, [[ x+(width+shell)/fine*i, y+pow(2/fine*i,2)/4*height-cos(atan(2*(i/fine)*(height/width)))*shell]]))
+    : result;
+
+
+module paraboloid(paraboloid_fineness){
+    rotate_extrude(angle=360,convexity=10,$fn=paraboloid_fineness)
+polygon(concat(parabola(width/2,width/2,0,0,paraboloid_fineness),[[width/2,width/2+2]],[[width/2+thickness,width/2+2]],parabola_reverse_shell(width/2,width/2,0,0,thickness,paraboloid_fineness,paraboloid_fineness)));
+
+}
+
+module reflector(){
+    difference(){
+        translate([0,0,width/2+2+0.001])
+        rotate([0,180,0])
+        paraboloid(fineness);
+        
+        rotate([0,0,360/(teeth*2)])
+        teethvoids();
+    }
+}
+
 
 module preview(){
     finger_tray_cup();
@@ -165,7 +250,21 @@ module print_finger_cap(){
 }
 
 
-preview();
+//preview();
 
-//finger_tray_cup();
+
+finger_tray_cup();
+
+adapter();
+
+translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length])
+extension();
+
+
+translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_length-teeth_length+kerf])
+reflector();
+
+
+//polygon(concat(parabola(10,10,0,0,10),parabola_reverse(10,10,0,-1,10,10)));
+
 //print_finger_cap();
