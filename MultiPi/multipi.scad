@@ -3,6 +3,7 @@ shell=1.2;
 hover=0.1;
 kerf=0.0035*inch*2.5;
 
+tiny_fineness=16;
 small_fineness=40;
 fineness=80;
 
@@ -16,6 +17,16 @@ show_board=false;
 holder_comfort=0.25;
 holder_stand=0.5;
 
+vents=true;
+vent=2;
+vent_space=5;
+vent_count=floor((board_length-vent_space*2-vent)/(vent+vent_space))+1;
+vent_start=(board_length-vent-vent_space*2-(vent+vent_space)*(vent_count-1))/2;
+vent_front_mask=[];
+vent_back_mask=[5,6];
+
+echo(vent_count);
+echo(vent_start);
 
 case_length=3.5*inch;
 case_width=2.5*inch;
@@ -55,7 +66,7 @@ lock_recess=(connector_shell<shell)?true:false;
 
 pi_b_seam=8;
 
-cutout_length=shell+holder_stand+holder_comfort+lock_depth+shell+0.002;
+cutout_length=shell+holder_stand+holder_comfort+lock_depth+lock_kerf+shell+0.002;
     
     
 
@@ -127,9 +138,27 @@ module holder_connector_lock_shape(){
 
 module holder_connector_joint_shape(){
     difference(){
-        offset(r=connector_kerf+shell*2,$fn=fineness)
+        offset(r=lock_kerf+shell*2,$fn=fineness)
         holder_void();
         holder_void();
+    }
+}
+
+module holder_vents(){
+    zpos=shell+board_clearance+hover+board_thickness+pi_b_seam+connector/2+shell+hover;
+    height=board_void-pi_b_seam-connector/2-shell-hover;
+    
+    holder_center()
+    rotate([90,0,0])
+    for (i=[0:vent_count-1]){
+        translate([vent_start+vent/2,vent/2+zpos+shell/2,(!search(i,vent_back_mask)?-shell:0.002)-holder_comfort*2-board_width-0.001])
+        linear_extrude((!search(i,vent_back_mask)?shell+0.001:0)+(!search(i,vent_front_mask)?shell+0.001:0)+holder_comfort*2+board_width,convexity=10)
+        translate([vent_space+i*(vent+vent_space),0])
+        hull(){
+            circle(vent/2,$fn=tiny_fineness);
+            translate([0,height-vent])
+            circle(vent/2,$fn=tiny_fineness);
+        }
     }
 }
 
@@ -224,7 +253,7 @@ module pi_b_screwheads(){
 
 module hdmi_cutout(cutout_length){
     rotate([90,0,0])
-    translate([0,0,-holder_stand-holder_comfort-0.001])
+    translate([0.5,0,-holder_stand-holder_comfort-0.001])
     linear_extrude(cutout_length,convexity=10)
     offset(delta=0.5)
     polygon(
@@ -243,19 +272,19 @@ module hdmi_cutout(cutout_length){
 module sd_cutout(cutout_length){
     rotate([0,0,90])
     translate([0,+0.001,-4])
-    cube(size=[25,cutout_length+0.002,4+0.001]);
+    cube(size=[26,cutout_length+0.002,4+0.001]);
     
     rotate([0,0,90])
     translate([-4,-cutout_length+shell+holder_stand+holder_comfort-0.001,-4])
-    cube(size=[31.5,-shell+cutout_length+0.002,4+0.001]);
+    cube(size=[32.5,-shell+cutout_length+0.002,4+0.001]);
 }
 
 module usb_micro_b_cutout(cutout_length){
-    translate([+0.001+holder_stand+holder_comfort,8,0])
+    translate([+0.001+holder_stand+holder_comfort,8+0.5,0])
     rotate([90,0,-90])
     linear_extrude(cutout_length+0.002,convexity=10)
     offset(delta=0.5)
-    polygon(points=[[1,0],[7,0],[8,1],[8,3],[0,3],[0,1]]);
+    polygon(points=[[1,0],[7,0],[8,1],[8,3.25],[0,3.25],[0,1]]);
 }
 
 module rca_cutout(cutout_length){
@@ -284,27 +313,27 @@ module usb_dual_a_cutout(cutout_length){
 
 module pi_b_cutouts(){
     
-    translate([36,0,shell+board_clearance+board_thickness+hover])
+    translate([36.5+holder_comfort,0,shell+board_clearance+board_thickness+hover])
     holder_center()
     hdmi_cutout(cutout_length);
     
-    translate([holder_stand+holder_comfort-0.001,17-shell+0.001,shell+board_clearance])
+    translate([holder_stand+holder_comfort-0.001,18+holder_comfort-shell+0.001,shell+board_clearance])
     holder_center()
     sd_cutout(cutout_length);
     
-    translate([0,3,shell+board_clearance+board_thickness+hover])
+    translate([0,3.25,shell+board_clearance+board_thickness+hover])
     holder_center()
     usb_micro_b_cutout(cutout_length);
     
-    translate([45.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3.5])
+    translate([46+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3.5])
     holder_center()
     rca_cutout(cutout_length);
     
-    translate([64.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3.25])
+    translate([64.5+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+2.75])
     holder_center()
     3p5_trs_cutout(cutout_length);
     
-    translate([85+holder_comfort*2,2,shell+board_clearance+board_thickness+hover])
+    translate([85+holder_comfort*2,2.5,shell+board_clearance+board_thickness+hover])
     holder_center()
     ethernet_cutout(cutout_length);
     
@@ -319,7 +348,7 @@ module pi_b_cutouts(){
 
 module hdmi_cutout_connector(cutout_length){
     rotate([90,0,0])
-    translate([-0.5,0,-holder_stand-holder_comfort-0.001])
+    translate([0,0,-holder_stand-holder_comfort-0.001])
     linear_extrude(cutout_length,convexity=10)
     square(size=[16,pi_b_seam-5.5+connector/2+0.002]);
 }
@@ -361,7 +390,7 @@ module usb_dual_a_cutout_connector(cutout_length){
 
 module pi_b_cutouts_connector_top(){
     
-    translate([36,0,shell+board_clearance+board_thickness+hover+pi_b_seam-connector/2-0.001])
+    translate([holder_comfort+36.5,0,shell+board_clearance+board_thickness+hover+pi_b_seam-connector/2-0.001])
     holder_center()
     hdmi_cutout_connector(cutout_length);
     
@@ -371,11 +400,11 @@ module pi_b_cutouts_connector_top(){
     usb_micro_b_cutout_connector(cutout_length);
     */
     
-    translate([45.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3+5])
+    translate([46+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3+5])
     holder_center()
     rca_cutout_connector(cutout_length);
     
-    translate([64.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3.25+4])
+    translate([64.5+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+2.75+4])
     holder_center()
     3p5_trs_cutout_connector(cutout_length);
     
@@ -392,7 +421,7 @@ module pi_b_cutouts_connector_top(){
 
 module pi_b_cutouts_connector_bottom(){
     /*
-    translate([36,0,shell+board_clearance+board_thickness+hover+pi_b_seam-connector/2-1])
+    translate([36.5,0,shell+board_clearance+board_thickness+hover+pi_b_seam-connector/2-1])
     holder_center()
     hdmi_cutout_connector(cutout_length);
     
@@ -401,11 +430,11 @@ module pi_b_cutouts_connector_bottom(){
     usb_micro_b_cutout_connector(cutout_length);
     */
     
-    translate([45.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3+5-connector/2-shell-hover-0.001])
+    translate([46+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3+5-connector/2-shell-hover-0.001])
     holder_center()
     rca_cutout_connector(cutout_length);
     
-    translate([64.5,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+3.25+4-connector/2-shell-hover-0.001])
+    translate([64.5+holder_comfort,56+holder_comfort*2,shell+board_clearance+board_thickness+hover+2.75+4-connector/2-shell-hover-0.001])
     holder_center()
     3p5_trs_cutout_connector(cutout_length);
     
@@ -550,9 +579,10 @@ module pi_b_holder_top(){
     difference(){
         translate([0,0,shell+board_clearance+board_thickness+hover+pi_b_seam+connector/2+hover+shell-0.001])
         holder_center()
-        linear_extrude(board_void-pi_b_seam-hover-shell+0.002,convexity=10)
+        linear_extrude(board_void-pi_b_seam-hover-shell-shell+0.002,convexity=10)
         holder_shape();
         pi_b_cutouts();
+        holder_vents();
     }
     
     // Holder top plate
@@ -627,9 +657,9 @@ module pi_b_print_both(){
 
 
 //pi_b_monopi_render_crosssection();
-//pi_b_monopi_render();
+pi_b_monopi_render();
 //pi_b_print_both();
-pi_b_print_top();
+//pi_b_print_top();
 //pi_b_print_bottom();
 
 /*
@@ -640,3 +670,5 @@ pi_b_cutouts_connector_top();
 color([0,0,1,0.4])
 pi_b_cutouts_connector_bottom();
 */
+
+//holder_vents();

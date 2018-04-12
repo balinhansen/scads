@@ -214,8 +214,8 @@ function parabola_reverse_shell(width, height, x, y, shell, fine, i, result = []
     : result;
 
 
-module paraboloid(paraboloid_fineness){
-    rotate_extrude(angle=360,convexity=10,$fn=paraboloid_fineness)
+module paraboloid(paraboloid_fineness,rotation_fineness){
+    rotate_extrude(angle=360,convexity=10,$fn=rotation_fineness)
 polygon(concat(parabola(width/2,width/2,0,0,paraboloid_fineness),[[width/2,width/2+2]],[[width/2+thickness,width/2+2]],parabola_reverse_shell(width/2,width/2,0,0,thickness,paraboloid_fineness,paraboloid_fineness)));
 
 }
@@ -224,7 +224,7 @@ module reflector(){
     difference(){
         translate([0,0,width/2+2+0.001])
         rotate([0,180,0])
-        paraboloid(fineness);
+        paraboloid(fineness,large_fineness);
         
         rotate([0,0,360/(teeth*2)])
         teethvoids();
@@ -254,6 +254,7 @@ module print_finger_cap(){
 
 
 finger_tray_cup();
+
 
 adapter();
 
