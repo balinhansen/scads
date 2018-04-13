@@ -20,6 +20,12 @@ adapter_length=10;
 teeth=6;
 teeth_length=2;
 
+stem=1/4*inch;
+arm=3;
+
+pigtail_space=1.5*inch;
+pigtail_height=120;
+
 extension_length=6;
 
 
@@ -143,12 +149,12 @@ module cap(){
 
 module fingervoids(){
     for (i=[0:2]){
-            rotate([0,0,360/3*i+atan((finger-kerf)/(width/2))-atan(finger/(width/2))/2])
-            
-            translate([0,0,corner/2+thickness-0.001])
-            rotate_extrude(angle=360/3-atan((finger-kerf*2)/(width/2)),convexity=10,$fn=large_fineness)
-            square(size=[width/2+thickness+1,height-corner/2+kerf+0.001]);
-        }
+        rotate([0,0,360/3*i+atan((finger-kerf)/(width/2))-atan(finger/(width/2))/2])
+        
+        translate([0,0,corner/2+thickness-0.001])
+        rotate_extrude(angle=360/3-atan((finger-kerf*2)/(width/2)),convexity=10,$fn=large_fineness)
+        square(size=[width/2+thickness+1,height-corner/2+kerf+0.001]);
+    }
 }
 
 module finger_cap(){
@@ -180,6 +186,66 @@ module adapter(){
         translate([0,0,thickness+height+kerf+adapter_length-teeth_length])
         teethvoids();
     }
+}
+
+module adapted_pigtail(){
+    difference(){
+        rotate_extrude(angle=360,convexity=10,$fn=large_fineness)
+        translate([0,corner/2+thickness+kerf,0])
+        difference(){
+            square(size=[width/2+thickness,height-corner/2+adapter_length]);
+            translate([-0.001,-0.001,0])
+            square(size=[width/2+0.001,height-corner/2+adapter_length+0.002]);
+        }
+        fingervoids();
+        
+        rotate([0,0,-60-(atan((stem-kerf*2)/(width/2)))/2])
+        
+        translate([0,0,height-thickness+-0.001])
+        rotate_extrude(angle=atan((stem-kerf*2)/(width/2)),convexity=10,$fn=large_fineness)
+        square(size=[width/2+thickness+1,height-corner/2+kerf+0.001]);
+        /*
+        translate([0,0,thickness+height+kerf+adapter_length-teeth_length])
+        teethvoids();
+        */
+    }
+    
+    // Pigtail Ring
+    translate([0,0,corner/2+thickness+kerf+height-corner/2+adapter_length-arm])
+    rotate_extrude(angle=180,convexity=10,$fn=fineness)
+    translate([stem/2,0])
+    square([thickness*2,arm]);
+    
+    // Pigtail Arm Back
+    
+    translate([thickness,stem/2,corner/2+thickness+kerf+height-corner/2+adapter_length-arm])
+    rotate([0,0,90])
+    cube([width/2-stem/2+0.001,thickness*2,arm]);
+    
+    // Pigtail Arm Right
+    
+    translate([stem/2,0,corner/2+thickness+kerf+height-corner/2+adapter_length-arm])
+    rotate([0,0,-30])
+    cube([width/2-stem/2+1+0.001,thickness*2,arm]);
+    
+    // Pigtail Arm Left
+    
+    translate([-stem/2,0,corner/2+thickness+kerf+height-corner/2+adapter_length-arm])
+    rotate([0,0,210])
+    translate([0,-thickness*2,0])
+    cube([width/2-stem/2+1+0.001,thickness*2,arm]);
+    
+    
+    // Pigtail
+    pigheight=pigtail_height-height-adapter_length+thickness*2+corner/2-arm/2-kerf;
+    pigtwist=pigheight/pigtail_space*360;
+    echo(pigtwist);
+    
+    translate([0,0,corner/2+thickness+kerf+height-corner/2+adapter_length-arm/2])
+    linear_extrude(height=pigtail_height-height-adapter_length+thickness*2+corner/2-arm/2-kerf,twist=-pigtwist,convexity=10,$fn=fineness)
+    rotate([0,0,atan(thickness/(stem/2+thickness*2))])
+    translate([stem/2+thickness,0])
+    circle(thickness);
 }
 
 
@@ -255,7 +321,10 @@ module print_finger_cap(){
 
 finger_tray_cup();
 
+//translate([0,0,-corner/2-thickness-kerf])
+adapted_pigtail();
 
+/*
 adapter();
 
 translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length])
@@ -264,7 +333,7 @@ extension();
 
 translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_length-teeth_length+kerf])
 reflector();
-
+*/
 
 //polygon(concat(parabola(10,10,0,0,10),parabola_reverse(10,10,0,-1,10,10)));
 
