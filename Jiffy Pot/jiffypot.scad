@@ -315,25 +315,33 @@ module print_finger_cap(){
     
 }
 
+module print_reflector(){
+translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_length-teeth_length+kerf])
+    rotate([0,180,0])
+    difference(){
+        reflector();
+        cylinder(width,5.75,5.75,$fn=fineness);
+    }
+}
+
+print_reflector();
 
 //preview();
 
 
-finger_tray_cup();
+//finger_tray_cup();
 
 //translate([0,0,-corner/2-thickness-kerf])
-adapted_pigtail();
+//adapted_pigtail();
 
 /*
 adapter();
 
 translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length])
 extension();
-
-
-translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_length-teeth_length+kerf])
-reflector();
 */
+
+
 
 //polygon(concat(parabola(10,10,0,0,10),parabola_reverse(10,10,0,-1,10,10)));
 

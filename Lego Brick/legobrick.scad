@@ -1181,10 +1181,10 @@ difference(){
 //xbyy_brick(1,1,lego_block_height/3);
 
 
-//xbyy_brick(2,2,lego_block_height/3);
+xbyy_brick(2,18,lego_block_height/3);
 
 //brick_test();
-technic_test();
+//technic_test();
 //brick_test_print();
 
 //scale([xy_shrink,xy_shrink,1])

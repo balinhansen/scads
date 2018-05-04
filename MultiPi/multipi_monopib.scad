@@ -729,7 +729,8 @@ module pi_b_print_both(){
 
 //pi_b_monopi_render_crosssection();
 
-//pi_b_monopi_render();
+translate([0,0,case_corner+hover+case_connector_length])
+%pi_b_monopi_render();
 //pi_b_print_both();
 //pi_b_print_top();
 //pi_b_print_bottom();
@@ -744,10 +745,3 @@ pi_b_cutouts_connector_bottom();
 */
 
 //pi_b_holder_vents();
-
-module multipi_pib(){
-    translate([0,0,case_corner+hover+case_connector_length])
-    pi_b_monopi_render();
-}
-
-multipi_pib();
