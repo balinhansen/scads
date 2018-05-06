@@ -3,12 +3,13 @@ thickness=1.6;
 kerf=0.0035*inch*2.5;
 echo(kerf);
 
+grow=1/16*inch;
 
 fineness=40;
 large_fineness=160;
 
-width=(1+9/16)*inch;
-height=(1+5/16)*inch;
+width= (1+9/16)*inch+grow*2; // Small Jiffy
+height= (1+5/16)*inch+grow*2; // Small Jiffy
 cap_height=2*inch;
 
 corner=0.25*inch;
@@ -31,6 +32,7 @@ extension_length=6;
 
 hole=0.25*inch;
 
+disk=2.25*inch;
 
     tooth=(width*PI)/(teeth*2);
 
@@ -61,22 +63,40 @@ module cup(){
     }
 }
 
+module disk(){
+    cylinder(thickness,disk/2,disk/2,$fn=large_fineness);
+}
+
+module hydrofingers(){
+    for (i=[0:2]){
+        rotate([0,0,360/3*i-atan(finger/(width/2))/2])
+        translate([0,0,corner/2+thickness])
+        rotate_extrude(angle=atan(finger/(width/2)),convexity=10,$fn=large_fineness)
+        square(size=[disk/2+0.2,height-corner/2+0.001]);
+    }
+    
+}
+
 module fingers(){
     for (i=[0:2]){
         rotate([0,0,360/3*i-atan(finger/(width/2))/2])
-        
         translate([0,0,corner/2+thickness])
         rotate_extrude(angle=atan(finger/(width/2)),convexity=10,$fn=large_fineness)
         square(size=[width/2+thickness+1,height-corner/2+0.001]);
-                
+    }
+}
+
+module holes(){
+    
+    for (i=[0:2]){
         rotate([0,0,360/3*i])
         translate([0,0,thickness+0.001])
         rotate([90,0,-90])
         linear_extrude(width/2+thickness+0.001,convexity=10)
         difference(){
             circle(hole/2,$fn=fineness);
-            translate([0,-hole/2-0.001])
-            square(size=[hole,hole/2+0.001]);
+            translate([-hole,-hole/2-0.001])
+            square(size=[hole*2,hole/2+0.001]);
         }
        
     }
@@ -86,6 +106,7 @@ module finger_cup(){
     difference(){
         cup();
         fingers();
+        holes();
     } 
 }
 
@@ -297,6 +318,82 @@ module reflector(){
     }
 }
 
+module hydroponic(){
+    difference(){
+        union(){
+            translate([0,0,height])
+            difference(){
+                disk();
+                translate([0,0,-0.001])
+                cylinder(thickness+0.002,width/2,width/2,$fn=large_fineness);
+            }
+            cup();
+        }
+        for (i=[0:2]){
+            rotate([0,0,i*360/3]){
+                rotate([0,0,60]){
+                    
+                    translate([2*hole*sqrt(3)/2,-0.001]){
+                        rotate([0,0,-10]){
+                            cylinder(height+thickness+0.002,hole/2,hole/2,$fn=fineness);
+                                translate([0,-hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                                translate([cos(90+20)*hole/2,sin(90+20)*hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                            rotate();
+                            translate([0,-hole/2])
+                            cube(size=[disk,hole,thickness+height+0.002]);
+                            
+                        }
+                    }
+                    
+                    translate([hole*2,2*hole*sqrt(3)/2,0-0.001]){
+                        rotate([0,0,30]){
+                            cylinder(height+thickness+0.002,hole/2,hole/2,$fn=fineness);
+                                translate([0,-hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                                translate([cos(90+20)*hole/2,sin(90+20)*hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                            rotate();
+                            translate([0,-hole/2])
+                            cube(size=[disk,hole,thickness+height+0.002]);
+                            
+                        }
+                    }
+                    
+                    translate([hole*2,-2*hole*sqrt(3)/2,0-0.001]){
+                        rotate([0,0,-50]){
+                            cylinder(height+thickness+0.002,hole/2,hole/2,$fn=fineness);
+                                translate([0,-hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                                translate([cos(90+20)*hole/2,sin(90+20)*hole/2])
+                            rotate_extrude(angle=20,convexity=10,$fn=large_fineness)
+                            square([disk/2+0.2,thickness+height+0.002]);
+                            
+                            rotate();
+                            translate([0,-hole/2])
+                            cube(size=[disk,hole,thickness+height+0.002]);
+                            
+                        }
+                    }
+                    
+                }
+            }
+        }
+        hydrofingers();
+    }
+}
+
 
 module preview(){
     finger_tray_cup();
@@ -324,12 +421,14 @@ translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_
     }
 }
 
-print_reflector();
+//print_reflector();
+
+
+hydroponic();
+
 
 //preview();
 
-
-//finger_tray_cup();
 
 //translate([0,0,-corner/2-thickness-kerf])
 //adapted_pigtail();
