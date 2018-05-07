@@ -2,6 +2,7 @@ inch=25.4;
 thickness=1.6;
 kerf=0.0035*inch*2.5;
 echo(kerf);
+comfort=0.25;
 
 grow=1/16*inch;
 
@@ -33,6 +34,9 @@ extension_length=6;
 hole=0.25*inch;
 
 disk=2.25*inch;
+
+jar=80;
+
 
     tooth=(width*PI)/(teeth*2);
 
@@ -394,6 +398,31 @@ module hydroponic(){
     }
 }
 
+module hydrolid(){
+    difference(){
+        cylinder(thickness,jar/2,jar/2,$fn=large_fineness);
+        translate([0,0,-0.001]){
+            cylinder(thickness+0.002,width/2+thickness+comfort,width/2+thickness+comfort,$fn=large_fineness);
+                translate([0,-width/2-thickness-comfort,0])
+            cube(size=[jar/2+0.001,width+thickness*2+comfort*2,thickness+0.002]);
+        }
+    }
+}
+
+module hydrolidsert(){
+    intersection(){
+    difference(){
+        cylinder(thickness,jar/2,jar/2,$fn=large_fineness);
+        translate([0,0,-0.001]){
+            cylinder(thickness+0.002,width/2+thickness+comfort,width/2+thickness+comfort,$fn=large_fineness);
+        }
+    }
+    
+    translate([0,-width/2-thickness-comfort+kerf,0])
+    cube(size=[jar/2+0.001,width+thickness*2+comfort*2-kerf*2,thickness+0.002]);
+}
+}
+
 
 module preview(){
     finger_tray_cup();
@@ -425,7 +454,10 @@ translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_
 
 
 hydroponic();
-
+translate([0,0,height-thickness-0.1]){
+hydrolid();
+hydrolidsert();
+}
 
 //preview();
 
