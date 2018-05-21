@@ -1,3 +1,4 @@
+
 difference(){
     
     cylinder(0.4,50,50,$fn=240);
@@ -11,6 +12,18 @@ difference(){
         cylinder(0.203,35,35,$fn=240);
     }
 }
+
+
+/*
+difference(){
+    
+    cylinder(0.3,50,50,$fn=240);
+    translate([0,0,-0.001])
+    cylinder(0.302,30,30,$fn=240);
+    
+}
+*/
+
 
 translate([0,0,0.4-0.001])
 difference(){

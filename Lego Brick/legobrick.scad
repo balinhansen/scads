@@ -33,7 +33,7 @@ lego_knob_height=1.8/8*lego_length;
 lego_knob_width=(4.9+knob_adjustment)/8*lego_length;
 lego_tube_hole=(4.9+technic_hole_adjustment)/8*lego_length+(kerf+round_kerf_adj)*2;
 
-lego_tube=6.4137/8*lego_length-kerf; // 6.51371/8*lego_length; //6.51371/8*lego_length;
+lego_tube=(big_overrides?6.4137:6.51371)/8*lego_length-kerf; // 6.51371/8*lego_length; //6.51371/8*lego_length;
 
 lego_accessory_hole=(3.1)/8*lego_length+(round_kerf_adj+accessory_kerf_adj)*2;
 lego_accessory_peg=3.1/8*lego_length-(kerf)*2;
@@ -1181,7 +1181,7 @@ difference(){
 //xbyy_brick(1,1,lego_block_height/3);
 
 
-xbyy_brick(2,18,lego_block_height/3);
+xbyy_brick(1,18,lego_block_height/3);
 
 //brick_test();
 //technic_test();

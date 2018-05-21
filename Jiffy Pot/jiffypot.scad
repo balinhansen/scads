@@ -1,10 +1,12 @@
 inch=25.4;
 thickness=1.6;
 kerf=0.0035*inch*2.5;
+vkerf=2;
+
 echo(kerf);
 comfort=0.25;
 
-grow=1/16*inch;
+grow=0; // 1/16*inch;
 
 fineness=40;
 large_fineness=160;
@@ -410,17 +412,21 @@ module hydrolid(){
 }
 
 module hydrolidsert(){
-    intersection(){
-    difference(){
-        cylinder(thickness,jar/2,jar/2,$fn=large_fineness);
-        translate([0,0,-0.001]){
-            cylinder(thickness+0.002,width/2+thickness+comfort,width/2+thickness+comfort,$fn=large_fineness);
+    union(){
+        rotate([0,0,180])
+        hydrolid();
+        intersection(){
+            difference(){
+                cylinder(thickness+vkerf+0.001,jar/2,jar/2,$fn=large_fineness);
+                translate([0,0,-0.001]){
+                    cylinder(thickness+vkerf+0.003,width/2+thickness+comfort,width/2+thickness+comfort,$fn=large_fineness);
+                }
+            }
+            
+            translate([0,-width/2-thickness-comfort+kerf,thickness-0.001])
+            cube(size=[jar/2+0.001,width+thickness*2+comfort*2-kerf*2,thickness+vkerf+0.001]);
         }
     }
-    
-    translate([0,-width/2-thickness-comfort+kerf,0])
-    cube(size=[jar/2+0.001,width+thickness*2+comfort*2-kerf*2,thickness+0.002]);
-}
 }
 
 
@@ -452,10 +458,11 @@ translate([0,0,thickness+height+kerf+adapter_length+kerf-teeth_length+extension_
 
 //print_reflector();
 
-
 hydroponic();
 translate([0,0,height-thickness-0.1]){
 hydrolid();
+}
+translate([0,0,height-thickness-vkerf-0.1]){
 hydrolidsert();
 }
 
