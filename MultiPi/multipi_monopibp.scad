@@ -12,7 +12,7 @@ board_width=56;
 board_thickness=1/16*inch;
 board_clearance=1/8*inch;
 board_void=16;
-show_board=true;
+show_board=false;
 
 pi_bp_holder_comfort=0.25;
 pi_bp_holder_stand=0.5;
@@ -374,6 +374,10 @@ module pi_bp_hdmi_cutout(cutout_length){
     [15,5.5],
     [0,5.5]
     ]);
+    /*
+    translate([-3,-50-shell-kerf+0.001,-3])
+    cube(size=[15+3*2,50,5.5+3*2]);
+    */
 }
 
 module pi_bp_sdmicro_cutout(cutout_length){
@@ -392,29 +396,66 @@ module pi_bp_usb_micro_b_cutout(cutout_length){
     linear_extrude(cutout_length+0.002,convexity=10)
     offset(delta=0.5)
     polygon(points=[[1,0],[7,0],[8,1],[8,3.25],[0,3.25],[0,1]]);
+    
+    translate([-3,-50-shell-kerf+0.001,-3])
+    cube(size=[8+3*2,50,3.25+3*2]);
 }
 
 module pi_bp_3p5trs_cutout(cutout_length){
     rotate([90,0,0])
-    translate([0,4,0])
+    translate([0,4,0]){
     cylinder(cutout_length,4,4,$fn=small_fineness);
+    
+    translate([0,0,pi_bp_holder_stand+shell+lock_depth])
+    cylinder(1.5,4+3,4+3,$fn=small_fineness);
+    }
 }
 
 module pi_bp_ethernet_cutout(cutout_length){
-    translate([-pi_bp_holder_comfort-pi_bp_holder_stand-0.001,0,-0.5])
-    cube(size=[cutout_length,17,14.75]);
+    translate([-pi_bp_holder_comfort-pi_bp_holder_stand-0.001,-0.5,-0.5])
+    cube(size=[cutout_length,15.9+1,14.75]);
 }
 
 module usb_dual_a_cutout(cutout_length){
     translate([-pi_bp_holder_comfort-pi_bp_holder_stand-0.001,-0.5,-0.5])
-    cube(size=[cutout_length,14.25,17.5]);
+    {
+        cube(size=[cutout_length,13.1+0.5*2,17.5]);
+    
+    translate([1.5,-0.75,-0.75])
+    cube(size=[1.25,13.1+0.5*2+0.75*2,17.5+0.75*2]);
+    }
 }
+
 
 module usb_dual_a_two_cutout(cutout_length){
     translate([-pi_bp_holder_comfort-pi_bp_holder_stand-0.001,-0.5,-0.5])
-    cube(size=[cutout_length,14.25,17.5]);
+    {
+    cube(size=[cutout_length,13.1+0.5*2,17.5]);
+    
+    translate([1.5,-0.75,-0.75])
+    cube(size=[1.25,13.1+0.5*2+0.75*2,17.5+0.75*2]);
+    }
 }
 
+
+module cutout_align(){
+translate([85-1+pi_bp_holder_comfort,pi_bp_holder_comfort,board_clearance+shell+hover])
+pi_bp_holder_center()
+color([1,0,0,1])
+
+cube([1,2.3,1]);    
+    translate([0,2.3+15.9,0])
+    cube([1,4.2,1]);
+    
+    translate([0,2.3+15.9+4.2+13.1,0])
+    cube([1,4.9,1]);
+    
+    translate([0,2.3+15.9+4.2+13.1+4.9+13.1],0)
+    cube([1,1,1]);
+}
+
+
+//cutout_align();
 
 
 module pi_bp_cutouts(){
@@ -435,15 +476,15 @@ module pi_bp_cutouts(){
     pi_bp_holder_center()
     pi_bp_3p5trs_cutout(cutout_length);
     
-    translate([85+pi_bp_holder_comfort*2,2.3,shell+board_clearance+board_thickness+hover])
+    translate([85+pi_bp_holder_comfort*2,pi_bp_holder_comfort+2.3,shell+board_clearance+board_thickness+hover])
     pi_bp_holder_center()
     pi_bp_ethernet_cutout(cutout_length);
     
-    translate([85+pi_bp_holder_comfort*2,2.3+15.9+4.2,shell+board_clearance+board_thickness+hover])
+    translate([85+pi_bp_holder_comfort*2,pi_bp_holder_comfort+2.3+15.9+4.2,shell+board_clearance+board_thickness+hover])
     pi_bp_holder_center()
     usb_dual_a_cutout(cutout_length);
     
-    translate([85+pi_bp_holder_comfort*2,2.3+15.9+4.2+13.1+4.9-1,shell+board_clearance+board_thickness+hover])
+    translate([85+pi_bp_holder_comfort*2,pi_bp_holder_comfort+2.3+15.9+4.2+13.1+4.9,shell+board_clearance+board_thickness+hover])
     pi_bp_holder_center()
     usb_dual_a_two_cutout(cutout_length);
     
