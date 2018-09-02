@@ -422,7 +422,7 @@ module usb_dual_a_cutout(cutout_length){
         cube(size=[cutout_length,13.1+0.5*2,17.5]);
     
     translate([1.5,-0.75,-0.75])
-    cube(size=[1.25,13.1+0.5*2+0.75*2,17.5+0.75*2]);
+    cube(size=[2,13.1+0.5*2+0.75*2,17.5+0.75*2]);
     }
 }
 
@@ -433,7 +433,7 @@ module usb_dual_a_two_cutout(cutout_length){
     cube(size=[cutout_length,13.1+0.5*2,17.5]);
     
     translate([1.5,-0.75,-0.75])
-    cube(size=[1.25,13.1+0.5*2+0.75*2,17.5+0.75*2]);
+    cube(size=[2,13.1+0.5*2+0.75*2,17.5+0.75*2]);
     }
 }
 
@@ -838,8 +838,8 @@ module pi_bp_print_both(){
 
 //pi_bp_monopi_render();
 //pi_bp_print_both();
-//pi_bp_print_top();
-pi_bp_print_bottom();
+pi_bp_print_top();
+//pi_bp_print_bottom();
 
 /*
 color([1,0,0,0.4])
