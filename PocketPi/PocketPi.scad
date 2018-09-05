@@ -5,11 +5,11 @@ boards=1;
 standoff=0;
 
 color=1;
-spacing=1;
+spacing=0;
 
 kerf=0.007*inch;
 
-make_stl=1;
+make_stl=0;
 
 show_branding=0;
 
@@ -23,6 +23,9 @@ low_disk_fineness=48;
 stl_fineness=80;
 stl_font_fineness=40;
 stl_disk_fineness=320;
+
+lock=0.5;
+lock_depth=0.2;
 
 screw_length=9;
 screw_head=2.2;
@@ -53,9 +56,10 @@ disk_fineness=make_stl?stl_disk_fineness:low_disk_fineness;
 
 thickness=11.2; //screw_length+screw_head;
 
+
 io_support_thickness=bevel-(shell_thickness-kerf)/2;
 
-shell_connector=shell_thickness/2;
+shell_connector=1.5;
 shell_split=board_zpos+board_thickness+0.5;
 
 stand_extrude=(board_zpos>=shell_thickness+nut_kerf)?nut_kerf:(board_zpos>=nut_kerf+1)?board_zpos-shell_thickness:nut_kerf+1;
@@ -492,12 +496,48 @@ module ShellConnectorCutoutB(){
     }
 }
 
+module BoardShape(){
+    translate([corner,corner,0])
+    hull(){
+        translate([corner,corner,0])
+        children();
+        translate([corner,30-corner,0])
+        children();
+        translate([65-corner,corner,0])
+        children();
+        translate([65-corner,30-corner,0])
+        children();
+    }
+}
+
+module ShellConnectorLockInset(){
+translate([0,0,shell_split+shell_connector/2-lock/2-kerf/2])
+linear_extrude(lock+kerf,convexity=10)
+BoardShape()
+circle(corner+bevel-shell_thickness/2+kerf/2+lock_depth,$fn=fineness);
+}
+
+module ShellConnectorLockOutset(){
+translate([0,0,shell_split+shell_connector/2-lock/2-0.1])
+    linear_extrude(lock,convexity=10)
+    difference(){
+        BoardShape()
+        circle(corner+bevel-shell_thickness/2+kerf/2,$fn=fineness);
+        
+        BoardShape()
+        circle(corner+bevel-shell_thickness/2+kerf/2-lock_depth,$fn=fineness);
+        
+    }
+}
+
+
 module BottomSlice(){
  difference(){
      Shell();
      translate([-0.001,-0.001,shell_split+shell_connector])
      cube([65+bevel*2+0.002,30+bevel*2+0.002,thickness-shell_split+0.001]);
      ShellConnectorCutout();
+     ShellConnectorLockInset();
  }
 }
 
@@ -508,6 +548,7 @@ module TopSlice(){
      cube([65+bevel*2+0.002,30+bevel*2+0.002,shell_split+0.001]);
      ShellConnectorCutoutB();
  }
+ ShellConnectorLockOutset();
 }
 
 module Inset(){
@@ -630,6 +671,7 @@ module Render(){
         translate([0,0,2*x+n])
         PocketPiTop();
     }else{
+        translate([0,0,0.1])
         PocketPiTop();
     }
 
@@ -666,12 +708,14 @@ PrintTop();
 //union()
 //Render();
 //PrintBoth();
+
 union(){
-    PrintBottom();
+    //PrintBottom();
     
     //PiZero();
-    //PrintTop();
+    PrintTop();
 }
+
 //color([1,1,0,0.4])
 //PocketPiTop();
 //PocketPiBottom();
