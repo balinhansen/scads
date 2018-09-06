@@ -9,7 +9,7 @@ spacing=0;
 
 kerf=0.007*inch;
 
-make_stl=0;
+make_stl=1;
 
 show_branding=0;
 
@@ -30,7 +30,7 @@ lock_depth=0.2;
 screw_length=9;
 screw_head=2.2;
 
-shell_thickness=1.4;
+shell_thickness=1.6+kerf;
 nut_kerf=2.2;
 min_thickness=0.8;
 
@@ -57,7 +57,7 @@ disk_fineness=make_stl?stl_disk_fineness:low_disk_fineness;
 thickness=11.2; //screw_length+screw_head;
 
 
-io_support_thickness=bevel-(shell_thickness-kerf)/2;
+io_support_thickness=bevel-shell_thickness/2-(lock_depth+kerf)/2;
 
 shell_connector=1.5;
 shell_split=board_zpos+board_thickness+0.5;
@@ -463,7 +463,7 @@ module Shell(){
 module ShellConnectorCutout(){
     translate([bevel+corner,bevel+corner,shell_split])
     minkowski(){
-        cylinder(shell_connector/2+0.001,bevel-shell_thickness/2+kerf/2,bevel-shell_thickness/2+kerf/2,$fn=fineness);
+        cylinder(shell_connector/2+0.001,bevel-shell_thickness/2-(kerf+lock_depth)/2+kerf,bevel-shell_thickness/2-(kerf+lock_depth)/2+kerf,$fn=fineness);
         minkowski(){
             cylinder(0.001,corner,corner,$fn=fineness);
         cube(size=[65-corner*2,30-corner*2,shell_connector/2+0.001-0.001]);
@@ -486,7 +486,7 @@ module ShellConnectorCutoutB(){
         }
         translate([0,0,-0.001]);
         minkowski(){
-            cylinder(shell_connector/2+0.002,bevel-shell_thickness/2-kerf/2,bevel-shell_thickness/2-kerf/2,$fn=fineness);
+            cylinder(shell_connector/2+0.002,bevel-shell_thickness/2-(lock_depth+kerf)/2,bevel-shell_thickness/2-(lock_depth+kerf)/2,$fn=fineness);
             translate([0,0,-0.001])
             minkowski(){
                 cylinder(0.001,corner,corner,$fn=fineness);
@@ -514,7 +514,7 @@ module ShellConnectorLockInset(){
 translate([0,0,shell_split+shell_connector/2-lock/2-kerf/2])
 linear_extrude(lock+kerf,convexity=10)
 BoardShape()
-circle(corner+bevel-shell_thickness/2+kerf/2+lock_depth,$fn=fineness);
+circle(corner+bevel-shell_thickness/2+(lock_depth+kerf)/2,$fn=fineness);
 }
 
 module ShellConnectorLockOutset(){
@@ -522,13 +522,15 @@ translate([0,0,shell_split+shell_connector/2-lock/2-0.1])
     linear_extrude(lock,convexity=10)
     difference(){
         BoardShape()
-        circle(corner+bevel-shell_thickness/2+kerf/2,$fn=fineness);
+        circle(corner+bevel-shell_thickness/2-(lock_depth+kerf)/2+lock_depth,$fn=fineness);
         
         BoardShape()
-        circle(corner+bevel-shell_thickness/2+kerf/2-lock_depth,$fn=fineness);
+        circle(corner+bevel-shell_thickness/2-(lock_depth+kerf)/2-0.2,$fn=fineness);
         
     }
 }
+
+//ShellConnectorLockOutset();
 
 
 module BottomSlice(){
