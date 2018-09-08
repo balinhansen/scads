@@ -695,7 +695,18 @@ module PrintTop(){
     PocketPiTop();
 }
 
+module PrintTopHigh(){
+    translate([0,0-30-bevel-corner-5,-thickness+board_zpos+nut_kerf+board_thickness-kerf-0.1])
+
+    PocketPiTop();
+}
+
 module PrintBottom(){
+    PocketPiBottom();
+}
+
+module PrintBottomHigh(){
+    translate([0,30+corner+bevel,shell_split+shell_connector]) rotate([180,0,0,])
     PocketPiBottom();
 }
 
@@ -703,6 +714,12 @@ module PrintBoth(){
 PrintTop();
     translate([0,30+bevel*2+3,0])
     PrintBottom();
+}
+
+module PrintBothHigh(){
+PrintTopHigh();
+    translate([0,30+bevel*2+3,0])
+    PrintBottomHigh();
 }
 
 
@@ -713,9 +730,11 @@ PrintTop();
 
 union(){
     //PrintBottom();
+    PrintBottomHigh();
     
     //PiZero();
-    PrintTop();
+    //PrintTop();
+    PrintTopHigh();
 }
 
 //color([1,1,0,0.4])
