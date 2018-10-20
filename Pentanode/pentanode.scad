@@ -5,17 +5,40 @@ space=5*inch;
 pad=16*inch;
 halls=9.5*foot;
 secret=10*foot;
+distance=16*inch;
 
 floorboard=0.5*inch;
 
-dummy_height=6*foot;
+dummy_height=5*foot+6*inch;
 
 board_kerf=3/8*inch;
 
 
+module decor(){
+    color([0,0,0.4,0.4])
+    children();
+}
+
+module dumb(){
+    color([1,1,1,0.4])
+    children();
+}
+
+module fixture(){
+    color([.75,0,.75,0.4])
+    children();
+}
+
+module appliance(){
+    color([0,.75,0,0.4])
+    children();
+}
+
 
 radius=sqrt(pow(cord/2,2)+pow((cord/2)*cos(72),2));
 wall=cos(36)*radius;
+side=sqrt(pow(radius,2)-pow(wall,2))*2;
+
 
 module dummy(){
     translate([0,0,6.5*dummy_height/7])
@@ -49,13 +72,9 @@ translate([0,0,4*dummy_height/7/2/2]){
       
 }
 
-dummy();
 
-
-
-
-    $fn=5;
-    num_dummies=100;
+    $fn=12;
+    num_dummies=2;
     
     module dummies(){
         for (i=[0:num_dummies-1]){
@@ -63,18 +82,243 @@ dummy();
           dummy();
         }
     }
+    dumb()
+    translate([0,0,10*inch+0.5*inch])
     dummies();
+
+
+module full_bed(){
+    translate([-27*inch,-37.5*inch,18*inch])
+    cube([54*inch,75*inch,14*inch]);
+}
+
+decor()
+translate([0,-wall+37.5*inch+4*inch,0])
+full_bed();
+
+
+module shower(){
+    translate([-24*inch,-18*inch,0])
+    cube([48*inch,36*inch,7*foot]);
+}
+
+fixture()
+rotate([0,0,144])
+translate([3.5*foot,-wall+24*inch+4*inch,0])
+rotate([0,0,90])
+shower();
+
+
+
+
+module ewdc(){
+        translate([-12*inch,-12*inch,0])
+        cube([24*inch,24*inch,37*inch]);
+}
+
+appliance()
+rotate([0,0,-144])
+translate([0,-wall+12*inch+4*inch,0])
+ewdc();
+
+
+module tlwh(){
+    translate([-7*inch,0,4*foot])
+    cube([14*inch,10*inch,23*inch]);
+}
+
+appliance()
+rotate([0,0,-144])
+translate([0,-wall+4*inch,0])
+tlwh();
+
+
+module oven(){
+    translate([-15*inch,-14.5*inch,0])
+    cube([30*inch,29*inch,47*inch]);
+}
+
+
+appliance()
+rotate([0,0,-144])
+translate([+30*inch,-wall+4*inch+14.5*inch,0])
+oven();
+
+
+module ksink(){
+    translate([-16.5*inch,0,36*inch-10*inch])
+    cube([33*inch,22*inch,10*inch]);
+}
+
+fixture()
+rotate([0,0,-72])
+translate([0,-wall+4*inch,0])
+ksink();
+
+
+
+
+module toilet(){
+    
+    translate([0,20*inch,0]){
+
+        translate([0,0,9*inch])
+        scale([14/20,1,1])
+        translate([-10*inch,-10*inch,0])    
+        cube(size=[20*inch,20*inch,10*inch]);
+                   
+            translate([-4*inch,-20*inch+6*inch,0])
+        cube([8*inch,20*inch,10*inch]);
+
+        translate([-10*inch,-8*inch-11*inch,10*inch])
+        cube([20*inch,8*inch,18*inch]);
+   
+    }
+    
+}
+
+fixture()
+rotate([0,0,144,0])
+translate([-20*inch,-wall+4*inch,0])
+toilet();
+
+
+
+module bsink(){
+    translate([-11*inch,0,36*inch-10*inch])
+    cube([22*inch,18*inch,10*inch]);
+}
+
+fixture()
+rotate([0,0,144])
+translate([-side/2+4*inch+11*inch+4*inch,-wall+4*inch,0])
+bsink();
+
+
+
+
+// Furniture
+
+
+
+module table(){
+    translate([0,0,28*inch])
+    cylinder(2*inch,18*inch,18*inch);
+    translate([0,0,2*inch])
+    cylinder(26*inch,1.375*inch,1.375*inch);
+    cylinder(2*inch,12*inch,12*inch);
+}
+
+decor()
+rotate([0,0,-72-36])
+translate([0,-3*foot,0])
+table();
+
 
 echo(norm([1,1,1]));
 echo(cross([1,0,0],[0,1,0]));
 
+
+
+// Boards
+
 module tbf(length){
     translate([-1*inch,-2*inch,0])
-cube([2*inch-board_kerf,4*inch-board_kerf,length]);
+cube([2*inch,4*inch,length]);
 }
 
-tbf(8*foot);
+module tbs(length){
+    translate([-1*inch,-3*inch,0])
+cube([2*inch,6*inch,length]);
+}
 
+module tbe(length){
+    translate([-1*inch,-4*inch,0])
+cube([2*inch,8*inch,length]);
+}
+
+
+
+// Walls and Framing
+
+
+//tbf(8*foot);
+
+module wall(l){
+    l=l-2*inch;
+    nf=floor(l/distance);
+    n=((nf==l/distance)?nf:nf+1);
+    
+    offset=(distance-(l/n));
+    
+    
+    translate([-l/2,0,0])
+        for (i=[0:n]){
+            translate([i*(distance-offset),0,0])
+            tbf(9.5*foot);
+        }
+}
+
+
+module wall_side(l){
+    translate([0,2*inch,0]){
+        translate([0,0,2*inch+8*inch+2*inch])
+        wall(l);
+
+
+        translate([-l/2,inch,inch])
+        rotate([0,90,0])
+        tbs(l);
+
+        translate([-l/2,-inch,4*inch+inch*2])
+        rotate([90,0,0])
+        rotate([0,90,0])
+        tbe(l);
+
+        translate([-l/2,0,inch+2*inch+8*inch])
+        rotate([0,90,0])
+        tbf(l);
+        
+        translate([-l/2,0,inch+2*inch+8*inch+2*inch+9.5*foot])
+        rotate([0,90,0])
+        tbf(l);
+    }
+}
+
+
+module wall_interior(l){
+    translate([-l/2,0,inch])
+    rotate([0,90,0])
+    tbf(l);
+    
+    translate([0,0,2*inch])
+    wall(l);
+    
+    translate([-l/2,0,inch+9.5*foot+2*inch])
+    rotate([0,90,0])
+    tbf(l);
+}
+
+
+// Bathroom
+
+translate([0,0,10*inch])
+rotate([0,0,144]){
+
+    translate([side/2-5*inch-2*inch,-wall+4*inch+26*inch])
+    rotate([0,0,90])
+    wall_interior(52*inch);
+
+    translate([-side/2+5*inch+2*inch,-wall+4*inch+26*inch])
+    rotate([0,0,90])
+    wall_interior(52*inch);
+
+
+    translate([0,-wall+4*inch+48*inch+2*inch])
+    rotate([0,0,0])
+    wall_interior(side-10*inch-8*inch);
+
+}
 
 function ngon(count, radius, i = 0, result = []) = i < count
     ? ngon(count, radius, i + 1, concat(result, [[ radius*sin(360/count*i), radius*cos(360/count*i) ]]))
@@ -116,11 +360,19 @@ module pentamod(){
     
 }
 
+
+pentapad();
+
+for (i=[0:4]){
+    rotate([0,0,i*360/5])
+    translate([0,-wall,0])
+wall_side(side-10*inch);
+}
 //ring([1:5])
 //pentamod();
 
 // Some interesting test ideas ... 
-
+/*
 translate([0,0,12.5*foot])
 compound();
 
@@ -227,3 +479,5 @@ module compound(){
     rotate([0,0,-144])
     bedroom();
 }
+
+*/
