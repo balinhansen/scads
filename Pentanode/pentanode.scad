@@ -14,6 +14,9 @@ dummy_height=5*foot+6*inch;
 board_kerf=3/8*inch;
 
 
+// Colors
+
+
 module decor(){
     color([0,0,0.4,0.4])
     children();
@@ -73,8 +76,11 @@ translate([0,0,4*dummy_height/7/2/2]){
 }
 
 
+// Dummies
+
+
     $fn=12;
-    num_dummies=2;
+    num_dummies=1;
     
     module dummies(){
         for (i=[0:num_dummies-1]){
@@ -87,26 +93,7 @@ translate([0,0,4*dummy_height/7/2/2]){
     dummies();
 
 
-module full_bed(){
-    translate([-27*inch,-37.5*inch,18*inch])
-    cube([54*inch,75*inch,14*inch]);
-}
 
-decor()
-translate([0,-wall+37.5*inch+4*inch,0])
-full_bed();
-
-
-module shower(){
-    translate([-24*inch,-18*inch,0])
-    cube([48*inch,36*inch,7*foot]);
-}
-
-fixture()
-rotate([0,0,144])
-translate([3.5*foot,-wall+24*inch+4*inch,0])
-rotate([0,0,90])
-shower();
 
 
 
@@ -116,21 +103,12 @@ module ewdc(){
         cube([24*inch,24*inch,37*inch]);
 }
 
-appliance()
-rotate([0,0,-144])
-translate([0,-wall+12*inch+4*inch,0])
-ewdc();
-
 
 module tlwh(){
     translate([-7*inch,0,4*foot])
     cube([14*inch,10*inch,23*inch]);
 }
 
-appliance()
-rotate([0,0,-144])
-translate([0,-wall+4*inch,0])
-tlwh();
 
 
 module oven(){
@@ -138,11 +116,16 @@ module oven(){
     cube([30*inch,29*inch,47*inch]);
 }
 
+ 
 
-appliance()
-rotate([0,0,-144])
-translate([+30*inch,-wall+4*inch+14.5*inch,0])
-oven();
+
+//  Fixtures
+
+
+module shower(){
+    translate([-24*inch,-18*inch,0])
+    cube([48*inch,36*inch,7*foot]);
+}
 
 
 module ksink(){
@@ -150,13 +133,38 @@ module ksink(){
     cube([33*inch,22*inch,10*inch]);
 }
 
+
+    translate([0,0,10*inch+0.5*inch]){
+        
 fixture()
-rotate([0,0,-72])
+rotate([0,0,144])
+translate([3.5*foot,-wall+24*inch+4*inch,0])
+rotate([0,0,90])
+shower();
+
+    }
+    
+    
+
+
+    translate([0,0,10*inch+0.5*inch]){
+        
+appliance()
+rotate([0,0,-144])
+translate([0,-wall+12*inch+4*inch,0])
+ewdc();
+
+appliance()
+rotate([0,0,-144])
 translate([0,-wall+4*inch,0])
-ksink();
+tlwh();
 
+appliance()
+rotate([0,0,-144])
+translate([+30*inch,-wall+4*inch+14.5*inch,0])
+oven();
 
-
+    }
 
 module toilet(){
     
@@ -177,11 +185,6 @@ module toilet(){
     
 }
 
-fixture()
-rotate([0,0,144,0])
-translate([-20*inch,-wall+4*inch,0])
-toilet();
-
 
 
 module bsink(){
@@ -189,16 +192,35 @@ module bsink(){
     cube([22*inch,18*inch,10*inch]);
 }
 
+
+
+    translate([0,0,10*inch+0.5*inch]){
+        
+fixture()
+rotate([0,0,-72])
+translate([0,-wall+4*inch,0])
+ksink();
+
+fixture()
+rotate([0,0,144,0])
+translate([-20*inch,-wall+4*inch,0])
+toilet();
+
 fixture()
 rotate([0,0,144])
 translate([-side/2+4*inch+11*inch+4*inch,-wall+4*inch,0])
 bsink();
 
-
+    }
 
 
 // Furniture
 
+
+module full_bed(){
+    translate([-27*inch,-37.5*inch,18*inch])
+    cube([54*inch,75*inch,14*inch]);
+}
 
 
 module table(){
@@ -209,14 +231,23 @@ module table(){
     cylinder(2*inch,12*inch,12*inch);
 }
 
+
+    translate([0,0,10*inch+0.5*inch]){
+
+
+decor()
+translate([0,-wall+37.5*inch+4*inch,0])
+full_bed();
+
+
 decor()
 rotate([0,0,-72-36])
 translate([0,-3*foot,0])
 table();
 
-
-echo(norm([1,1,1]));
-echo(cross([1,0,0],[0,1,0]));
+    }
+    
+    
 
 
 
