@@ -291,6 +291,29 @@ module wall(l){
 }
 
 
+module floor_side(l){
+    translate([0,2*inch,0]){
+        
+        translate([-l/2,inch,inch])
+        rotate([0,90,0])
+        tbs(l);
+
+        translate([-l/2,-inch,4*inch+inch*2])
+        rotate([90,0,0])
+        rotate([0,90,0])
+        tbe(l);
+
+        translate([-l/2,0,inch+2*inch+8*inch])
+        rotate([0,90,0])
+        tbf(l);
+        
+        translate([-l/2,0,inch+2*inch+8*inch+2*inch+9.5*foot])
+        rotate([0,90,0])
+        tbf(l);
+    }
+}
+
+
 module wall_side(l){
     translate([0,2*inch,0]){
         translate([0,0,2*inch+8*inch+2*inch])
@@ -316,6 +339,104 @@ module wall_side(l){
     }
 }
 
+module door(w,h){
+        translate([-w/2,-1.75*inch/2,0])
+        cube([w,1.75*inch,h]);
+}
+
+module doorframe(w,h){
+    translate([-w/2-inch-4*inch,0,0])
+    tbf(9.5*foot);
+    
+    translate([w/2+inch+4*inch,0,0])
+    tbf(9.5*foot);
+    
+    translate([-w/2-inch-2*inch,0,0])
+    tbf(h+2*inch);
+    translate([w/2+inch+2*inch,0,0])
+    tbf(h+2*inch);
+    
+    translate([-(w+8*inch)/2,inch,h+2*inch+2*inch])
+    rotate([90,0,0])
+    rotate([0,90,0])
+    tbf(w+8*inch);
+    
+    translate([-(w+8*inch)/2,-inch,h+2*inch+2*inch])
+    rotate([90,0,0])
+    rotate([0,90,0])
+    tbf(w+8*inch);
+    
+    l=w-2*inch+8*inch;
+    nf=floor(l/distance);
+    n=((nf==l/distance)?nf:nf+1);
+    
+    offset=(distance-(l/n));
+    
+    
+    translate([-l/2,0,0])
+        for (i=[0:n]){
+            translate([i*(distance-offset),0,h+3*2*inch])
+            tbf(9.5*foot-h-3*2*inch);
+        }
+}
+
+
+module window(w,h,z){
+      l=w-2*inch+4*inch;
+    nf=floor(l/distance);
+    n=((nf==l/distance)?nf:nf+1);
+    
+    offset=(distance-(l/n));
+    
+    translate([-w/2-inch-2*inch,0,0])
+    tbf(9.5*foot);
+    
+    translate([w/2+inch+2*inch,0,0])
+    tbf(9.5*foot);
+    
+    translate([-l/2,0,0])
+    for (i=[0:n]){
+        translate([i*(distance-offset),0,0])
+        tbf(z-2*inch);
+    }
+    
+    translate([-(w+4*inch)/2,0,inch+z-2*inch])
+    rotate([0,90,0])
+    tbf(w+4*inch);
+    
+    translate([-w/2-inch,0,z])
+    tbf(h);
+    
+    translate([w/2+inch,0,z])
+    tbf(h);
+    
+    translate([-(w+4*inch)/2,-inch,2*inch+z+h])
+    rotate([90,0,0])
+    rotate([0,90,0])
+    tbf(w+4*inch);
+    
+    translate([-(w+4*inch)/2,inch,2*inch+z+h])
+    rotate([90,0,0])
+    rotate([0,90,0])
+    tbf(w+4*inch);
+        
+    translate([-l/2,0,z+h+4*inch])
+    for (i=[0:n]){
+        translate([i*(distance-offset),0,0])
+        tbf(9.5*foot-z-h-2*2*inch);
+    }
+        
+}
+
+module wall_example(){
+    translate([-side/2+5*inch+(38*inch+6*2*inch)/2,0,0]){
+        door(38*inch,84*inch);
+        doorframe(38*inch,84.25*inch);
+    }
+    translate([side/2-5*inch-(6*foot+4*2*inch)/2,0,0])
+    window(6*foot,4*foot,30*inch);
+}
+
 
 module wall_interior(l){
     translate([-l/2,0,inch])
@@ -329,6 +450,7 @@ module wall_interior(l){
     rotate([0,90,0])
     tbf(l);
 }
+
 
 
 // Bathroom
@@ -394,11 +516,26 @@ module pentamod(){
 
 pentapad();
 
+
+
 for (i=[0:4]){
+    rotate([0,0,i*360/5])
+    translate([0,-wall,0])
+    floor_side(side-10*inch);
+}
+
+for (i=[0,2,3,4]){
     rotate([0,0,i*360/5])
     translate([0,-wall,0])
 wall_side(side-10*inch);
 }
+
+    rotate([0,0,1*360/5])
+    translate([0,-wall+2*inch,12*inch])
+wall_example(side-10*inch);
+
+
+
 //ring([1:5])
 //pentamod();
 
