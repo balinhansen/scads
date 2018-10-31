@@ -1,5 +1,6 @@
 inch=25.4;
-space=0.0;//25*inch;
+space=330/40;//25*inch;
+//space=1;
 
 tri=tan(30)*(0.5*inch);
 tri_long=inch/2*sqrt(3)-tan(30)*(0.5*inch);
@@ -44,12 +45,23 @@ module yellow(){
     polygon(ngon(6,inch));
 }
 
+module yellow_edge(){
+    translate([0,-tri*3,0])
+    rotate([0,0,30])
+    yellow();
+}
+
 module purple(){
     color([0.8,0,0.8])
     linear_extrude(0.25*inch,convexity=10)
     polygon(ngon(5,0.5*inch/sin(36)));
 }
 
+module purple_edge(){
+    translate([0,-pent,0])
+    rotate([0,0,36])
+    purple();
+}
 
 // BLUE
 
@@ -72,6 +84,15 @@ module blue_wide(){
     blue();
 }
 
+module blue_right(){
+    translate([inch/2,0,0,])
+    rotate([0,0,30+90])
+    blue();
+}
+
+
+// GREEN
+
 
 module green(){
   color([0,0.6,0])
@@ -80,8 +101,23 @@ module green(){
     polygon(ngon(3,tri_long));
 }
 
+module green_edge(){
+translate([0,-tri,0])
+    green();
+}
+
+module green_corner(){
+    rotate([0,0,180])
+    translate([0,tri*2,0])
+    green();
+}
+
+
+
+// BEIGE
+
+
 module beige(){
-    
     color([1,0.91,0.7])
     rotate([0,0,-15-90])
     linear_extrude(0.25*inch,convexity=10)
@@ -93,6 +129,26 @@ module beige(){
     ]);
 }
 
+module beige_wide(){
+    translate([0,-sin(15)*inch,0])
+    rotate([0,0,90])
+    translate([0,cos(15)*inch,0])
+    beige();
+}
+
+module beige_right(){
+    translate([inch/2,0,0])
+    rotate([0,0,-75])
+    beige();
+}
+
+module beige_left(){
+    translate([-inch/2,0,0])
+    rotate([0,0,75])
+    beige();
+}
+
+
 
 //      RED
 
@@ -103,6 +159,29 @@ module red(){
     polygon([[-inch,0],[inch,0],[0.5*inch,sin(60)*inch],[-0.5*inch,sin(60)*inch]]);
 }
 
+module red_flat(){
+    translate([0,-tri*3,0])
+    rotate([0,0,180])
+    red();
+}
+
+module red_left(){
+    rotate([0,0,120])
+    translate([-inch*3/4,tri*3/2,0])
+   red();
+}
+
+module red_right(){
+    rotate([0,0,-120])
+    translate([inch*3/4,tri*3/2,0])
+   red();
+}
+
+
+
+
+scale([40/330,40/330,1/(0.25*inch)]){
+//scale([1,1,1]){
 
 purple();
 
@@ -154,6 +233,7 @@ for (i=[0:4]){
 for (j=[0:4]){
     translate([0,-pent-inch-hex-(tri*3)-sqrt(pow(inch/2,2)+pow(sin(21)*(inch/2),2))/2-space*5,0])
     rotate([0,0,j*360/5])
+    translate([0,-space/2,0])
 beige();
 }
 }
@@ -210,4 +290,61 @@ for (i=[0:19]){
     rotate([0,0,i*360/20-36-9])
     translate([0,-inch/sin(36)/2-tri*9-space*7-hex/2-quad-hex-pent,0])
     blue_wide();
+}
+
+
+for (i=[0:19]){
+    rotate([0,0,i*360/20-36-9])
+    translate([0,-inch/sin(36)/2-tri*9-space*8-hex/2-quad-hex-pent-inch,0])
+    red_left();
+}
+
+
+for (i=[0:19]){
+    rotate([0,0,i*360/20-36-9])
+    translate([0,-inch/sin(36)/2-tri*9-space*8-hex/2-quad-hex-pent-inch-tri*3,0])
+    rotate([0,0,-60]){
+   //     translate([0,-space*2,0])
+   //     green_corner();
+    translate([inch/2+space/2,-space,0]){
+    green_edge();
+        translate([-space-inch,0,0])
+    green_edge();
+    }
+}
+}
+
+
+for (i=[0:19]){
+    rotate([0,0,i*360/20-36])
+    translate([0,-inch/sin(36)/2-tri*9-space*8-hex/2-quad-hex-tri*3-inch,0])
+    beige();
+}
+
+/*
+for (i=[0:19]){
+    rotate([0,0,i*360/20-36])
+    translate([0,-inch/sin(36)/2-tri*9-space*9-hex/2-quad-hex-tri*3-inch-cos(15)*inch*2,0])
+    yellow_edge();
+}
+
+for (i=[0:19]){
+    rotate([0,0,i*360/20-36])
+    translate([0,-inch/sin(36)/2-tri*9-space*9-hex/2-quad-hex-tri*3-inch-cos(15)*inch*2-tri*3,0])
+    for (j=[0,1,5]){
+        rotate([0,0,j*360/6])
+        translate([0,-tri*3-space,0])
+        beige_right();
+    }
+}
+*/
+
+}
+
+
+translate([0,0,0.001])
+difference(){
+   translate([0,0,-0.8])
+    cylinder(1.6,45,45,$fn=240);
+    cylinder(0.801,43.4,43.4,$fn=240);
 }
