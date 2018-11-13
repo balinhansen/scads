@@ -8,6 +8,7 @@ secret=10*foot;
 distance=16*inch;
 wall_height=9.5*foot;
 floorboard=0.5*inch;
+cut=0.375*inch;
 
 dummy_height=5*foot+6*inch;
 
@@ -689,26 +690,3 @@ module compound(){
     */
 }
 
-
-module crosshouse(){
-    translate([32*foot,32*foot,0])
-    children();
-}
-
-
-crosshouse(){
-    floor_side(11*foot+4*inch,1);
-
-    //translate([0,+8*inch+11*foot+4*inch,0])
-    rotate([0,0,180])
-    floor_side(11*foot+4*inch);
-
-    translate([(11*foot+0*inch)/2-4*inch,(11*foot+8*inch)/2,0])
-    rotate([0,0,90])
-    floor_side(11*foot+4*inch,1);
-/*
-    translate([0,0,0])
-    rotate([0,0,180])
-    floor_side(11*foot+4*inch);
-  */  
-}
