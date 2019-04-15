@@ -75,7 +75,7 @@ module joint_femalewheel(points,width,depth){
             translate([0,0,-1-kerf-0.001])
             cube([width+2,width+2,2+depth*2+kerf*2+1+0.002],center=true);
             translate([0,0,-2-kerf-0.002])
-            cylinder(2+depth*2+kerf*2+0.004,width/2+kerf,width/2+kerf*2,$fn=big_fineness);
+            cylinder(2+depth*2+kerf*2+0.004,width/2+kerf,width/2+kerf,$fn=big_fineness);
             }
         }
     translate([0,0,0])
@@ -319,43 +319,55 @@ module test_hinge(){
     rotate([0,90,0])
     {
     boxtube(27.5,10,7.5,1.2);
-    translate([0,7.5*2+0.1*2+1*2,0])
+    translate([0,7.5*2+0.0*2+1*2,0])
     boxtube(27.5,10,7.5,1.2);
     
     translate([0,7.5,27.5])
     rotate([-90,0,0])
     translate([0,0,-0.001])
-    boxtube(7.5+0.1*2+1*2+0.002,10,7.5,1.2);
+    boxtube(7.5+0.0*2+1*2+0.002,10,7.5,1.2);
     
     translate([5,7.5,5])
     rotate([-90,0,0])
     joint_male(20,10,1);
     
-    translate([5,7.5*2+0.1*2+1*2,5])
+    translate([5,7.5*2+0.0*2+1*2,5])
     rotate([90,0,0])
     joint_male(20,10,1);
     }
     
     // part b
-    translate([0,7.5*2+1+0.1+5,0])
+    translate([0,7.5*2+1+0.0+5,0])
     {
-    translate([0,7.5+0.1+1,10])
+        
+        difference(){
+    translate([0,7.5+0.0+1,10])
     rotate([0,90,0])
     boxtube(27.5,10,7.5,1.2);
     
-    translate([5,7.5+0.1+1,5])
+    translate([5,7.5+0.0-1+1,5])
+    rotate([90,0,180])
+    joint_femalewheel(20,10,1);
+    
+    
+    translate([5,7.5*2+0.0+1+1,5])
+    rotate([-90,0,180])
+    joint_femalewheel(20,10,1);
+        }
+            
+        
+    translate([5,7.5+0.0+1,5])
     rotate([90,0,0])
     joint_femalewheeldisk(20,10,1);
     
     
-    translate([5,7.5*2+0.1+1,5])
+    translate([5,7.5*2+0.0+1,5])
     rotate([-90,0,0])
     joint_femalewheeldisk(20,10,1);
     }
 }
 
 test_hinge();
-
 
 //center_panel();
 //benchcube(0.99);
