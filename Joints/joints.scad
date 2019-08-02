@@ -1013,6 +1013,25 @@ link_sharp_described(25.4,10,3,medium_fineness,[1,0],[0,0]);
 //tee_described(35.4,10,3,medium_fineness,[1,0,0],[1,0,0]);
 
 //el_described(25.4,10,3,medium_fineness,[0,0],[0,0]);
+
+/*
 translate([0,0,10])
 rotate([90,0,0])
 palm(4,25.4+15.4*2,25.4,10,3,medium_fineness);
+*/
+
+/*
+    translate([0,0,10/2])
+    rotate([0,90,0])
+nub_sharp(25.4,10,3,medium_fineness,0);
+
+*/
+
+rotate([45,0,0])
+rotate([0,90,0])
+link_sharp_described(25.4,10,3,medium_fineness,[1,0],[0,1]);
+
+/*
+rotate([0,90,0])
+link_sharp_described(25.4,10,3,medium_fineness,[1,0],[0,0]);
+   */ 
