@@ -40,6 +40,42 @@ module capsule_shell(){
     }
 }
 
+
+
+function trim(a,v,i=0,r=[])=
+    i<len(a)?
+        trim(a,v,i+1,concat(r,a[i][v]))
+    :r;
+
+function vlen(a,v)=max(trim(a,v))-min(trim(a,v));
+
+//max(trim(a,v))-min(trim(a),v);
+
+
+
+
+ar=[[-0.001,0],[0,0],[0,1],[1,1],[1,2],[-0.001,2],[-0.001,0]];
+
+echo(vlen(ar,1));
+
+
+function capsule_thread_points(length, radius, thread_shape, fineness, y, result = []) = 
+        let(v=vlen(thread_shape,1))
+        let(ang=asin(v/(radius*2*PI)))
+        let(adj=cos(ang)*v)
+        let(turns=(length+adj*2)/adj)
+        let(y=y?y:-1*adj)
+    (y<(length+v))?
+    capsule_thread_points(length, radius, thread_shape, fineness, y+adj/fineness, concat(result, [
+    [0,1],[1,0]
+    
+    ]))
+    : concat(result,thread_shape); //result;
+
+
+echo(capsule_thread_points(25.4,size/2,ar,fineness));
+
+
 module capsule_threads(count, radius, height, shape, taper, helix_fineness){
     tmp=[];
     
@@ -50,12 +86,6 @@ module capsule_threads(count, radius, height, shape, taper, helix_fineness){
     shape_len=len(shape);
     
     
-    newshape=[[0,0,0], for (i=[1:10])
-        for (j=[0,shape_len-1])
-            concat(shape[j][0]*i/10,shape[j][1]*i/10,inch*i/10)
-    ];
-    
-polyhedron(newshape);
     
 }
     
@@ -67,6 +97,9 @@ module capsule_bottom(){
         cube(size=[size,size,size/2],center=true);
     }
 }
+
+function rand2DPoints(count,xmin,xmax,ymin,ymax,i=0,result=[])=
+i<count?rand2DPoints(count,xmin,xmax,ymin,ymax,i+1,concat(result,[[rands(xmin,xmax,1)[0],rands(ymin,ymax,1)[0]]])):result;
 
 
 capsule_threads(2,1*inch,1*inch,[[0,-shell/2],[cos(30)*shell,sin(30)*shell-shell/2],[0,shell/2]],1/4*inch,fineness);
