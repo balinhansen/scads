@@ -11,12 +11,16 @@ small_fineness=24;
 medium_fineness=48;
 big_fineness=120;
 
-function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =  let(vkerf=kerf/sin(90-atan(radius*2*PI/(count*2)/depth))) let (backing=-0.002) i < count*2
+gums=0.5;
+
+
+
+function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =  let(vkerf=kerf/sin(90-atan(radius*2*PI/(count*2)/depth))) let (backing=-0.2) i < count*2
     ? joint_malewheel_sharppoints(count, radius, depth,i + 2, concat(result, 
-    
+   
     // 1
     [[0,0,0]],
-    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),0]],
+    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),
     depth-vkerf]],
@@ -27,7 +31,7 @@ function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),
     depth-vkerf]],
-    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),0]],
+    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),gums]],
   
  
     // 3
@@ -46,17 +50,17 @@ function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =
     
 
     // 5
-    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),0]],
+    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
-    radius*cos(360/(count*2)*(i+1)),0]],
+    radius*cos(360/(count*2)*(i+1)),gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),depth-vkerf]],
     
     
     // 6
     [[ radius*sin(360/(count*2)*(i+1)),
-    radius*cos(360/(count*2)*(i+1)),0]],
-    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),0]],
+    radius*cos(360/(count*2)*(i+1)),gums]],
+    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),depth-vkerf]],
     
@@ -67,26 +71,26 @@ function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),backing]],
     [[ radius*sin(360/(count*2)*(i+1)),
-    radius*cos(360/(count*2)*(i+1)),0]],  
+    radius*cos(360/(count*2)*(i+1)),gums]],  
 
     // 8
     [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),backing]],  
     [[ radius*sin(360/(count*2)*(i+1)),
-    radius*cos(360/(count*2)*(i+1)),0]],
-    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),0]],
+    radius*cos(360/(count*2)*(i+1)),gums]],
+    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),gums]],
     
     
     // 9
     [[ radius*sin(360/(count*2)*(i+1)),
-    radius*cos(360/(count*2)*(i+1)),0]],
+    radius*cos(360/(count*2)*(i+1)),gums]],
     [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),backing]],
-    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),0]],
+    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),gums]],
     
     // 10
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),backing]],
     [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),backing]],
-    [[ radius*sin(360/(count*2)*(i+1)), radius*cos(360/(count*2)*(i+1)),0]]
+    [[ radius*sin(360/(count*2)*(i+1)), radius*cos(360/(count*2)*(i+1)),gums]]
     
     
     ))
@@ -105,20 +109,23 @@ function joint_malewheel_sharppolys(count, i = 0, result = []) = i < count*10
 function joint_femalewheel_sharppoints(count, radius, depth, i = 0, result = []) = let(vkerf=kerf/sin(90-atan(radius*2*PI/(count*2)/(depth)))) let(backing=0.002) i < count*2
     ? joint_femalewheel_sharppoints(count, radius, depth,i + 2, concat(result, 
     
+    
     // 1
+    
     [[0,0,vkerf]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),
     depth]],
-    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),vkerf]],
+    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),vkerf+gums]],
     
     
     // 2
     [[0,0,vkerf]],
-    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),vkerf]],
+    [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),vkerf+gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),
     depth]],
+    
     
      
     // 3
@@ -138,7 +145,7 @@ function joint_femalewheel_sharppoints(count, radius, depth, i = 0, result = [])
     
     
     // 5
-    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),vkerf]],
+    [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),vkerf+gums]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),depth]],
     [[ radius*sin(360/(count*2)*i), radius*cos(360/(count*2)*i),depth]],
@@ -146,7 +153,7 @@ function joint_femalewheel_sharppoints(count, radius, depth, i = 0, result = [])
     
     // 6
     [[ radius*sin(360/(count*2)*(i+2)),
-    radius*cos(360/(count*2)*(i+2)),vkerf]],
+    radius*cos(360/(count*2)*(i+2)),vkerf+gums]],
     [[ radius*sin(360/(count*2)*(i+2)), radius*cos(360/(count*2)*(i+2)),depth]],
     [[ radius*sin(360/(count*2)*(i+1)),
     radius*cos(360/(count*2)*(i+1)),depth]],
@@ -232,9 +239,11 @@ module joint_malewheel_sharp(points,width,depth){
     polyhedron(points=joint_malewheel_sharppoints(points,width/2,depth), faces=joint_malewheel_sharppolys(points),convexity=10);
     
     difference(){
-        sphere(depth-kerf,$fn=medium_fineness);
-        translate([-depth+kerf-0.001,-depth+kerf-0.001,-depth+kerf-0.001])
-        cube([(depth-kerf)*2+0.002,(depth-kerf)*2+0.002,depth-kerf+0.001]);
+        scale([1.5,1.5,1])
+        sphere(depth-kerf*2/1.5,$fn=medium_fineness);
+        translate([-(depth+kerf*2)*1.5-0.001,-(depth+kerf*2)*1.5-0.001,-depth+kerf-0.001])
+        scale([1.5,1.5,1])
+        cube([(depth-kerf)*2*1.5+0.002,(depth-kerf)*2*1.5+0.002,depth-kerf+0.001]);
     }
 }
 
@@ -250,7 +259,7 @@ module joint_femalewheel_sharp(points,width,depth){
     difference(){
         
     polyhedron(points=joint_femalewheel_sharppoints(points,width/2,depth), faces=joint_femalewheel_sharppolys(points),convexity=10);
-    
+        scale([1.5,1.5,1])
         sphere(depth,$fn=medium_fineness);
        
     }
@@ -994,7 +1003,7 @@ link_sharp_described(25.4,10,3,medium_fineness,[1,0],[0,0]);
 //nubs_print(25.4,10,3,medium_fineness);
 
 //nubs_sharp_preview(25.4,10,3,medium_fineness);
-//nubs_sharp_print(25.4,10,3,medium_fineness);
+nubs_sharp_print(25.4,10,3,medium_fineness);
 
 //nub(25.4,10,2,medium_fineness,1);
 
@@ -1027,9 +1036,11 @@ nub_sharp(25.4,10,3,medium_fineness,0);
 
 */
 
+/*
 rotate([45,0,0])
 rotate([0,90,0])
 link_sharp_described(25.4,10,3,medium_fineness,[1,0],[0,1]);
+*/
 
 /*
 rotate([0,90,0])
