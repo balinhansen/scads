@@ -11,11 +11,11 @@ small_fineness=24;
 medium_fineness=48;
 big_fineness=120;
 
-gums=0.5;
+gums=0.0; // default: 0.5 // no teeth: 0.88
 
 
 
-function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =  let(vkerf=kerf/sin(90-atan(radius*2*PI/(count*2)/depth))) let (backing=-0.2) i < count*2
+function joint_malewheel_sharppoints(count, radius, depth, i = 0, result = []) =  let(vkerf=kerf/sin(90-atan(radius*2*PI/(count*2)/(depth)))) let (backing=-0.2) i < count*2
     ? joint_malewheel_sharppoints(count, radius, depth,i + 2, concat(result, 
    
     // 1

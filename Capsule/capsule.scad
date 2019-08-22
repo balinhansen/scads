@@ -5,10 +5,10 @@ thread_gap=kerf*2;
 fineness_low=40;
 fineness_stl=200;
 
-build_stl=true;
-thread_length_inches=0.6875; //0.125;
+build_stl=false;
+thread_length_inches=0.1875; //0.125;
 size_inches=1;
-corner_inches=0.125;
+corner_inches=0.375;
 shell_inches=0.0625;
 vent_inches=0.125;
 
@@ -205,5 +205,5 @@ module cross_section(){
 //capsule_top();
 //polygon(points=ar);
 //polygon(points=fem_threads);
-//cross_section();
-print_top();
+cross_section();
+//print_top();
