@@ -1,5 +1,5 @@
 fineness=120;
-thickness=0.6;
+thickness=0.4;
 connector=0;
 inch=25.4;
 
@@ -41,11 +41,11 @@ module nozzle(width,length,throat,thickness,throat_connector){
     
     translate([throat/2+thickness,0,throat_connector-thickness])
     rotate([0,15,0])
-    translate([0,0,sqrt(pow(width/2,2)+pow(length,2))/2])
-    %cube([1,1,sqrt(pow(width/2,2)+pow(length,2))],center=true);
+    translate([0,0,sqrt(pow(width/2,2)+pow(length,2))/2+thickness])
+    %cube([1,1,sqrt(pow(width/2,2)+pow(length,2))+thickness*2],center=true);
         
 }
 
 
 
-nozzle(1.66*inch-thickness,3*inch,3,0.8,10);
+nozzle(5/9*inch-thickness,inch,3,thickness,10);
