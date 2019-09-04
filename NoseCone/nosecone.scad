@@ -45,7 +45,9 @@ function Strip(s,v,i=0,result=[])=i<v?Strip(s,v,i+1,concat(result,[[s+i,s+i+v+1,
 
 function HaackBodyPoints(L,V,res=1,fine,i=1,result=[[0,0,0]])=i<L?HaackBodyPoints(L,V,res,fine,i+res,concat(result,PointCircle(SearsHaackRadius(L,V,i/L),i,fine))):concat(result,[[0,0,L]]);
 
-function HaackBodyPolys(L,fine,res=1,i=0,result=[])=let (result=!len(result)?FanFrom(0,fine):result)i<(L-1)?HaackBodyPolys(L,fine,res,i+res,concat(result,Strip(1+(i*(fine+1)),fine))):concat(result,FanTo(1+(i)*(fine+1),fine));
+function HaackBodyPolys(L,fine,res=1,i=0,result=[])=let (result=!len(result)?FanFrom(0,fine):result)i<(L-2)?HaackBodyPolys(L,fine,res,i+res,concat(result,Strip(1+(i*(fine+1)),fine))):concat(result,FanTo(1+(i+1)*(fine+1),fine));
+
+echo(Strip(2,3));
 
 //echo(HaackBodyPoints(200,200*PI,100,1,10));
 //echo(FanTo(39,10));
@@ -53,11 +55,11 @@ function HaackBodyPolys(L,fine,res=1,i=0,result=[])=let (result=!len(result)?Fan
 
 //echo(SearsHaack(200,200*PI,100/200));
 
-echo(HaackBodyPoints(4,20,1,10));
-echo(len(HaackBodyPoints(4,20,1,10)));
+//echo(HaackBodyPoints(3,20,1,4));
+//echo(len(HaackBodyPoints(3,20,1,4)));
 
-echo(HaackBodyPolys(4,10,1));
-echo(len(HaackBodyPolys(4,10,1)));
+//echo(HaackBodyPolys(3,4,1));
+//echo(len(HaackBodyPolys(3,4,1)));
 
 module SearsHaackModel(L,V){
     for (t=[0:L]){
@@ -72,11 +74,15 @@ module SearsHaackMesh(L,V,fine){
 
 //SearsHaackModel(2,10);
 //SearsHaackModel(100,1000*PI);
+
+/*
 difference(){
     
-SearsHaackMesh(100,6000*PI,240);
+SearsHaackMesh(100,8000*PI,240);
     
-    cube(10);
+    cylinder(70,9,9,$fn=240);
     
 }
-//SearsHaackMesh(10,200,100);
+*/
+
+SearsHaackMesh(30,200,48);
