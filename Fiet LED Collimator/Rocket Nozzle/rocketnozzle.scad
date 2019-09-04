@@ -1,6 +1,6 @@
 fineness=120;
-thickness=0.4;
-connector=0;
+thickness=0.8;
+connector=10;
 inch=25.4;
 
 
@@ -47,5 +47,8 @@ module nozzle(width,length,throat,thickness,throat_connector){
 }
 
 
-
-nozzle(5/9*inch-thickness,inch,3,thickness,10);
+//difference(){
+//nozzle(0.75*inch-thickness*2-2.3,inch,2.3,thickness,10);
+nozzle(0.75*inch-thickness*2-2.3,inch,2.3,thickness,10);
+  //  cube ([40,40,40]);
+//}
