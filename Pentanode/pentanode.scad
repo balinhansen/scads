@@ -203,7 +203,7 @@ translate([0,-wall+4*inch,0])
 ksink();
 
 fixture()
-rotate([0,0,144,0])
+rotate([0,0,144])
 translate([-20*inch,-wall+4*inch,0])
 toilet();
 
@@ -541,7 +541,8 @@ wall_side(side-10*inch);
 
     rotate([0,0,1*360/5])
     translate([0,-wall+2*inch,12*inch])
-wall_example(side-10*inch);
+//wall_example(side-10*inch);
+wall_example();
 
 
 
@@ -679,7 +680,7 @@ r640b(){
 
 
 module compound(){
-    /*pentapad();
+    pentapad();
     affine_wall()
     pentamod();
     
@@ -687,6 +688,6 @@ module compound(){
     
     rotate([0,0,-144])
     bedroom();
-    */
+    
 }
 

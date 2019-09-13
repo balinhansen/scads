@@ -1,6 +1,11 @@
 fineness=96;
 size=10;
 div=2;
+fins=1.6;
+shell=2.0;
+inch=25.4;
+
+kerf=0.0035*inch;
 
 module spheraboloid(){
 
@@ -47,8 +52,6 @@ function HaackBodyPoints(L,V,res=1,fine,i=1,result=[[0,0,0]])=i<L?HaackBodyPoint
 
 function HaackBodyPolys(L,fine,res=1,i=0,result=[])=let (result=!len(result)?FanFrom(0,fine):result)i<(L-2)?HaackBodyPolys(L,fine,res,i+res,concat(result,Strip(1+(i*(fine+1)),fine))):concat(result,FanTo(1+(i+1)*(fine+1),fine));
 
-echo(Strip(2,3));
-
 //echo(HaackBodyPoints(200,200*PI,100,1,10));
 //echo(FanTo(39,10));
 //echo(FanFrom(12,10));
@@ -75,14 +78,92 @@ module SearsHaackMesh(L,V,fine){
 //SearsHaackModel(2,10);
 //SearsHaackModel(100,1000*PI);
 
-/*
-difference(){
-    
-SearsHaackMesh(100,8000*PI,240);
-    
-    cylinder(70,9,9,$fn=240);
-    
+module rocket(){
+
+    difference(){
+        
+    SearsHaackMesh(150,12000*PI,240);
+        
+        cylinder(70+25,9+kerf,9+kerf,$fn=240);
+        
+    }
+
+    module fin(){
+        translate([-9,0,0])
+        rotate([90,0,0])
+        translate([0,0,-0.8])
+        linear_extrude(1.6,convexity=10)
+        polygon(points=[[0,35],[0,65],[-30,20],[-30,0]]);
+        
+    }
+
+    for (i=[0:3]){
+        rotate([0,0,360/4*i])
+        fin();
+    }
+
 }
+//SearsHaackMesh(30,200,48);
+
+
+module engine(){
+    difference(){
+        cylinder(70,9,9,$fn=48);   
+        translate([0,0,65])
+        cylinder(5.001,9-2.5,9-2.5,$fn=48);
+        
+        translate([0,0,-0.001])
+        cylinder(1.5+0.001,9-2.5,9-2.5,$fn=48);
+        
+        translate([0,0,1.5-0.001])
+        cylinder(1.5,9-2.5,0,$fn=48);
+        
+        translate([0,0,3-0.6])
+        cylinder(10,2.5,1.4,$fn=48);
+    }
+}
+
+
+/*
+rocket();
+translate([0,0,25])
+engine();
+
 */
 
-SearsHaackMesh(30,200,48);
+
+
+difference(){
+    cylinder(70+shell,9+shell,9+shell,$fn=240);
+    translate([0,0,-0.001])
+    cylinder(70,9,9,$fn=240);
+}
+
+
+
+//engine();
+
+translate([1/16*inch+shell+9+kerf+2*kerf,0,0])
+difference(){
+    cylinder(1.*inch,1/16*inch+shell+2*kerf,1/16*inch+shell+2*kerf,$fn=48);
+    translate([0,0,-0.001])
+    cylinder(1.0*inch+0.002,1/16*inch+2*kerf,1/16*inch+2*kerf,$fn=48);
+}
+
+
+
+translate([0,0,50.8])
+difference(){
+    SearsHaackMesh(40,9000,240);
+    translate([0,0,10-0.001])
+    cube([18+kerf*2+shell*2+0.1,18+kerf*2+shell*2+0.1,20.001],center=true);
+}
+
+for (i=[0:3]){
+    rotate([0,0,45+360/4*i])
+    translate([9+kerf+shell-0.15,0,0])
+    rotate([90,0,0])
+    translate([0,0,-shell/2])
+    linear_extrude(shell,convexity=10)
+    polygon([[0,0],[0,1.5*inch],[1*inch,0],[1*inch,-0.75*inch],[0.75*inch,-0.75*inch]]);
+}
