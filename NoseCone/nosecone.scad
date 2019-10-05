@@ -143,6 +143,17 @@ difference(){
 
 //engine();
 
+adj=((shell+1/16*inch+2*kerf)/((1/16*inch+shell+9+4*kerf+1/16*inch)*PI*2))*360;
+
+rotate([0,0,45+adj])
+translate([1/16*inch+shell+9+kerf+2*kerf,0,0])
+difference(){
+    cylinder(1.*inch,1/16*inch+shell+2*kerf,1/16*inch+shell+2*kerf,$fn=48);
+    translate([0,0,-0.001])
+    cylinder(1.0*inch+0.002,1/16*inch+2*kerf,1/16*inch+2*kerf,$fn=48);
+}
+
+rotate([0,0,180+45+adj])
 translate([1/16*inch+shell+9+kerf+2*kerf,0,0])
 difference(){
     cylinder(1.*inch,1/16*inch+shell+2*kerf,1/16*inch+shell+2*kerf,$fn=48);
