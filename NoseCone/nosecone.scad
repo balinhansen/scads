@@ -1,7 +1,7 @@
 fineness=96;
 size=10;
 div=2;
-fins=1.6;
+fins=2.0;
 shell=2.0;
 inch=25.4;
 
@@ -78,22 +78,25 @@ module SearsHaackMesh(L,V,fine){
 //SearsHaackModel(2,10);
 //SearsHaackModel(100,1000*PI);
 
-module rocket(){
-
+module Wasp(){
+//color([1,0,0,0.4])
     difference(){
         
-    SearsHaackMesh(150,12000*PI,240);
+    SearsHaackMesh(175,18000*PI,240);
         
-        cylinder(70+25,9+kerf,9+kerf,$fn=240);
-        
+        cylinder(70+30,9,9,$fn=240);
+        translate([0,0,100-0.001])
+        cylinder(5.002,8,8,$fn=240);
+        translate([0,0,105])
+        cylinder(70,11+kerf*2,11+kerf*2,$fn=240);
     }
 
     module fin(){
         translate([-9,0,0])
         rotate([90,0,0])
-        translate([0,0,-0.8])
-        linear_extrude(1.6,convexity=10)
-        polygon(points=[[0,35],[0,65],[-30,20],[-30,0]]);
+        translate([0,0,-1*fins/2])
+        linear_extrude(fins,convexity=10)
+        polygon(points=[[0,35],[0,75],[-30,20],[-30,0],[-20,0]]);
         
     }
 
@@ -101,7 +104,18 @@ module rocket(){
         rotate([0,0,360/4*i])
         fin();
     }
-
+    
+    for (i=[0:1]){
+        rotate([0,0,45+360/2*i])
+        translate([14+1/16*inch,0,(175-inch)/2])
+        difference(){
+            cylinder(inch,shell+1/16*inch+kerf*2,shell+1/16*inch+kerf*2,$fn=240);
+            translate([0,0,-0.001])
+            cylinder(inch+0.002,1/16*inch+kerf*2,1/16*inch+kerf*2,$fn=240);
+        }
+    }
+    //translate([0,0,30])
+    //engine();
 }
 //SearsHaackMesh(30,200,48);
 
@@ -124,15 +138,14 @@ module engine(){
 }
 
 
-/*
-rocket();
-translate([0,0,25])
-engine();
 
-*/
+Wasp();
 
 
 
+module Hornet(){
+    
+    
 difference(){
     cylinder(70+shell,9+shell,9+shell,$fn=240);
     translate([0,0,-0.001])
@@ -177,4 +190,7 @@ for (i=[0:3]){
     translate([0,0,-shell/2])
     linear_extrude(shell,convexity=10)
     polygon([[0,0],[0,1.5*inch],[1*inch,0],[1*inch,-0.75*inch],[0.75*inch,-0.75*inch]]);
+}
+
+
 }
