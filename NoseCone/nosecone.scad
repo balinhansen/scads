@@ -2,8 +2,9 @@ fineness=96;
 size=10;
 div=2;
 fins=2.0;
-shell=2.0;
+shell=0.4;
 inch=25.4;
+rod=5/32*inch;
 
 kerf=0.0035*inch;
 
@@ -107,11 +108,11 @@ module Wasp(){
     
     for (i=[0:1]){
         rotate([0,0,45+360/2*i])
-        translate([14+1/16*inch,0,(175-inch)/2])
+        translate([14+rod/2,0,(175-inch)/2])
         difference(){
-            cylinder(inch,shell+1/16*inch+kerf*2,shell+1/16*inch+kerf*2,$fn=240);
+            cylinder(inch,shell+rod/2+kerf*2,shell+rod/2+kerf*2,$fn=240);
             translate([0,0,-0.001])
-            cylinder(inch+0.002,1/16*inch+kerf*2,1/16*inch+kerf*2,$fn=240);
+            cylinder(inch+0.002,rod/2+kerf*2,rod/2+kerf*2,$fn=240);
         }
     }
     //translate([0,0,30])
@@ -139,46 +140,59 @@ module engine(){
 
 
 
-Wasp();
+//Wasp();
+Hornet();
 
+module lug(length){
+    difference(){
+            cylinder(length,shell+rod/2+kerf*2,shell+rod/2+kerf*2,$fn=240);
+            translate([0,0,-0.001])
+            cylinder(length+0.002,rod/2+kerf*2,rod/2+kerf*2,$fn=240);
+        }
+    
+}
 
+//lug(1*inch);
 
 module Hornet(){
     
     
 difference(){
-    cylinder(70+shell,9+shell,9+shell,$fn=240);
+    cylinder(70,9+shell,9+shell,$fn=240);
     translate([0,0,-0.001])
-    cylinder(70,9,9,$fn=240);
+    cylinder(70+0.002,9,9,$fn=240);
 }
 
 
 
 //engine();
 
-adj=((shell+1/16*inch+2*kerf)/((1/16*inch+shell+9+4*kerf+1/16*inch)*PI*2))*360;
+adj=((fins/1.6+shell+rod/2+2*kerf)/((rod/2+shell+9+4*kerf+rod/2)*PI*2))*360;
 
 rotate([0,0,45+adj])
-translate([1/16*inch+shell+9+kerf+2*kerf,0,0])
+translate([rod/2+shell+9+kerf+2*kerf,0,0])
 difference(){
-    cylinder(1.*inch,1/16*inch+shell+2*kerf,1/16*inch+shell+2*kerf,$fn=48);
+    cylinder(1.0*inch,rod/2+shell+2*kerf,rod/2+shell+2*kerf,$fn=48);
     translate([0,0,-0.001])
-    cylinder(1.0*inch+0.002,1/16*inch+2*kerf,1/16*inch+2*kerf,$fn=48);
+    cylinder(1.0*inch+0.002,rod/2+2*kerf,rod/2+2*kerf,$fn=48);
 }
 
 rotate([0,0,180+45+adj])
-translate([1/16*inch+shell+9+kerf+2*kerf,0,0])
+translate([rod/2+shell+9+kerf+2*kerf,0,0])
 difference(){
-    cylinder(1.*inch,1/16*inch+shell+2*kerf,1/16*inch+shell+2*kerf,$fn=48);
+    cylinder(1.0*inch,rod/2+shell+2*kerf,rod/2+shell+2*kerf,$fn=48);
     translate([0,0,-0.001])
-    cylinder(1.0*inch+0.002,1/16*inch+2*kerf,1/16*inch+2*kerf,$fn=48);
+    cylinder(1.0*inch+0.002,rod/2+2*kerf,rod/2+2*kerf,$fn=48);
 }
 
 
+translate([0,0,70-0.001])
 
-translate([0,0,50.8])
+    translate([0,0,-20])
 difference(){
-    SearsHaackMesh(40,9000,240);
+    //SearsHaackMesh(40,9000,240);
+
+    SearsHaackMesh(40,6600,240);
     translate([0,0,10-0.001])
     cube([18+kerf*2+shell*2+0.1,18+kerf*2+shell*2+0.1,20.001],center=true);
 }
@@ -187,8 +201,8 @@ for (i=[0:3]){
     rotate([0,0,45+360/4*i])
     translate([9+kerf+shell-0.15,0,0])
     rotate([90,0,0])
-    translate([0,0,-shell/2])
-    linear_extrude(shell,convexity=10)
+    translate([0,0,-fins/2])
+    linear_extrude(fins,convexity=10)
     polygon([[0,0],[0,1.5*inch],[1*inch,0],[1*inch,-0.75*inch],[0.75*inch,-0.75*inch]]);
 }
 
