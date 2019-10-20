@@ -2,7 +2,7 @@ fineness=96;
 size=10;
 div=2;
 fins=2.0;
-shell=0.4;
+shell=2.0;
 inch=25.4;
 rod=5/32*inch;
 
@@ -108,7 +108,7 @@ module Wasp(){
     
     for (i=[0:1]){
         rotate([0,0,45+360/2*i])
-        translate([14+rod/2,0,(175-inch)/2])
+        translate([13.4+rod/2,0,(175-inch)/2])
         difference(){
             cylinder(inch,shell+rod/2+kerf*2,shell+rod/2+kerf*2,$fn=240);
             translate([0,0,-0.001])
@@ -140,8 +140,8 @@ module engine(){
 
 
 
-//Wasp();
-Hornet();
+Wasp();
+//Hornet();
 
 module lug(length){
     difference(){
@@ -190,9 +190,9 @@ translate([0,0,70-0.001])
 
     translate([0,0,-20])
 difference(){
-    //SearsHaackMesh(40,9000,240);
+    SearsHaackMesh(40,8900,240); // shell of 2.0mm
 
-    SearsHaackMesh(40,6600,240);
+    //SearsHaackMesh(40,6600,240); // shell of 0.4mm
     translate([0,0,10-0.001])
     cube([18+kerf*2+shell*2+0.1,18+kerf*2+shell*2+0.1,20.001],center=true);
 }

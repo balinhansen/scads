@@ -1,5 +1,5 @@
-zheight=0.4;
-width=0.8;
+zheight=0.41;
+width=0.41;
 
 
 function ngon(count, radius, i = 0, result = []) = i < count
@@ -70,9 +70,12 @@ module linesquare(size){
 //polygon(points=[[0,0],[1,0],[1,1],[0,1]]);
 
 linesquare(114);
+
+/*
 extrusion([[0,0],[1,0],[1,1],[0.5,2],[0,1]],[0,0,1],[0,200],[100,100]);
 
 drawextrusions([[0,0],[1,0],[1,1],[0.5,2],[0,1]],[0,0,1],[[0,1],[0,2],[1,3]]);
 
 
 extrusion_ngon(7,20);
+*/
