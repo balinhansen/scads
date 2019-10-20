@@ -1,15 +1,16 @@
 slot=8.5;
-slot_length=80;
-slot_depth=65;
+slot_length=65;
+slot_depth=17;
 shell=2;
+is_plug=0;
 
-angle=0;
+angle=5;
 
 fineness=120;
 small_fineness=40;
 
 phone=14;
-phone_length=80;
+phone_length=65;
 phone_depth=17;
 
 cable_width=14;
@@ -38,6 +39,8 @@ module plug(length){
     }
 }
 
+rotate([180-angle,0,0]){
+    
 difference(){
     union(){
         translate([slot/2,slot/2,slot/2]){
@@ -74,11 +77,12 @@ difference(){
 
 }
 
-
-   translate([(slot_length-cable_width)/2,cos(angle)*sqrt(pow(slot,2)+pow(distance,2))/2,slot_depth+sin(angle)*sqrt(pow(slot,2)+pow(distance,2))/2])
-    rotate([angle,0,0])
-    translate([0,-cable_height/2,-24])
-    plug(25);
+    if (is_plug){
+       translate([(slot_length-cable_width)/2,cos(angle)*sqrt(pow(slot,2)+pow(distance,2))/2,slot_depth+sin(angle)*sqrt(pow(slot,2)+pow(distance,2))/2])
+        rotate([angle,0,0])
+        translate([0,-cable_height/2,-24])
+        plug(25);
+    }
 }
 
 
@@ -99,10 +103,15 @@ rotate([angle,0,0]){
         sphere(phone/2,$fn=fineness);
         translate([phone_length,0,0])
         sphere(phone/2,$fn=fineness);
+        
+        
         rotate([0,90,0])
         cylinder(phone_length,phone/2,phone/2,$fn=fineness);
-        translate([(phone_length-cable_width)/2,-cable_height/2,-25])
-        plug(25);
+        
+        if (is_plug){
+            translate([(phone_length-cable_width)/2,-cable_height/2,-25])
+            plug(25);
+        }
     }
 
     translate([0,0,phone/2+shell])
@@ -128,3 +137,4 @@ rotate([angle,0,0]){
 }
 
 
+}
