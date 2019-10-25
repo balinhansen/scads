@@ -140,8 +140,8 @@ module engine(){
 
 
 
-Wasp();
-//Hornet();
+//Wasp();
+Hornet();
 
 module lug(length){
     difference(){
@@ -167,9 +167,9 @@ difference(){
 
 //engine();
 
-adj=((fins/1.6+shell+rod/2+2*kerf)/((rod/2+shell+9+4*kerf+rod/2)*PI*2))*360;
+//adj=((fins/1.6+shell+rod/2+2*kerf)/((rod/2+shell+9+4*kerf+rod/2)*PI*2))*360;
 
-rotate([0,0,45+adj])
+rotate([0,0,0])
 translate([rod/2+shell+9+kerf+2*kerf,0,0])
 difference(){
     cylinder(1.0*inch,rod/2+shell+2*kerf,rod/2+shell+2*kerf,$fn=48);
@@ -177,7 +177,7 @@ difference(){
     cylinder(1.0*inch+0.002,rod/2+2*kerf,rod/2+2*kerf,$fn=48);
 }
 
-rotate([0,0,180+45+adj])
+rotate([0,0,180])
 translate([rod/2+shell+9+kerf+2*kerf,0,0])
 difference(){
     cylinder(1.0*inch,rod/2+shell+2*kerf,rod/2+shell+2*kerf,$fn=48);
