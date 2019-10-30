@@ -107,6 +107,7 @@ module pier_two(length,height){
 
 
 module two_by_four(length){
+    color([0.94,0.89,0.69,1.0])
     cube(size=[two_by_four_height,two_by_four_width,length]);
 }
 
@@ -133,7 +134,54 @@ module wall_section(length,height,sans_begin,sans_end){
     
 }
 
+module three_stud_corner(length){
+	two_by_four(length);
+	translate([0,two_by_four_width+two_by_four_height,0])
+	rotate([0,0,-90])
+	two_by_four(length);
+	translate([two_by_four_height,two_by_four_width,0])
+	rotate([0,0,-90])
+	two_by_four(length);
+}
+
+
+module window(length,wall_height,height,window_height,header){
+    two_by_four(height-two_by_four_height);
+    translate([0,0,height])
+    rotate([0,90,0])
+    two_by_four(length);
+    translate([0,0,height])
+    two_by_four(window_height);
+    
+    translate([0,0,height+window_height+two_by_four_height])
+    for (i=[0:ceil(header/two_by_four_height)-1]){
+        translate([0,0,two_by_four_height*i])
+        rotate([0,90,0])
+        two_by_four(length);
+    }
+    
+    translate([0,0,height+window_height+two_by_four_height*ceil(header/two_by_four_height)])
+    two_by_four(wall_height-height-window_height-two_by_four_height*ceil(header/two_by_four_height));
+    
+    
+    // Right Side Studs
+    
+    translate([length-two_by_four_height,0,0])
+    two_by_four(height-two_by_four_height);
+    
+    translate([length-two_by_four_height,0,height])
+    two_by_four(window_height);
+    
+    translate([length-two_by_four_height,0,height+window_height+two_by_four_height*ceil(header/two_by_four_height)])
+    two_by_four(wall_height-height-window_height-two_by_four_height*ceil(header/two_by_four_height));
+    
+}
+
+
 pier_one(24*inch,6*inch);
 //pier_two(80*inch,6*inch);
 
-wall_section(18*12*inch,8*12*inch);
+//wall_section(5*12*inch,8*12*inch);
+
+//three_stud_corner(8*12*inch);
+window(4*12*inch,8*12*inch,3*12*inch,3*12*inch,6*inch);
