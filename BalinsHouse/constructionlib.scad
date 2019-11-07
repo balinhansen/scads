@@ -1,8 +1,14 @@
 inch=25.4;
-gap=0; // visual aid
+gap=10; // visual aid
 stud_spacing_inches=18;
 
+building_height=14;
+building_width=25;
+building_length=55;
 
+property_size=45738;
+property_width=161;
+property_length=284;
 two_by_four_width_inches=3.75;
 two_by_four_height_inches=1.75;
 pier_width_inches=12;
@@ -15,14 +21,20 @@ bracket_width_inches=1;
 bracket_fineness=24;
 bracket_stock_inches=0.25;
 
-block_length_inches=16;
-block_width_inches=8;
-block_height_inches=8;
+block_length_inches=15.625;
+block_width_inches=7.625;
+block_height_inches=7.625;
 
 slab_length_inches=24;
 slab_width_inches=24;
 slab_height_inches=8;
 
+
+side_setback=building_height<14?10:building_height-4;
+front_setback=building_height+10;
+
+echo(concat("Sideyard Setbacks: ",side_setback));
+echo(concat("Front/Backyard Setbacks:", front_setback));
 
 stud_spacing=stud_spacing_inches*inch;
 
@@ -95,7 +107,7 @@ module pier_two(length,height){
         translate([0,0,-length+(block_height+gap)*i+height])
         translate([-block_length/2,-block_width-gap/2,0]){
             block();
-            translate([0,8*inch+gap,0])
+            translate([0,block_width+gap,0])
             block();
         }
     }
@@ -103,6 +115,41 @@ module pier_two(length,height){
     slab();
 }
 
+
+module brick_fence(length,height,spacing,void,cap_begin,cap_end){
+    count=floor((length-(block_width+spacing))/(block_length+spacing));
+    stack=floor(height/(block_height+spacing));
+
+    a=(length-(block_width+spacing));
+    b=floor((length-(block_width+spacing))/(block_length+spacing))*(block_length+spacing);
+    
+    diff=a-b;
+    
+    
+    half_void=(diff>=(block_width+spacing))?true:false;
+    
+    
+    echo (concat("Blocks ",count));
+    echo (concat("Half void: ",half_void));
+    echo (concat("Void: ",void));
+    
+    for (z=[0:stack-1]){
+        knock=(((half_void && void) && !z%2) || ((half_void && !void) && (z%2)) || !half_void)?true:false;
+        
+        for (i=[0:count-(knock?1:0)]){
+            translate([
+            (
+                (void?
+                    ((z%2)?0:(block_width+spacing)):
+                    ((z%2)?(block_width+spacing):0)  
+                )
+            )+
+            
+            (block_length+spacing)*i,0,z*(block_height+spacing)])
+            block();
+        }
+    }
+}
 
 
 
@@ -177,11 +224,68 @@ module window(length,wall_height,height,window_height,header){
     
 }
 
+echo(concat("Perimeter ",property_length*2+property_width*2));
 
-pier_one(24*inch,6*inch);
+color([0,0.8,0,0.2])
+translate([0,0,-inch])
+cube([property_width*12*inch,property_length*12*inch,inch]);
+
+color([0.8,0,0,1])
+translate([(building_height-4)*12*inch,(building_height+4)*12*inch,0])
+cube([(property_width-(building_height-4)*2)*12*inch,(property_length-(building_height+10)*2)*12*inch,inch]);
+
+translate([(property_width-building_length)/2*12*inch,(property_length-building_width)/2*12*inch,0])
+cube([building_length*12*inch,building_width*12*inch,building_height*12*inch]);
+
+
+
+//pier_one(24*inch,6*inch);
 //pier_two(80*inch,6*inch);
 
 //wall_section(5*12*inch,8*12*inch);
 
 //three_stud_corner(8*12*inch);
-window(4*12*inch,8*12*inch,3*12*inch,3*12*inch,6*inch);
+//window(4*12*inch,8*12*inch,3*12*inch,3*12*inch,6*inch);
+
+
+brick_fence(((property_width-24)/2)*12*inch,7*12*inch,gap,false,false,true);
+
+// Left Wall
+
+translate([block_width,0,0])
+rotate([0,0,90])
+brick_fence(property_length*12*inch,7*12*inch,gap,true,false,false);
+
+a=(property_length*12*inch-(block_width+gap));
+b=(block_length+gap)*floor((property_length*12*inch-(block_width+gap))/(block_length+gap));
+
+echo(a);
+echo(b);
+echo(block_width+gap);
+half_void=((a-b)>(block_width+gap))?true:false;
+
+echo (half_void);
+
+
+
+// Rear Wall
+
+translate([0,(block_length+gap)*floor((property_length*12*inch-block_width-gap)/(block_length+gap))+(half_void?(block_width+gap):0),0])
+brick_fence(property_width*12*inch,7*12*inch,gap,!half_void,false,false);
+
+c=(property_width*12*inch-(block_width+gap));
+d=floor((property_width*12*inch-(block_width+gap))/(block_length+gap))*(block_length+gap);
+echo(c);
+
+echo(d);
+rear_void=((c-d)>(block_width+gap))?(half_void?true:false):(half_void?false:true);
+
+echo(concat("Rear void: ",rear_void));
+
+// Right Wall
+
+translate([(rear_void?0:(block_width+gap))+block_width+gap+(block_length+gap)*floor((property_width*12*inch-block_width-gap)/(block_length+gap)),0,0])
+rotate([0,0,90])
+
+
+brick_fence(property_length*12*inch,7*12*inch,gap,half_void?rear_void:!rear_void ,false,false);
