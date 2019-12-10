@@ -1,11 +1,10 @@
 inch=25.4;
 
-sphere_inches=8;
-element_inches=1/5.818181;
+sphere_inches=4;
+element_inches=0.25;
 sphere_fineness=60;
 element_fineness=12;
-bead_fineness=60;
-
+bead_fineness=12;
 
 sphere_size=sphere_inches*inch;
 element_size=element_inches*inch;
@@ -22,6 +21,17 @@ module seedbead(){
     circle(element_size/3,$fn=bead_fineness);
     }
  
+module behold_corn(){
+    scale([1,1,0.5])
+    hull(){
+        translate([-element_size/4,0,0])
+        sphere(element_size/2,$fn=element_fineness);
+        translate([element_size/4,0,0])
+        sphere(element_size/2,$fn=element_fineness);
+    }
+}
+    
+    
 function list(i,o)=let(rad=sin(i*180/rings)*sphere_size/2) let(rings=floor(PI*sphere_size/(2*element_size))) i<rings?list(i+1,concat(o,floor(2*rad*PI/element_size))):o;
     
 
@@ -48,7 +58,10 @@ for (i=[0:rings-1]){
                 rotate([0,0,360*e/elements])
                 translate([rad,0,0])
                 //seedbead();
-                sphere(element_size/2,$fn=element_fineness);
+                
+                    rotate([0,-ang,0])
+                    behold_corn();
+                //sphere(element_size/2,$fn=element_fineness);
             }
             echo(elements);
         }
