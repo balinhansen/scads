@@ -121,17 +121,60 @@ module Wasp(){
 //SearsHaackMesh(30,200,48);
 
 
-module engine(){
+
+module engine24mm(){
+    r=24/2;
+    l=95;
     difference(){
-        cylinder(70,9,9,$fn=48);   
-        translate([0,0,65])
-        cylinder(5.001,9-2.5,9-2.5,$fn=48);
+        cylinder(l,r,r,$fn=48);   
+        translate([0,0,l-5])
+        cylinder(5.001,r-2.5,r-2.5,$fn=48);
         
         translate([0,0,-0.001])
-        cylinder(1.5+0.001,9-2.5,9-2.5,$fn=48);
+        cylinder(1.5+0.001,r-2.5,r-2.5,$fn=48);
         
         translate([0,0,1.5-0.001])
-        cylinder(1.5,9-2.5,0,$fn=48);
+        cylinder(1.5,r-2.5,0,$fn=48);
+        
+        translate([0,0,3-0.6])
+        cylinder(10,2.5,1.4,$fn=48);
+    }
+}
+
+
+module engine18mm(){
+    r=18/2;
+    l=70;
+    difference(){
+        cylinder(l,r,r,$fn=48);   
+        translate([0,0,l-5])
+        cylinder(5.001,r-2.5,r-2.5,$fn=48);
+        
+        translate([0,0,-0.001])
+        cylinder(1.5+0.001,r-2.5,r-2.5,$fn=48);
+        
+        translate([0,0,1.5-0.001])
+        cylinder(1.5,r-2.5,0,$fn=48);
+        
+        translate([0,0,3-0.6])
+        cylinder(10,2.5,1.4,$fn=48);
+    }
+}
+
+
+module engine13mm(){
+    r=13/2;
+    l=45;
+    difference(){
+        cylinder(l,r,r,$fn=48);   
+        translate([0,0,l-5])
+        cylinder(5.001,r-2.5,r-2.5,$fn=48);
+        
+        translate([0,0,-0.001])
+        cylinder(1.5+0.001,r-2.5,r-2.5,$fn=48);
+        
+        translate([0,0,1.5-0.001])
+        cylinder(1.5,r-2.5,0,$fn=48);
         
         translate([0,0,3-0.6])
         cylinder(10,2.5,1.4,$fn=48);
@@ -140,8 +183,14 @@ module engine(){
 
 
 
-//Wasp();
-Hornet();
+
+
+
+Wasp();
+//Hornet();
+
+//engine24mm();
+
 
 module lug(length){
     difference(){
