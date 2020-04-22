@@ -53,28 +53,67 @@ slab_length=slab_length_inches*inch;
 slab_width=slab_width_inches*inch;
 slab_height=slab_height_inches*inch;
 
+opacity=1;
+
 module wood_color(){
-    color([0.94,0.89,0.69,1.0])
+    color([0.94,0.89,0.69,opacity])
     children();
 }
 module wood_color_b(){
-    color([0.91,0.86,0.66,1.0])
+    color([0.88,0.83,0.66,opacity])
     children();
 }
 
 module wood_color_c(){
-    color([0.94,0.87,0.59,1.0])
+    color([0.94,0.87,0.59,opacity])
+    children();
+}
+
+module random_wood(){
+    color=floor(rands(0,3,1)[0]);
+    if (color==0){
+        wood_color()
+        children();
+    }
+    if (color==1){
+        wood_color_b()
+        children();
+    }
+    if (color==2){
+        wood_color_c()
+        children();
+    }
+}
+
+
+module treated(){
+    color([0.8,0.3,0.1,opacity])
     children();
 }
 
 module pink_panther(){
-    color([1,0.8,0.8,1])
+    color([1,0.8,0.8,opacity])
     children();
-    
 }
 
-module pier(depth){
-    color([0.8,0.8,0.8,0.8])
+module concrete(){
+    color([0.8,0.8,0.8,opacity])
+    children();
+}
+
+module flat_batt(width,height,thickness){
+    pink_panther()
+    cube(size=[width,height,thickness]);    
+}
+
+module wall_batt(width,height,thickness){
+    pink_panther()
+    cube(size=[width,thickness,height]);    
+}
+
+
+module pier(depth,width=pier_width){
+    concrete()
     translate([0,0,-depth])
     cylinder(depth,pier_width/2,pier_width/2,$fn=pier_fineness);
 }
@@ -99,20 +138,32 @@ module bracket(length,height,box_size,box_height){
 }
 
 module block(){
-    color([0.8,0.8,0.8,1])
+    concrete()
     cube([block_length,block_width,block_height]);
 }
 
 module cap(){
-    color([0.8,0.8,0.8,1])
+    concrete()
     cube([16*inch,16*inch,16*inch]);
 }
 
 module slab(){
-    color([0.8,0.8,0.8,1])
+    concrete()
     translate([-slab_length/2,-slab_width/2,-slab_height])
     cube([slab_length,slab_width,slab_height]);
 }
+
+module post_hole(length,width,height){
+    concrete()
+    translate([0,0,height])
+    pier(length,width);
+}
+
+module woodpost(height,length,width,depth){
+    translate([-length/2,-width/2,depth])
+    cube([length,width,height]);
+}
+
 
 module pier_one(length,height){
     bracket(18*inch,height,4*inch,3.5*inch);
@@ -180,6 +231,24 @@ module mattress(mattress_width,mattress_length,mattress_depth){
     }
 }
 
+module auto_studs(height, width, thickness, spacing,center){
+        if (center){
+            translate([-two_by_four_height/2,0,0])
+            random_wood()
+            cube(size=[two_by_four_height,thickness,height]);
+        }else{
+            for (i=[0:floor((width/2)/spacing)-1]){
+                random_wood()
+                translate([-spacing/2-two_by_four_height/2-i*spacing,0,0])
+                cube(size=[two_by_four_height,thickness,height]);
+              
+                random_wood()
+                translate([spacing/2-two_by_four_height/2+i*spacing,0,0])
+                cube(size=[two_by_four_height,thickness,height]);
+            }
+        }
+}
+
 module tool_shed(){
 
     for (i=[-1:1]){
@@ -236,15 +305,14 @@ module tool_shed(){
     
     // floor insulation
     
-    pink_panther()
     translate([-4*12*inch,-4*12*inch+two_by_four_height,6*inch+two_by_four_width+0.75*inch])
     for (i=[0:4]){
         translate([2*inch-(2*inch-two_by_four_height)/2+18*inch*i,0,0])
-        cube([16*inch,8*12*inch-two_by_four_height*2,two_by_four_width]);
+        flat_batt(16*inch, 8*12*inch-two_by_four_height*2,2*inch);
     }
     pink_panther()
     translate([4*12*inch-4*inch-(2*inch-two_by_four_height)/2,-4*12*inch+two_by_four_height,6*inch+two_by_four_width+0.75*inch])
-    cube(size=[96*inch-two_by_four_height*2-(2*inch-two_by_four_height)-18*5*inch,8*12*inch-two_by_four_height*2,two_by_four_width]);
+    flat_batt(96*inch-two_by_four_height*2-(2*inch-two_by_four_height)-18*5*inch,8*12*inch-two_by_four_height*2,2*inch);
     
     // subfloor
     
@@ -255,6 +323,7 @@ module tool_shed(){
     translate([0,-4*12*inch,6*inch+two_by_four_width*2+0.75*inch])
     cube([4*12*inch,8*12*inch,0.75*inch]);
 
+    
     // wall plates
     wood_color()
     for (i=[-1,1]){
@@ -268,8 +337,277 @@ module tool_shed(){
         cube(size=[two_by_four_width,8*12*inch-two_by_four_width*2,two_by_four_height]);
     }
 
+    // wall corners 
+    translate([0,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height]){
+        
+    translate([-4*12*inch,-4*12*inch,0])
+    three_stud_corner(8*12*inch);
+       
+    translate([4*12*inch,-4*12*inch,0])
+        mirror([1,0,0]) //rotate([0,0,90])
+    three_stud_corner(8*12*inch);
+        
+    translate([-4*12*inch,4*12*inch,0])
+        mirror([0,1,0])
+    three_stud_corner(8*12*inch);
+       
+    translate([4*12*inch,4*12*inch,0])
+        mirror([0,1,0])
+        mirror([1,0,0]) //rotate([0,0,90])
+    three_stud_corner(8*12*inch);
+    
+    }
+    
+    // front wall
+    
+    
+    // door frame
+    translate([0,4*12*inch-two_by_four_width,6*inch+two_by_four_width*2+0.75*inch*2+two_by_four_height])
+    door_frame(80*inch,36*inch,two_by_four_width,8*12*inch,4);
+    
+    front_wall_width=(8*12*inch-2*(two_by_four_width+two_by_four_height)-36*inch-two_by_four_height*4-2*inch)/2;
+    
+   
+    translate([36*inch/2+inch+two_by_four_height*2+front_wall_width/2,4*12*inch-two_by_four_width,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
+    auto_studs(8*12*inch,front_wall_width,two_by_four_width,18*inch,false);
+    
+    translate([-36*inch/2-inch-two_by_four_height*2-front_wall_width/2,4*12*inch-two_by_four_width,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
+    auto_studs(8*12*inch,front_wall_width,two_by_four_width,18*inch,false);
+    
+    
+    // rear wall
+    
+    translate([0,-4*12*inch,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
+    auto_studs(8*12*inch,8*12*inch-two_by_four_width*2-two_by_four_height*2,two_by_four_width,18*inch,false);
+    
+    // left wall
+    
+    translate([-4*12*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
+    rotate([0,0,-90])
+    window(8*12*inch, 4*12*inch, 42*inch, 36*inch, 3);
+    
+    
+    // right wall
+    translate([4*12*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
+    rotate([0,0,90])
+    window(8*12*inch, 4*12*inch, 42*inch, 36*inch, 3);
+    
+    // top plate (first row)
+    
+    random_wood()
+    translate([-4*12*inch,-4*12*inch, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height+8*12*inch])
+    cube([8*12*inch,two_by_four_width,two_by_four_height]);
+    
+    random_wood()
+    translate([-4*12*inch,4*12*inch-two_by_four_width, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height+8*12*inch])
+    cube([8*12*inch,two_by_four_width,two_by_four_height]);
+    
+    random_wood()
+    translate([-4*12*inch,-4*12*inch+two_by_four_width, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height+8*12*inch])
+    cube(size=[two_by_four_width,8*12*inch-two_by_four_width*2,two_by_four_height]);
+    
+    random_wood()
+    translate([4*12*inch-two_by_four_width,-4*12*inch+two_by_four_width, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height+8*12*inch])
+    cube(size=[two_by_four_width,8*12*inch-two_by_four_width*2,two_by_four_height]);
+    
+    // top plate (second row)
+    
+    random_wood()
+    translate([-4*12*inch,-4*12*inch, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*2+8*12*inch])
+    cube([two_by_four_width,8*12*inch,two_by_four_height]);
+    
+    random_wood()
+    translate([4*12*inch-two_by_four_width,-4*12*inch, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*2+8*12*inch])
+    cube([two_by_four_width,8*12*inch,two_by_four_height]);
+    
+    
+    random_wood()
+    translate([-4*12*inch+two_by_four_width,-4*12*inch, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*2+8*12*inch])
+    cube(size=[8*12*inch-two_by_four_width*2,two_by_four_width,two_by_four_height]);
+    
+    random_wood()
+    translate([-4*12*inch+two_by_four_width,4*12*inch-two_by_four_width, 6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*2+8*12*inch])
+    cube(size=[8*12*inch-two_by_four_width*2,two_by_four_width,two_by_four_height]);
+    
+    
+    // ceiling joists
+    
+    for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))-1]){
+        random_wood()
+        translate([-4*12*inch,8*inch-two_by_four_height/2+16*inch*i,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch])
+        cube([8*12*inch,two_by_four_height, two_by_four_width]);
+    
+        random_wood()
+            translate([-4*12*inch,-8*inch-two_by_four_height/2-16*inch*i,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch])
+        cube([8*12*inch,two_by_four_height, two_by_four_width]);
+    
+        }
+    
+        //roof ridge
+        roof_angle=90-56;
+        birds_mouth=sin(roof_angle)*1.5*inch;
+        echo(birds_mouth/25.4);
+        overhang=12*inch;
+        min_ridge=two_by_four_width/cos(roof_angle);
+        echo(min_ridge/25.4);
+        
+        roof_ridge_height=(4*12*inch-two_by_four_height/2)*tan(roof_angle)-birds_mouth;
+        
+        rafter_cut=sqrt(pow(two_by_four_width,2)+pow(tan(roof_angle)*two_by_four_width,2));
+        
+        
+        random_wood()
+        translate([-4*12*inch-overhang,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        cube([8*12*inch+overhang*2,two_by_four_height,min_ridge]);
+
+
+
+
+    // auto rafters
+    
+        for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))]){
+            
+            random_wood()
+        translate([i*(16*inch-two_by_four_height/2)+8*inch,two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rotate([-roof_angle,0,0])
+        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+        
+   random_wood()
+        translate([i*(16*inch-two_by_four_height/2)+8*inch,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        translate([-two_by_four_height/2,0,0])
+        mirror([0,1,0])
+        rotate([-roof_angle,0,0])
+        translate([0,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+        
+          
+            random_wood()
+        translate([-i*(16*inch-two_by_four_height/2)-8*inch,two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rotate([-roof_angle,0,0])
+        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+        
+   random_wood()
+        translate([-i*(16*inch-two_by_four_height/2)-8*inch,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        translate([-two_by_four_height/2,0,0])
+        mirror([0,1,0])
+        rotate([-roof_angle,0,0])
+        translate([0,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+    }
+
+
+
+    // end rafters
+    
+        for (i=[-1,1]){
+            
+            random_wood()
+        translate([i*(4*12*inch-two_by_four_height/2),two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rotate([-roof_angle,0,0])
+        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+        
+   random_wood()
+        translate([i*(4*12*inch-two_by_four_height/2),-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        translate([-two_by_four_height/2,0,0])
+        mirror([0,1,0])
+        rotate([-roof_angle,0,0])
+        translate([0,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+    }
+    
+        
+    // barge boards
+        
+        for (i=[-1,1]){
+            
+            random_wood()
+        translate([i*(4*12*inch+overhang-two_by_four_height/2),two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rotate([-roof_angle,0,0])
+        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+        
+   random_wood()
+        translate([i*(4*12*inch+overhang-two_by_four_height/2),-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        translate([-two_by_four_height/2,0,0])
+        mirror([0,1,0])
+        rotate([-roof_angle,0,0])
+        translate([0,-tan(roof_angle)*two_by_four_width,0])
+        difference(){
+            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
+            color([0,0,1,1])
+            translate([-0.01,-0.01,-0.01])
+            //translate([0,0,rafter_cut])
+            rotate([roof_angle,0,0])
+            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
+        }
+    }
+        
+    
+        
+    // mattress (lol)
     translate([0,0,6*inch+two_by_four_width*2+0.75*inch*2])
     mattress(80*inch,60*inch, 12*inch);
+
 
 }
 
@@ -313,12 +651,8 @@ module brick_fence(length,height,spacing,void,cap_begin,cap_end){
 
 module two_by_four(length){
     color([0.94,0.89,0.69,1.0])
+    translate([-two_by_four_height/2,0,0])
     cube(size=[two_by_four_height,two_by_four_width,length]);
-}
-
-module two_by_four_center(length){
-    translate([-two_by_four_depth/2,-two_by_four_width/2,0])
-    two_by_four(length);
 }
 
 
@@ -340,46 +674,125 @@ module wall_section(length,height,sans_begin,sans_end){
 }
 
 module three_stud_corner(length){
-	two_by_four(length);
+	translate([two_by_four_height/2,0,0])
+    two_by_four(length);
+    
 	translate([0,two_by_four_width+two_by_four_height,0])
 	rotate([0,0,-90])
+	translate([two_by_four_height/2,0,0])
 	two_by_four(length);
+    
 	translate([two_by_four_height,two_by_four_width,0])
 	rotate([0,0,-90])
+	translate([two_by_four_height/2,0,0])
 	two_by_four(length);
 }
 
 
-module window(length,wall_height,height,window_height,header){
-    two_by_four(height-two_by_four_height);
-    translate([0,0,height])
+module window(wall_height,length,floor_height,window_height,header_boards){
+
+    // wall studs
+    
+    random_wood()
+    translate([-length/2-3*(two_by_four_height/2),0,0])
+    two_by_four(wall_height);
+    
+    random_wood()
+    translate([length/2+3*(two_by_four_height/2),0,0])
+    two_by_four(wall_height);
+    
+    // jack studs
+    
+    random_wood()
+    translate([-length/2-two_by_four_height/2,0,0])
+    two_by_four(floor_height-two_by_four_height);
+    
+    random_wood()
+    translate([length/2+two_by_four_height/2,0,0])
+    two_by_four(floor_height-two_by_four_height);
+    
+    auto_studs(floor_height-two_by_four_height,length,two_by_four_width,18*inch,false);
+    
+    // window sill
+    
+    random_wood()
+    translate([-length/2-two_by_four_height,0,floor_height-two_by_four_height/2])
     rotate([0,90,0])
-    two_by_four(length);
-    translate([0,0,height])
+    two_by_four(length+two_by_four_height*2);
+    
+    // window studs
+    
+    random_wood()
+    translate([-length/2-two_by_four_height/2,0,floor_height])
     two_by_four(window_height);
     
-    translate([0,0,height+window_height+two_by_four_height])
-    for (i=[0:ceil(header/two_by_four_height)-1]){
-        translate([0,0,two_by_four_height*i])
+    random_wood()
+    translate([length/2+two_by_four_height/2,0,floor_height])
+    two_by_four(window_height);
+    
+    // windows header
+    
+    translate([-length/2-two_by_four_height,0,floor_height+window_height])
+    for (i=[0:header_boards-1]){
+        random_wood()
+        translate([0,0,two_by_four_height*i+two_by_four_height/2])
         rotate([0,90,0])
-        two_by_four(length);
+        two_by_four(length+two_by_four_height*2);
     }
     
-    translate([0,0,height+window_height+two_by_four_height*ceil(header/two_by_four_height)])
-    two_by_four(wall_height-height-window_height-two_by_four_height*ceil(header/two_by_four_height));
+    // cripple studs
+    
+    random_wood()
+    translate([-length/2-two_by_four_height/2,0,floor_height+window_height+two_by_four_height*header_boards])
+    two_by_four(wall_height-floor_height-window_height-two_by_four_height*header_boards);
     
     
-    // Right Side Studs
+    random_wood()
+    translate([length/2+two_by_four_height/2,0,floor_height+window_height+two_by_four_height*header_boards])
+    two_by_four(wall_height-floor_height-window_height-two_by_four_height*header_boards);
     
-    translate([length-two_by_four_height,0,0])
-    two_by_four(height-two_by_four_height);
+    translate([0,0,floor_height+window_height+header_boards*two_by_four_height])
+    auto_studs(wall_height-floor_height-window_height-header_boards*two_by_four_height,length,two_by_four_width,18*inch,false);
     
-    translate([length-two_by_four_height,0,height])
-    two_by_four(window_height);
     
-    translate([length-two_by_four_height,0,height+window_height+two_by_four_height*ceil(header/two_by_four_height)])
-    two_by_four(wall_height-height-window_height-two_by_four_height*ceil(header/two_by_four_height));
+}
+
+module door_frame(door_height,door_width,thickness,wall_height,header_boards){
+    // door studs
+    wood_color(){
+    translate([-door_width/2-two_by_four_height-1*inch,0,0])
+    cube(size=[two_by_four_height,two_by_four_width,door_height+2*inch]);
     
+    translate([door_width/2+1*inch,0,0])
+    cube(size=[two_by_four_height,two_by_four_width,door_height+2*inch]);
+    }
+    
+    wood_color_b(){
+    // wall studs
+    translate([-door_width/2-2*two_by_four_height-1*inch,0,0])
+    cube(size=[two_by_four_height,two_by_four_width,wall_height]);
+
+    translate([door_width/2+two_by_four_height+1*inch,0,0])
+    cube(size=[two_by_four_height,two_by_four_width,wall_height]);
+    }
+    
+    // door header
+    for (i=[0:header_boards-1]){
+    random_wood()
+    translate([-door_width/2-two_by_four_height-1*inch,0,door_height+2*inch+two_by_four_height*i])
+    cube(size=[door_width+2*inch+two_by_four_height*2,two_by_four_width,two_by_four_height]);
+    }
+    
+    // cripples
+    wood_color(){
+    translate([-door_width/2-two_by_four_height-1*inch,0,door_height+2*inch+two_by_four_height*header_boards])
+    cube(size=[two_by_four_height,two_by_four_width,wall_height-door_height-2*inch-two_by_four_height*header_boards]);
+    
+    translate([door_width/2+1*inch,0,door_height+2*inch+two_by_four_height*header_boards])
+    cube(size=[two_by_four_height,two_by_four_width,wall_height-door_height-2*inch-two_by_four_height*header_boards]);
+    }
+    translate([0,0,door_height+2*inch+two_by_four_height*header_boards])
+        auto_studs(wall_height-door_height-2*inch-two_by_four_height*header_boards,36*inch,two_by_four_width,18*inch,false);
 }
 
 echo(concat("Perimeter ",property_length*2+property_width*2));
@@ -411,7 +824,7 @@ cube([building_length*12*inch,building_width*12*inch,building_height*12*inch]);
 
 brick_fence(((property_width-24)/2)*12*inch,7*12*inch,gap,false,false,true);
 
-// Left Wall
+// Left Fence
 
 translate([block_width,0,0])
 rotate([0,0,90])
@@ -429,7 +842,7 @@ echo (half_void);
 
 
 
-// Rear Wall
+// Rear Fence
 
 translate([0,(block_length+gap)*floor((property_length*12*inch-block_width-gap)/(block_length+gap))+(half_void?(block_width+gap):0),0])
 brick_fence(property_width*12*inch,7*12*inch,gap,!half_void,false,false);
@@ -443,7 +856,7 @@ rear_void=((c-d)>(block_width+gap))?(half_void?true:false):(half_void?false:true
 
 echo(concat("Rear void: ",rear_void));
 
-// Right Wall
+// Right Fence
 
 translate([(rear_void?0:(block_width+gap))+block_width+gap+(block_length+gap)*floor((property_width*12*inch-block_width-gap)/(block_length+gap)),0,0])
 rotate([0,0,90])
@@ -490,6 +903,9 @@ module garden_plot(plot_length,plot_width,plot_height,corner,border){
     cube([plot_length,plot_width,plot_height-4*inch]);
 }
 
+
+// Raised Garden
+
 for (j=[0:0]){
     for (i=[0:5]){
         
@@ -507,6 +923,7 @@ for (j=[1:3]){
     }
 }
 
+
 translate([48*12*inch+6*12*inch,property_length*12*inch-6*12*inch-9*12*inch,0])
 rotate([0,0,-90])
 for (i=[0:1]){
@@ -523,5 +940,25 @@ for (i=[0:1]){
 }
 
 
-//translate([property_width*12*inch/2,property_length*12*inch-23*12*inch,0])
+module solar_battery(){
+        post_hole(3*12*inch,10*inch,1*inch);
+    treated()
+    woodpost(8*12*inch,two_by_four_width,two_by_four_width,-3*12*inch+1*inch);
+    translate([0,0,5*12*inch+1*inch+two_by_four_width/2])
+    rotate([90-56,0,0]){
+        wood_color_c()
+        translate([-1*12*inch,-2*12*inch])
+        cube([2*12*inch,4*12*inch,0.75*inch]);
+        color([0,0,0.4,opacity])
+        translate([-1*11*inch,-2*11*inch,0.75*inch])
+        cube([2*11*inch,4*11*inch,0.25*inch]);
+        
+    }
+    
+}
+
+solar_battery();
+
+
+translate([property_width*12*inch/2,property_length*12*inch-23*12*inch,0])
 tool_shed();
