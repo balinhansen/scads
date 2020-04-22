@@ -249,6 +249,36 @@ module auto_studs(height, width, thickness, spacing,center){
         }
 }
 
+module rafter_board(projected_length,roof_angle,overhang,birds_mouth){
+    
+    birds_mouth_depth=sin(roof_angle)*birds_mouth;
+    
+    min_ridge=two_by_four_width/cos(roof_angle);
+    
+    roof_ridge_height=(4*12*inch-two_by_four_height/2)*tan(roof_angle)-birds_mouth_depth;
+    
+    rafter_cut=sqrt(pow(two_by_four_width,2)+pow(tan(roof_angle)*two_by_four_width,2));
+    
+    translate([0,two_by_four_height/2,0])
+    rotate([-roof_angle,0,0])
+    translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
+    
+    difference(){
+        cube(size=[two_by_four_height,(projected_length+sin(roof_angle)*two_by_four_width)/cos(roof_angle), two_by_four_width]);
+        
+        translate([-0.1,-0.1,-0.1])
+        rotate([roof_angle,0,0])
+        translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
+        cube(size=[two_by_four_height+0.2,sin(roof_angle)*two_by_four_width+0.1,rafter_cut+0.2]);
+     
+        translate([-0.1,(projected_length+sin(roof_angle)*two_by_four_width)/cos(roof_angle),-0.01])
+        rotate([roof_angle,0,0])
+        translate([0,0,0])
+        cube(size=[two_by_four_height+0.2,sin(roof_angle)*two_by_four_width+0.1,rafter_cut+0.2]);   
+    }
+
+}
+
 module tool_shed(){
 
     for (i=[-1:1]){
@@ -438,171 +468,87 @@ module tool_shed(){
         cube([8*12*inch,two_by_four_height, two_by_four_width]);
     
         random_wood()
-            translate([-4*12*inch,-8*inch-two_by_four_height/2-16*inch*i,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch])
+        translate([-4*12*inch,-8*inch-two_by_four_height/2-16*inch*i,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch])
         cube([8*12*inch,two_by_four_height, two_by_four_width]);
     
-        }
+    }
     
-        //roof ridge
-        roof_angle=90-56;
-        birds_mouth=sin(roof_angle)*1.5*inch;
-        echo(birds_mouth/25.4);
-        overhang=12*inch;
-        min_ridge=two_by_four_width/cos(roof_angle);
-        echo(min_ridge/25.4);
         
-        roof_ridge_height=(4*12*inch-two_by_four_height/2)*tan(roof_angle)-birds_mouth;
         
-        rafter_cut=sqrt(pow(two_by_four_width,2)+pow(tan(roof_angle)*two_by_four_width,2));
+    //roof ridge
+    
+    
+    roof_angle=90-56;
+    birds_mouth=1.5*inch;
+    birds_mouth_depth=sin(roof_angle)*1.5*inch;
+    echo(birds_mouth/25.4);
+    overhang=12*inch;
+    min_ridge=two_by_four_width/cos(roof_angle);
+    echo(min_ridge/25.4);
+    
+    roof_ridge_height=(4*12*inch-two_by_four_height/2)*tan(roof_angle)-birds_mouth_depth;
+    
+    rafter_cut=sqrt(pow(two_by_four_width,2)+pow(tan(roof_angle)*two_by_four_width,2));
+    
+    
+    random_wood()
+    translate([-4*12*inch-overhang,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+    cube([8*12*inch+overhang*2,two_by_four_height,min_ridge]);
+
+    
+    // auto rafters
+    
+    for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))]){
+            
+        random_wood()
+        translate([i*(16*inch-two_by_four_height/2)+8*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+            
+        random_wood()
+        translate([i*(16*inch-two_by_four_height/2)+8*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        mirror([0,1,0])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
         
         
         random_wood()
-        translate([-4*12*inch-overhang,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        cube([8*12*inch+overhang*2,two_by_four_height,min_ridge]);
-
-
-
-
-    // auto rafters
-    
-        for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))]){
+        translate([-i*(16*inch-two_by_four_height/2)-8*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+        
+        random_wood()    
+        translate([-i*(16*inch-two_by_four_height/2)-8*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        mirror([0,1,0])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+    }
             
-            random_wood()
-        translate([i*(16*inch-two_by_four_height/2)+8*inch,two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        rotate([-roof_angle,0,0])
-        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
+    // ending rafters
+    
+    for (i=[-1,1]){
         
-   random_wood()
-        translate([i*(16*inch-two_by_four_height/2)+8*inch,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        translate([-two_by_four_height/2,0,0])
+        random_wood()
+        translate([(4*12*inch-two_by_four_height/2)*i,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+    
+        random_wood()
+        translate([(4*12*inch-two_by_four_height/2)*i,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
         mirror([0,1,0])
-        rotate([-roof_angle,0,0])
-        translate([0,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
-        
-          
-            random_wood()
-        translate([-i*(16*inch-two_by_four_height/2)-8*inch,two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        rotate([-roof_angle,0,0])
-        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
-        
-   random_wood()
-        translate([-i*(16*inch-two_by_four_height/2)-8*inch,-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        translate([-two_by_four_height/2,0,0])
-        mirror([0,1,0])
-        rotate([-roof_angle,0,0])
-        translate([0,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+    
     }
 
-
-
-    // end rafters
+    // barge boards (facsia)
     
-        for (i=[-1,1]){
-            
-            random_wood()
-        translate([i*(4*12*inch-two_by_four_height/2),two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        rotate([-roof_angle,0,0])
-        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
-        
-   random_wood()
-        translate([i*(4*12*inch-two_by_four_height/2),-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        translate([-two_by_four_height/2,0,0])
+    for (i=[-1,1]){
+        random_wood()
+        translate([(4*12*inch+overhang-two_by_four_height/2)*i,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
+    
+        random_wood()
+        translate([(4*12*inch+overhang-two_by_four_height/2)*i,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
         mirror([0,1,0])
-        rotate([-roof_angle,0,0])
-        translate([0,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
-    }
+        rafter_board(4*12*inch+overhang-two_by_four_height/2,90-56,overhang,1.5*inch);
     
-        
-    // barge boards
-        
-        for (i=[-1,1]){
-            
-            random_wood()
-        translate([i*(4*12*inch+overhang-two_by_four_height/2),two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        rotate([-roof_angle,0,0])
-        translate([-two_by_four_height/2,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
-        
-   random_wood()
-        translate([i*(4*12*inch+overhang-two_by_four_height/2),-two_by_four_height/2,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch+roof_ridge_height])
-        translate([-two_by_four_height/2,0,0])
-        mirror([0,1,0])
-        rotate([-roof_angle,0,0])
-        translate([0,-tan(roof_angle)*two_by_four_width,0])
-        difference(){
-            cube(size=[two_by_four_height,sqrt(pow(4*12*inch+overhang,2)+pow(roof_ridge_height+birds_mouth,2)),two_by_four_width]);
-            color([0,0,1,1])
-            translate([-0.01,-0.01,-0.01])
-            //translate([0,0,rafter_cut])
-            rotate([roof_angle,0,0])
-            translate([0,0,-(rafter_cut-cos(roof_angle)*two_by_four_width)])
-            cube(size=[two_by_four_height+0.02,sin(roof_angle)*two_by_four_width+0.01,rafter_cut+0.02]);
-        }
     }
-        
-    
+
         
     // mattress (lol)
     translate([0,0,6*inch+two_by_four_width*2+0.75*inch*2])
