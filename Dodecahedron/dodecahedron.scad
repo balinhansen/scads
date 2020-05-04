@@ -1,17 +1,17 @@
 use_bed_size=1;
-bed_size=100;
-fineness=10;
+bed_size=200;
+fineness=60;
 bar_length=40;
 bar_width=25.4/2;
-do_hull=0;
+do_hull=1;
 do_caps=1;
 do_hull_caps=1;
-do_bucky=1;
+do_bucky=0;
 orb_size=25.4*0.875;
 use_hole=0;
 hole_width=2.2;
 hole_fineness=36;
-numbers=0;
+numbers=1;
 number_font_auto=1;
 number_font_size=20;
 number_font_depth=2;
@@ -141,6 +141,7 @@ module place_numbers(length,width){
         
         linear_extrude(number_font_depth+1,convexity=10)
         rotate([0,180,0])
+        rotate([0,0,180])
         text(top[i], font=number_font,size=number_font_auto?auto_font:number_font_size,halign="center",valign="center");
         
     }
