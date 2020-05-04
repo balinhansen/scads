@@ -1,21 +1,21 @@
 use_bed_size=1;
-bed_size=200;
-fineness=30;
+bed_size=100;
+fineness=10;
 bar_length=40;
 bar_width=25.4/2;
-do_hull=1;
+do_hull=0;
 do_caps=1;
 do_hull_caps=1;
-do_bucky=0;
-orb_size=25.4*1.25;
+do_bucky=1;
+orb_size=25.4*0.875;
 use_hole=0;
 hole_width=2.2;
 hole_fineness=36;
-numbers=1;
+numbers=0;
 number_font_auto=1;
-number_font="Liberation Sans:style=Bold";
 number_font_size=20;
 number_font_depth=2;
+number_font="Liberation Sans:style=Bold";
 
 module stick(length,width){
     rotate([0,90,0])
@@ -171,6 +171,7 @@ module hull_bed_dodecahedron(bed,thickness){
             place_numbers(half_stick,thickness);
         }
     }else{
+        hull()
         assemble_dodecahedron(half_stick,thickness);
     }
 }
