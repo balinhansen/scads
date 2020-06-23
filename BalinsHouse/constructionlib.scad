@@ -1,6 +1,6 @@
 inch=25.4;
 gap=10; // visual aid
-stud_spacing_inches=18;
+stud_spacing_inches=16;
 
 building_height=14;
 building_width=25;
@@ -211,23 +211,36 @@ module deck_block(){
 
 
 
+module obelisk(height,width,cap_height,cap_theta){
+    cap_width=cap_height/tan(cap_theta);
+    cap_zpos=height-cap_height;
+
+polyhedron(points=[
+    [-width/2,-width/2,0],[width/2,-width/2,0],[width/2,width/2,0],[-width/2,width/2,0],
+    [-cap_width,-cap_width,cap_zpos],[cap_width,-cap_width,cap_zpos],[cap_width,cap_width,cap_zpos],[-cap_width,cap_width,cap_zpos],[0,0,height]    
+    ],faces=[[0,1,2,3],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[4,5,8],[5,6,8],[6,7,8],[7,4,8]],convexity=10);    
+}
+
+
+
 module mattress(mattress_width,mattress_length,mattress_depth){
     r=5*inch;
+    mattress_fineness=32;
     color([0.8,0.8,1])
         
     translate([-mattress_width/2,-mattress_length/2,0])
     hull(){
         translate([r,r,0])
-        cylinder(mattress_depth,r,r,$fn=18);
+        cylinder(mattress_depth,r,r,$fn=mattress_fineness);
         
         translate([mattress_width-r,r,0])
-        cylinder(mattress_depth,r,r,$fn=18);
+        cylinder(mattress_depth,r,r,$fn=mattress_fineness);
         
         translate([r,mattress_length-r,0])
-        cylinder(mattress_depth,r,r,$fn=18);
+        cylinder(mattress_depth,r,r,$fn=mattress_fineness);
         
         translate([mattress_width-r,mattress_length-r,0])
-        cylinder(mattress_depth,r,r,$fn=18);
+        cylinder(mattress_depth,r,r,$fn=mattress_fineness);
     }
 }
 
@@ -237,7 +250,7 @@ module auto_studs(height, width, thickness, spacing,center){
             random_wood()
             cube(size=[two_by_four_height,thickness,height]);
         }else{
-            for (i=[0:floor((width/2)/spacing)-1]){
+            for (i=[0:floor((width-spacing)/(spacing*2))]){
                 random_wood()
                 translate([-spacing/2-two_by_four_height/2-i*spacing,0,0])
                 cube(size=[two_by_four_height,thickness,height]);
@@ -308,6 +321,7 @@ module tool_shed(){
         cube(size=[two_by_four_height,8*12*inch-two_by_four_height*2,two_by_four_width]);
     }
 
+/*
     // floor insulation subfloor
     wood_color_c()
     translate([-4*12*inch,-4*12*inch,6*inch+two_by_four_width])
@@ -315,11 +329,14 @@ module tool_shed(){
     wood_color_c()
     translate([0,-4*12*inch,6*inch+two_by_four_width])
     cube([4*12*inch,8*12*inch,0.75*inch]);
+*/
 
+    // floor joists
+    
     wood_color()
     translate([-4*12*inch,-4*12*inch+two_by_four_height,6*inch+two_by_four_width+0.75*inch])
     for (i=[0:5]){
-        translate([18*inch*i,0,0])
+        translate([16*inch*i,0,0])
         cube(size=[two_by_four_height,8*12*inch-two_by_four_height*2,two_by_four_width]);
     }
     wood_color()
@@ -334,25 +351,28 @@ module tool_shed(){
     }
     
     // floor insulation
-    
+    /*
     translate([-4*12*inch,-4*12*inch+two_by_four_height,6*inch+two_by_four_width+0.75*inch])
     for (i=[0:4]){
-        translate([2*inch-(2*inch-two_by_four_height)/2+18*inch*i,0,0])
-        flat_batt(16*inch, 8*12*inch-two_by_four_height*2,2*inch);
+        translate([2*inch-(2*inch-two_by_four_height)/2+16*inch*i,0,0])
+        flat_batt(15*inch, 8*12*inch-two_by_four_height*2,2*inch);
     }
     pink_panther()
     translate([4*12*inch-4*inch-(2*inch-two_by_four_height)/2,-4*12*inch+two_by_four_height,6*inch+two_by_four_width+0.75*inch])
     flat_batt(96*inch-two_by_four_height*2-(2*inch-two_by_four_height)-18*5*inch,8*12*inch-two_by_four_height*2,2*inch);
+    */
+    
     
     // subfloor
-    
+    /*
     wood_color_c()
     translate([-4*12*inch,-4*12*inch,6*inch+two_by_four_width*2+0.75*inch])
     cube([4*12*inch,8*12*inch,0.75*inch]);
     wood_color_c()
     translate([0,-4*12*inch,6*inch+two_by_four_width*2+0.75*inch])
     cube([4*12*inch,8*12*inch,0.75*inch]);
-
+*/
+    
     
     // wall plates
     wood_color()
@@ -399,28 +419,59 @@ module tool_shed(){
     
    
     translate([36*inch/2+inch+two_by_four_height*2+front_wall_width/2,4*12*inch-two_by_four_width,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
-    auto_studs(8*12*inch,front_wall_width,two_by_four_width,18*inch,false);
+    auto_studs(8*12*inch,front_wall_width,two_by_four_width,stud_spacing,false);
     
     translate([-36*inch/2-inch-two_by_four_height*2-front_wall_width/2,4*12*inch-two_by_four_width,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
-    auto_studs(8*12*inch,front_wall_width,two_by_four_width,18*inch,false);
+    auto_studs(8*12*inch,front_wall_width,two_by_four_width,stud_spacing,false);
     
+    sill_plate_height=6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height;
     
     // rear wall
     
     translate([0,-4*12*inch,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
-    auto_studs(8*12*inch,8*12*inch-two_by_four_width*2-two_by_four_height*2,two_by_four_width,18*inch,false);
+    
+    auto_studs(8*12*inch,8*12*inch-two_by_four_width*2-two_by_four_height*2,two_by_four_width,stud_spacing,false);
     
     // left wall
     
+    left_walls_length=(8*12*inch-2*12*inch-two_by_four_height*4-two_by_four_height*2-two_by_four_width*2)/2;
+    
+    translate([4*12*inch,-4*12*inch,sill_plate_height])
+    rotate([0,0,90])
+    translate([left_walls_length/2+two_by_four_height+two_by_four_width,0,0])
+    auto_studs(8*12*inch,left_walls_length,two_by_four_width,stud_spacing,false);
+    
     translate([-4*12*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
     rotate([0,0,-90])
-    window(8*12*inch, 4*12*inch, 42*inch, 36*inch, 3);
+    window(8*12*inch, 2*12*inch, 36*inch, 36*inch, 3);
+    
+    
+    translate([4*12*inch,4*12*inch,sill_plate_height])
+    rotate([0,0,90])
+    translate([-left_walls_length/2-two_by_four_height-two_by_four_width,0,0])
+    auto_studs(8*12*inch,left_walls_length,two_by_four_width,stud_spacing,false);
     
     
     // right wall
+    
+    right_walls_length=(8*12*inch-2*12*inch-two_by_four_height*4-two_by_four_height*2-two_by_four_width*2)/2;
+    
+    translate([-4*12*inch+two_by_four_width,-4*12*inch,sill_plate_height])
+    rotate([0,0,90])
+    translate([right_walls_length/2+two_by_four_height+two_by_four_width,0,0])
+    auto_studs(8*12*inch,right_walls_length,two_by_four_width,stud_spacing,false);
+    
+    
     translate([4*12*inch,0,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height])
     rotate([0,0,90])
-    window(8*12*inch, 4*12*inch, 42*inch, 36*inch, 3);
+    window(8*12*inch, 2*12*inch, 36*inch, 36*inch, 3);
+    
+    
+    translate([-4*12*inch+two_by_four_width,4*12*inch,sill_plate_height])
+    rotate([0,0,90])
+    translate([-left_walls_length/2-two_by_four_height-two_by_four_width,0,0])
+    auto_studs(8*12*inch,left_walls_length,two_by_four_width,stud_spacing,false);
+    
     
     // top plate (first row)
     
@@ -462,7 +513,7 @@ module tool_shed(){
     
     // ceiling joists
     
-    for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))-1]){
+    for (i=[0:floor((8*12*inch/2-8*inch)/(16*inch))]){
         random_wood()
         translate([-4*12*inch,8*inch-two_by_four_height/2+16*inch*i,6*inch+0.75*inch*2+two_by_four_width*2+two_by_four_height*3+8*12*inch])
         cube([8*12*inch,two_by_four_height, two_by_four_width]);
@@ -657,7 +708,7 @@ module window(wall_height,length,floor_height,window_height,header_boards){
     translate([length/2+two_by_four_height/2,0,0])
     two_by_four(floor_height-two_by_four_height);
     
-    auto_studs(floor_height-two_by_four_height,length,two_by_four_width,18*inch,false);
+    auto_studs(floor_height-two_by_four_height,length,two_by_four_width,stud_spacing,false);
     
     // window sill
     
@@ -698,7 +749,7 @@ module window(wall_height,length,floor_height,window_height,header_boards){
     two_by_four(wall_height-floor_height-window_height-two_by_four_height*header_boards);
     
     translate([0,0,floor_height+window_height+header_boards*two_by_four_height])
-    auto_studs(wall_height-floor_height-window_height-header_boards*two_by_four_height,length,two_by_four_width,18*inch,false);
+    auto_studs(wall_height-floor_height-window_height-header_boards*two_by_four_height,length,two_by_four_width,stud_spacing,false);
     
     
 }
@@ -738,18 +789,70 @@ module door_frame(door_height,door_width,thickness,wall_height,header_boards){
     cube(size=[two_by_four_height,two_by_four_width,wall_height-door_height-2*inch-two_by_four_height*header_boards]);
     }
     translate([0,0,door_height+2*inch+two_by_four_height*header_boards])
-        auto_studs(wall_height-door_height-2*inch-two_by_four_height*header_boards,36*inch,two_by_four_width,18*inch,false);
+        auto_studs(wall_height-door_height-2*inch-two_by_four_height*header_boards,36*inch,two_by_four_width,stud_spacing,false);
 }
+
+
+// Property Cube
 
 echo(concat("Perimeter ",property_length*2+property_width*2));
 
 color([0,0.8,0,0.1])
-translate([0,0,-inch])
-cube([property_width*12*inch,property_length*12*inch,inch]);
+translate([0,0,-1.5*inch])
+cube([property_width*12*inch,property_length*12*inch,inch/4]);
 
+//Buildable Area Cube
 color([0.8,0,0,0.1])
-translate([(building_height-4)*12*inch,(building_height+4)*12*inch,0])
-cube([(property_width-(building_height-4)*2)*12*inch,(property_length-(building_height+10)*2)*12*inch,inch]);
+translate([(building_height-4)*12*inch,(building_height+4)*12*inch,-0.5*inch])
+cube([(property_width-(building_height-4)*2)*12*inch,(property_length-(building_height+10)*2)*12*inch,inch/4]);
+
+// Garden Cube
+
+color([0,0,0.8,0.1])
+translate([8*12*inch,property_length*12*inch-8*12*inch-40*12*inch,0])
+    cube([property_width*12*inch-16*12*inch,40*12*inch,inch*2]);
+
+// Solar Array Cube
+
+
+// Sun Shadow
+
+shadow_height=(6*12*inch+18*inch-4*inch);
+shadow_length=shadow_height/tan(34);
+shadow_distance=shadow_height/sin(34);
+
+solar_clearance=ceil(shadow_length/25.4/12);
+
+echo(solar_clearance);
+
+color([0,0,0,0.4])
+translate([property_width*12*inch/2,property_length*12*inch-8*12*inch-40*12*inch-shadow_length+4*12*inch])
+rotate([-90+34,0,0])
+cylinder(shadow_distance,6*inch,6*inch,$fn=12);
+
+
+color([0,0,0.4,0.1])
+translate([8*12*inch,property_length*12*inch-8*12*inch-40*12*inch-20*12*inch-solar_clearance*12*inch+4*12*inch,0])
+    cube([property_width*12*inch-16*12*inch,20*12*inch,inch*2]);
+
+
+// Jogging track
+
+concrete()
+difference(){
+    translate([2*12*inch,2*12*inch,0])
+    cube([(property_width-4)*12*inch,(property_length-4)*12*inch,inch/4]);
+
+    translate([6*12*inch,6*12*inch,-inch/8])
+    cube([(property_width-12)*12*inch,(property_length-12)*12*inch,2*inch/4]);
+}
+
+
+// Driveway
+
+concrete()
+translate([(property_width*12*inch-14*12*inch)/2,0,0])
+cube([14*12*inch,25*12*inch,inch/2]);
 
 
 /*
@@ -847,44 +950,28 @@ module garden_plot(plot_length,plot_width,plot_height,corner,border){
     // garden bed
     color([0.5,0.2,0])
     cube([plot_length,plot_width,plot_height-4*inch]);
+    
+    // plant examples
+    
+    color([0,0.8,0,0.4])
+    for (i=[0:7]){
+        for (j=[0:1]){
+            translate([15*inch+30*inch*i,15*inch+30*inch*j,plot_height-4*inch])
+            cylinder(6*12*inch,9*12,15*inch,$fn=12);
+        }
+    }
 }
 
 
 // Raised Garden
 
-for (j=[0:0]){
-    for (i=[0:5]){
+for (j=[0:3]){
+    for (i=[0:4]){
         
-        translate([6*12*inch+i*24*12*inch,property_length*12*inch-6*12*inch-5*12*inch-j*9*12*inch,0])
+        translate([12*12*inch+i*27*12*inch,property_length*12*inch-12*12*inch-5*12*inch-j*9*12*inch,0])
         garden_plot(20*12*inch,5*12*inch,18*inch,two_by_four_width_inches*inch,two_by_four_height_inches*inch);
     }
 }
-
-
-for (j=[1:3]){
-    for (i=[0,1,4,5]){
-        
-        translate([6*12*inch+i*24*12*inch,property_length*12*inch-6*12*inch-5*12*inch-j*9*12*inch,0])
-        garden_plot(20*12*inch,5*12*inch,18*inch,two_by_four_width_inches*inch,two_by_four_height_inches*inch);
-    }
-}
-
-
-translate([48*12*inch+6*12*inch,property_length*12*inch-6*12*inch-9*12*inch,0])
-rotate([0,0,-90])
-for (i=[0:1]){
-    translate([0,i*9*12*inch,0])
-    garden_plot(20*12*inch,5*12*inch,18*inch,two_by_four_width_inches*inch,two_by_four_height_inches*inch);
-}
-
-
-translate([78*12*inch+6*12*inch,property_length*12*inch-6*12*inch-9*12*inch,0])
-rotate([0,0,-90])
-for (i=[0:1]){
-    translate([0,i*9*12*inch,0])
-    garden_plot(20*12*inch,5*12*inch,18*inch,two_by_four_width_inches*inch,two_by_four_height_inches*inch);
-}
-
 
 module solar_battery(){
         post_hole(3*12*inch,10*inch,1*inch);
@@ -903,8 +990,57 @@ module solar_battery(){
     
 }
 
+rotate([0,0,180])
 solar_battery();
 
+module solar_panel(length,width,cell,space){
+    color([0.9,0.9,0.9,1])
+    cube([length,width,30]);
+    
+    length_count=floor((length-space)/(cell+space));
+    length_border=(length-space-(length_count*(cell+space)))/2;
+    
+    width_count=floor((width-space)/(cell+space));
+    width_border=(width-space-(width_count*(cell+space)))/2;
+    
+    for (i=[0:length_count-1]){
+        for (j=[0:width_count-1]){
+            color([0,0,0.4,1])
+            translate([length_border+space+(cell+space)*i,width_border+space+(cell+space)*j,30])
+            cube([cell,cell,1]);
+        }
+    }
+   
+}
 
-translate([property_width*12*inch/2,property_length*12*inch-23*12*inch,0])
+module solar_array(length,width,spacing,angle){
+    panel_length=1680;
+    panel_width=1015;
+    
+    rotate([90-angle,0,0])
+    translate([-((panel_length+spacing)*length-spacing)/2,0,0])
+    for (i=[0:length-1]){
+        for (j=[0:width-1]){
+            translate([(panel_length+spacing)*i,(panel_width+spacing)*j,0])
+            solar_panel(panel_length,panel_width,360,6);
+        }
+    }
+    
+    echo(concat("Solar width: ",(sin(angle)*((panel_width+spacing)*width-spacing))/25.4/12," feet."));
+    
+    echo(concat("Solar height: ",(cos(angle)*((panel_width+spacing)*width-spacing))/25.4/12," feet."));
+}
+
+translate([property_width*12*inch/2,property_length*12*inch-8*12*inch-40*12*inch-solar_clearance*12*inch+4*12*inch,0])
+rotate([0,0,180])
+solar_array(12,7,inch,56);
+
+
+
+translate([property_width*12*inch/2,property_length*12*inch-8*12*inch-40*12*inch-solar_clearance*12*inch+4*12*inch-20*12*inch-5*12*inch,0])
 tool_shed();
+
+
+translate([property_width*12*inch/2,property_length*12*inch/2,0])
+color([0.2,0.2,0.2,1])
+obelisk(7*12*inch,24*inch,18*inch,65);
