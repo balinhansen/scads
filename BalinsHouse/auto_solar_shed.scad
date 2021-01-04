@@ -1,9 +1,10 @@
 include <constructionlib.scad>
 
 module auto_solarshed(dog_length,dog_width,dog_height,flooring, sheathing,siding,roofing,shingles,roof_angle){
-        
+       
     translate([-dog_length/2,-dog_width/2,0]){
-    
+     
+    /*
         translate([sheathing+siding,sheathing+siding,0]){
             
             random_wood()
@@ -50,22 +51,50 @@ module auto_solarshed(dog_length,dog_width,dog_height,flooring, sheathing,siding
             
         }
     }
+    */
     
     // cover box cladding
     
-    
     random_wood()
-    translate([0,sin(roof_angle)*two_by_four_width,dog_height-shingles-roofing*cos(roof_angle)])
+    translate([0,sin(roof_angle)*(two_by_four_width*2+roofing),dog_height-shingles-roofing*cos(roof_angle)])
     rotate([-roof_angle,0,0])
     //translate([0,tan(roof_angle)*two_by_four_width,0])
     cube([dog_length,48*inch,roofing]);
     
-    translate([0,0,dog_height-shingles-(roofing+two_by_four_width)*cos(roof_angle)])
+    random_wood()
+    translate([0,sin(roof_angle)*(two_by_four_width+roofing),dog_height-shingles-(roofing+two_by_four_width)*cos(roof_angle)])
+    rotate([-roof_angle,0,0])
+    cube([two_by_four_height,48*inch,two_by_four_width]);
+    
+    random_wood()
+    translate([dog_length-two_by_four_height,sin(roof_angle)*(two_by_four_width+roofing),dog_height-shingles-(roofing+two_by_four_width)*cos(roof_angle)])
     rotate([-roof_angle,0,0])
     cube([two_by_four_height,48*inch,two_by_four_width]);
     
     // solar roof cladding
     
+    random_wood()
+    translate([0,sin(roof_angle)*two_by_four_width,dog_height-shingles-roofing*cos(roof_angle)-(two_by_four_width+roofing)*cos(roof_angle)])
+    rotate([-roof_angle,0,0])
+    //translate([0,tan(roof_angle)*two_by_four_width,0])
+    cube([dog_length,48*inch,roofing]);
+    
+    random_wood()
+    translate([0,0,dog_height-shingles-(roofing*2+two_by_four_width*2)*cos(roof_angle)])
+    rotate([-roof_angle,0,0])
+    cube([two_by_four_height,48*inch,two_by_four_width]);
+    
+    random_wood()
+    translate([dog_length-two_by_four_height,0,dog_height-shingles-(roofing*2+two_by_four_width*2)*cos(roof_angle)])
+    rotate([-roof_angle,0,0])
+    cube([two_by_four_height,48*inch,two_by_four_width]);
+    
+    
+    random_wood()
+    translate([two_by_four_height,0,dog_height-shingles-(roofing*2+two_by_four_width*2)*cos(roof_angle)])
+    rotate([-roof_angle,0,0])
+    cube([dog_length-two_by_four_height*2,two_by_four_height,two_by_four_width]);
+    /*
     random_wood()
     translate([0,0,dog_height-shingles-((two_by_four_width+roofing)*cos(roof_angle))-(shingles+roofing)/cos(roof_angle)])
     rotate([-roof_angle,0,0])
@@ -76,6 +105,15 @@ module auto_solarshed(dog_length,dog_width,dog_height,flooring, sheathing,siding
     translate([0,0,dog_height-shingles-((two_by_four_width+roofing)*cos(roof_angle))-(shingles+roofing)/cos(roof_angle)-two_by_four_width/cos(roof_angle)])
     rotate([-roof_angle,0,])
     cube([two_by_four_height,dog_width/cos(roof_angle)-tan(roof_angle)*roofing-tan(roof_angle)*two_by_four_width-two_by_four_height,two_by_four_width]);
+    */
+    
+    // Base
+    
+    echo((cos(roof_angle)*(48*inch)-cos(roof_angle)*two_by_four_width-sin(roof_angle)*two_by_four_height*2)/25.4);
+    
+    color([1,0,0,1])
+    translate([0,sin(roof_angle)*two_by_four_width+cos(roof_angle)*two_by_four_height,0])
+    cube([two_by_four_height,cos(roof_angle)*(48*inch)-cos(roof_angle)*two_by_four_width-sin(roof_angle)*two_by_four_height*2,two_by_four_width]);
     
     echo(dog_width/cos(roof_angle)/25.4);
     
@@ -89,4 +127,4 @@ module auto_solarshed(dog_length,dog_width,dog_height,flooring, sheathing,siding
 
 }
 
-auto_solarshed(72*inch,44*inch,37*inch,15/32*inch,15/32*inch,15/32*inch,15/32*inch,0.25*inch,23);
+auto_solarshed(72*inch,44*inch,37*inch,15/32*inch,15/32*inch,15/32*inch,15/32*inch,0.25*inch,34);
