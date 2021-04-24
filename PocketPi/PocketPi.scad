@@ -64,7 +64,7 @@ shell_split=board_zpos+board_thickness+0.5;
 
 stand_extrude=(board_zpos>=shell_thickness+nut_kerf)?nut_kerf:(board_zpos>=nut_kerf+1)?board_zpos-shell_thickness:nut_kerf+1;
 
-top_stand_extrude=(board_zpos+board_thickness+3.5+kerf*3<thickness-nut_kerf-shell_thickness)?nut_kerf:nut_kerf-shell_thickness+1-kerf;
+top_stand_extrude=((board_zpos+board_thickness+3.5+kerf*3)<(thickness-nut_kerf-shell_thickness))?nut_kerf:nut_kerf-shell_thickness+1-kerf;
 
 
 if (make_stl){
@@ -717,8 +717,10 @@ PrintTop();
 }
 
 module PrintBothHigh(){
-PrintTopHigh();
-    translate([0,30+bevel*2+3,0])
+    translate([0,2.5,0])
+    PrintTopHigh();
+   //translate([0,30+bevel*2+3,0])
+    translate([0,2.5,0])
     PrintBottomHigh();
 }
 
@@ -734,8 +736,9 @@ union(){
     
     //PiZero();
     //PrintTop();
-    PrintTopHigh();
+    //PrintTopHigh();
 }
+//PrintBothHigh();
 
 //color([1,1,0,0.4])
 //PocketPiTop();
