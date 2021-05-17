@@ -80,19 +80,63 @@ module PiZero(){
                 cube(size=[65-board_bevel*2,30-board_bevel*2,board_thickness/2]);
         }
         translate([bevel,bevel,0])
-        ScrewHoles();
+            ScrewHoles();
     }
+    
+    // Mini HDMI
+    
+    translate([bevel+12.4-11.5/2,bevel-0.5,board_zpos+1/20*inch])
+    cube([11.5,8,3.5]);
+
+// MicroUSBs
+
+    translate([bevel+41.4-8.05/2,bevel-1,board_zpos+1/20*inch])
+    cube([8.05,5,3]);
+
+    translate([bevel+54-8.05/2,bevel-1,board_zpos+1/20*inch])
+    cube([8.05,5,3]);
+
+// Micro SD
+    
+    translate([bevel+1,bevel+16.9-6,board_zpos+1/20*inch])
+    cube([11.5,12,1.5]);
+    
+// Camera IO
+    
+    
+    translate([bevel+1+65-4.5,bevel+15-17.15/2,board_zpos+1/20*inch])
+    cube([4.5,17.15,1.25]);
+    
+// GPIO
+    
+    translate([bevel+(65-50.8)/2,bevel+30-6,board_zpos+1/20*inch])
+    cube([50.8,6,1/10*inch]);
 }
 
 module PiZeroKerf(){
     minkowski(){
         cylinder(board_thickness/2+kerf*2,board_bevel+support_kerf,board_bevel+support_kerf,$fn=fineness);
-        translate([bevel+board_bevel,bevel+board_bevel,board_zpos])
+        
             cube(size=[65-board_bevel*2,30-board_bevel*2,board_thickness/2]);
     }
 }
 
 // Screws
+
+
+module PiZeroHolePlace(){
+    translate([3.5,3.5,0])
+    children();
+    
+    translate([3.5,26.5,0])
+    children();
+    
+    translate([61.5,3.5,0])
+    children();
+    
+    translate([61.5,26.5,0])
+    children();
+}
 
 module ScrewHoles(){
     translate([3.5,3.5,0])
@@ -118,8 +162,8 @@ module Screw(){
 // IO Cutouts
 
 module GPIOCutout(){
-    translate([bevel+32.5-(20*inch/10)/2,30+bevel,board_zpos+board_thickness])
-    cube(size=[20*inch/10,bevel+1,2+0.001]);
+    translate([bevel+32.5-(20*inch/10)/2-0.25,30+bevel,board_zpos+board_thickness])
+    cube(size=[20*inch/10+0.5,5+bevel+1,2+0.001]);
 }
 
 module CameraIOCutout(){
@@ -135,18 +179,20 @@ module CameraIOCutoutBottom(){
 module MicroSDCutout(){
     translate([bevel+14,12/2+bevel+16.9,board_zpos+board_thickness])
     rotate([0,0,180])
-    cube([bevel+1+14,12,2.5]);
+    cube([bevel+1+24,12,2.5]);
 }
 
-module MicroSDShellCutout(){
+
+
+module MicroSDShellCutout(padding){
     h=thickness-(board_zpos+board_thickness)-2.5;
     
     translate([-22.5+bevel+1,16.9+bevel,board_zpos+board_thickness+2.5])
     translate([0,0,-0.001])
     intersection(){
         cylinder(h,22.5+shell_thickness,22.5+shell_thickness,$fn=disk_fineness);
-            translate([22.5-((bevel+1+shell_thickness)/2)+shell_thickness,0,h/2])
-            cube(size=[bevel+shell_thickness+1,12+shell_thickness*2,h],center=true);
+            translate([22.5-((padding+1+shell_thickness)/2)+shell_thickness,0,h/2])
+            cube(size=[10+padding+shell_thickness+1,12+shell_thickness*2,h],center=true);
     }
 }
 
@@ -158,7 +204,7 @@ module MicroSDNailCutout(){
     intersection(){
         cylinder(h+0.002,22.5,22.5,$fn=disk_fineness);
             translate([22.5-((bevel+1)/2)-0.001,0,h/2])
-            cube(size=[bevel+1+0.001,12,h+0.004],center=true);
+            cube(size=[10+bevel+1+0.001,12,h+0.004],center=true);
     }
 }
 
@@ -178,17 +224,25 @@ module HDMIPoly(){
     polygon([[1,0],[0,1],[0,3.5],[11.5,3.5],[11.5,1],[10.5,0]]);
 }
 
+module HDMIPolyNoDetail(){
+    polygon([[0,0],[0,3.5],[11.5,3.5],[11.5,0]]);
+}
+
 
 module HDMICladdingPoly(){
     polygon([[0,0],[0,3.5],[11.5,3.5],[11.5,0]]);
 }
 
 module USBMicroPoly(){
-    polygon([[1,0],[0,1],[0,3.0],[7.5,3.0],[7.5,1],[6.5,0]]);
+    polygon([[1,0],[0,1],[0,3.0],[8.05,3.0],[8.05,1],[7.05,0]]);
+}
+
+module USBMicroPolyNoDetail(){
+    polygon([[0,0],[0,3.0],[8.05,3.0],[8.05,0]]);
 }
 
 module USBMicroCladdingPoly(){
-    polygon([[0,0],[0,3.0],[7.5,3.0],[7.5,0]]);
+    polygon([[0,0],[0,3.0],[8.05,3.0],[8.05,0]]);
 }
 
 module HDMIMiniCutout(){
@@ -199,20 +253,44 @@ module HDMIMiniCutout(){
     HDMIPoly();
 }
 
+module HDMIMiniCutoutNoDetail(){
+    translate([bevel+12.4-(11.5/2),bevel,board_zpos+board_thickness])
+    rotate([90,0,0])
+ linear_extrude(bevel+1,convexity=10)
+    offset(r=kerf)
+    HDMIPolyNoDetail();
+}
+
 module USBMicroCutout(){
-      translate([bevel+41.4-(7.5/2),bevel,board_zpos+board_thickness])
+      translate([bevel+41.4-(8.05/2),bevel,board_zpos+board_thickness])
     rotate([90,0,0])
     linear_extrude(bevel+1,convexity=10)
     offset(r=kerf)
     USBMicroPoly();
 }
 
+module USBMicroCutoutNoDetail(){
+      translate([bevel+41.4-(8.05/2),bevel,board_zpos+board_thickness])
+    rotate([90,0,0])
+    linear_extrude(bevel+1,convexity=10)
+    offset(r=kerf)
+    USBMicroPolyNoDetail();
+}
+
 module USBMicroCutoutB(){
-      translate([bevel+54-(7.5/2),bevel,board_zpos+board_thickness])
+      translate([bevel+54-(8.05/2),bevel,board_zpos+board_thickness])
     rotate([90,0,0])
     linear_extrude(bevel+1,convexity=10)
     offset(r=kerf)
     USBMicroPoly();
+}
+
+module USBMicroCutoutBNoDetail(){
+      translate([bevel+54-(8.05/2),bevel,board_zpos+board_thickness])
+    rotate([90,0,0])
+    linear_extrude(bevel+1,convexity=10)
+    offset(r=kerf)
+    USBMicroPolyNoDetail();
 }
 
 module HDMIMiniCladdingCutout(){
@@ -436,6 +514,7 @@ module PocketPiBottom(){
     difference(){
         union(){
             BottomShell();
+            translate([bevel+board_bevel,bevel+board_bevel,shell_thickness])
             BoardSupport();
         }
         translate([bevel,bevel,0]){
@@ -599,23 +678,38 @@ module TopShell(){
         difference(){
             TopSlice();
             Inset();
-            MicroSDShellCutout();
+            MicroSDShellCutout(bevel);
             Cutouts();
         }
         difference(){
             intersection(){
                 TopSlice();
-                MicroSDShellCutout();
+                MicroSDShellCutout(bevel);
             }
             MicroSDNailCutout();
             MicroSDCutout();
         }
         difference(){
-            translate([3,0,0])
+            //translate([3,0,0])
         MicroSDTab();
             MicroSDNailCutout();
         }
     }
+}
+
+
+module BoardSupportCutout(){
+    minkowski(){
+        cylinder((board_zpos-shell_thickness+board_thickness/2)/2,board_bevel-support_thickness/2,board_bevel-support_thickness/2,$fn=fineness);
+         
+        translate([0,0,-0.001])
+         cube(size=[65-board_bevel*2,30-board_bevel*2,(board_zpos-shell_thickness)/2+0.002]);
+    }
+    echo(board_zpos);
+    
+    translate([0,0,board_zpos-shell_thickness])
+    PiZeroKerf();
+
 }
 
 module BoardSupport(){
@@ -624,17 +718,11 @@ module BoardSupport(){
         minkowski(){
             
             cylinder((board_zpos-shell_thickness+board_thickness/2)/2,board_bevel+support_thickness/2,board_bevel+support_thickness/2,$fn=fineness);
-             translate([bevel+board_bevel,bevel+board_bevel,shell_thickness])
+            
              cube(size=[65-board_bevel*2,30-board_bevel*2,(board_zpos-shell_thickness)/2]);
         }
 
-        minkowski(){
-            cylinder((board_zpos-shell_thickness+board_thickness/2)/2,board_bevel-support_thickness/2,board_bevel-support_thickness/2,$fn=fineness);
-             translate([bevel+board_bevel,bevel+board_bevel,shell_thickness-0.001])
-             cube(size=[65-board_bevel*2,30-board_bevel*2,(board_zpos-shell_thickness)/2+0.002]);
-        }
-        
-        PiZeroKerf();
+        BoardSupportCutout();
 
     }
 }
@@ -737,11 +825,11 @@ module PrintBothHigh(){
 //PrintBoth();
 
 union(){
-    PrintBottom();
+    //PrintBottom();
     //PrintBottomHigh();
     
     //PiZero();
-    //PrintTop();
+    PrintTop();
     //PrintTopHigh();
 }
 //PrintBothHigh();

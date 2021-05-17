@@ -9,7 +9,7 @@ spacing=0;
 
 kerf=0.007*inch;
 
-make_stl=1;
+make_stl=0;
 
 show_branding=0;
 
@@ -587,8 +587,8 @@ module BottomShell(){
         BottomSlice();
         Inset();
         
-        Cutouts();
-    CameraIOCutoutBottom();
+  //      Cutouts();
+  //  CameraIOCutoutBottom();
         
         Branding();
     }
@@ -599,9 +599,10 @@ module TopShell(){
         difference(){
             TopSlice();
             Inset();
-            MicroSDShellCutout();
-            Cutouts();
+         //   MicroSDShellCutout();
+         //   Cutouts();
         }
+        /*
         difference(){
             intersection(){
                 TopSlice();
@@ -615,6 +616,7 @@ module TopShell(){
         MicroSDTab();
             MicroSDNailCutout();
         }
+        */
     }
 }
 
@@ -734,14 +736,14 @@ module PrintBothHigh(){
 
 //union()
 //Render();
-//PrintBoth();
+PrintBoth();
 
 union(){
-    PrintBottom();
+    //PrintBottom();
     //PrintBottomHigh();
     
     //PiZero();
-    //PrintTop();
+   // PrintTop();
     //PrintTopHigh();
 }
 //PrintBothHigh();

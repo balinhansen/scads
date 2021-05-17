@@ -1,8 +1,7 @@
-use <JetsonTK1.scad>;
-
 build_stl=1;
 big_overrides=0;
 
+    
 inch=25.4;
 // kerf=0.007*25.4;  // Too Tight at 5:1 @ 0.3mm layer height
 //kerf=(0.007*25.4+0.05); // Attempt for 5:1 @ 0.3mm could be better!
@@ -62,6 +61,10 @@ lego_pad_depth_spec=(8-4.9)/2-lego_wall_thickness; //0.3;
 lego_pad_depth_adj=0.0;
 lego_pad_depth=(lego_pad_depth_spec+lego_pad_depth_adj);
 
+
+
+function getLegoLength()=lego_length;
+function getLegoBlockHeight()=lego_block_height;
 
 module knob(){
     translate([lego_length/2,lego_length/2,-0.001])
@@ -125,7 +128,35 @@ module technic_knob(){
     
 }
 
+module knob_perimeter(width,length){
+    for (x=[0,length-1]){
+        for (y=[0:width-1]){
+            translate([x*lego_length,y*lego_length])
+            knob();
+        }
+    }
+    for (x=[1:length-2]){
+        for (y=[0,width-1]){
+            translate([x*lego_length,y*lego_length])
+            knob();
+        }
+    }
+}
 
+module technic_knob_perimeter(width,length){
+    for (x=[0,length-1]){
+        for (y=[0:width-1]){
+            translate([x*lego_length,y*lego_length])
+            technic_knob();
+        }
+    }
+    for (x=[1:length-2]){
+        for (y=[0,width-1]){
+            translate([x*lego_length,y*lego_length])
+            technic_knob();
+        }
+    }
+}
 
 module xbyy_block(length,width,height){
     translate([0.1,0.1,0])
@@ -153,6 +184,17 @@ module xbyy_cutout(length,width,height){
 
 
 module xbyy_knobs(length,width,height){
+    for (x=[0:length-1]){
+        for (y=[0:width-1]){
+            
+            translate([lego_length*x,lego_length*y,height])
+            knob();
+        }
+    }
+}
+
+
+module xbyy_technic_knobs(length,width,height){
     for (x=[0:length-1]){
         for (y=[0:width-1]){
             
@@ -641,7 +683,6 @@ module lego_badge(length,width,height){
             if (center){
                 translate([lego_length*((width-wid_odd)/2),lego_length*((length-len_odd)/2),0])
                 xbyy_cutout(wid_odd,len_odd,height);
-            }
             
             // SIDE CUTOUTS 
             
@@ -655,12 +696,20 @@ module lego_badge(length,width,height){
             
             translate([0,lego_length*(length-2),0])
             xbyy_cutout(width,2,height);
+                
+                
+            }else{
+                
+            xbyy_cutout(width,length,height);
+            
+            }
         }
         //xbyy_knobs(width,length,height);
         
         // SIDE TUBES
         
         xbyy_tubes(2,length,height);
+        
         translate([(width-2)*lego_length,0,0])
         xbyy_tubes(2,length,height);
         
@@ -672,11 +721,18 @@ module lego_badge(length,width,height){
         
         // CENTER TUBES
         
-        translate([lego_length*((width-wid_odd)/2),lego_length*((length-len_odd)/2),0])
-        xbyy_tubes(wid_odd,len_odd,height);
+        if (center){
+            translate([lego_length*((width-wid_odd)/2),lego_length*((length-len_odd)/2),0])
+            xbyy_tubes(wid_odd,len_odd,height);
+        }else{
+            translate([lego_length,lego_length,0])
+            xbyy_tubes(width-2,length-2,height);
+        }
         
         // PADS
         
+        if (center){
+            
         translate([lego_length*2,lego_length*2,0])
         lego_outer_pads(width-4,length-4,height);
         
@@ -687,80 +743,32 @@ module lego_badge(length,width,height){
             xbyy_pads(wid_odd,len_odd,height);
         }
         
-        xbyy_pads(width,length,height);
         
         translate([lego_length*2,lego_length*2,0])
         xbyy_pads(width-4,length-4,height);
-       
+    }
+    xbyy_pads(width,length,height);
+        
     }
     
 }
 
-module lego_nvidia_jetson_io_panel(){
+
+
+module lego_badge_notubes(length,width,height){
     
-    difference(){
-    x_wall_panel(14,4*lego_block_height);
-    
-        translate([0.1,-8,-5/16*inch+lego_block_height/3*2]){
-    rotate([90,0,90]){
-        //tegra_io_panel();
-        translate([8,5/16*inch,-0.001])
-        serial_cutout(1.6);
-        translate([44,5/16*inch,-0.001])
-        hdmi_cutout(1.6);
+    union(){
+        difference(){
+            xbyy_block(width,length,height);
+            xbyy_cutout(width,length,height);  
+        }
         
-        translate([65,5/16*inch,-0.001])
-        usb_cutout(1.6);
+    xbyy_pads(width,length,height);
         
-        translate([74,5/16*inch,-0.001])
-        eth_cutout(1.6);
-        
-        translate([99.5,5/16*inch,-0.001])
-        sound_cutout(1.6);
-        
-        translate([108.5,5/16*inch,-0.001])
-        usb_mini(1.6);
-        }}
-    
     }
+    
 }
-
-module lego_nvidia_jetson_jtag_panel(){
-    
-    difference(){
-    x_wall_panel(14,4*lego_block_height);
-    
-        translate([0.1,-8,-5/16*inch+lego_block_height/3*2]){
-    rotate([90,0,90]){
-        //tegra_io_panel();
-        translate([10,5/16*inch,-0.001])
-        jtag_cutout(1.6);
-        }}
-    
-    }
-}
-
-module lego_nvidia_jetson_rear_panel(){
-    
-    difference(){
-    x_wall_panel(14,4*lego_block_height);
-    
-        translate([0.1,-8,-5/16*inch+lego_block_height/3*2]){
-    rotate([90,0,90]){
-        //tegra_io_panel();
-        translate([53.5,4.25+5/16*inch,-0.001])
-        power_cutout(1.6);
-        
-        translate([82,5/16*inch,-0.001])
-        sdcard_cutout(1.6);
-        }}
-    
-    }
-}
-
-
-
-module nvidia_logo(){
+module svg_logo(filename){
     
     translate([6.5,28.5,lego_block_height/3-0.001])
 linear_extrude(height=lego_knob_height+0.001, convexity=10)
@@ -771,11 +779,11 @@ import(file="nvidia_a.dxf",convexity=7,$fn=10);
 translate([6.5+32.35,28.5+26.55,lego_block_height/3-0.001])
 linear_extrude(height=lego_knob_height+0.001, convexity=10)
     translate([0.001,0.001,0])
-import(file="nvidia_b.dxf",convexity=7,$fn=10);
+import(file=filename,convexity=7,$fn=10);
     
 }
 
-module lego_nvidia_logo(length,width,height){
+module lego_svg_logo(length,width,height){
 
     union(){
         difference(){
@@ -845,7 +853,7 @@ module lego_nvidia_logo(length,width,height){
         
         
         union(){
-            nvidia_logo();
+            svg_logo();
            
             
             translate([19.5,11,lego_block_height/3-0.001])
@@ -858,69 +866,6 @@ module lego_nvidia_logo(length,width,height){
     
     
 }
-
-    /*  // Radio Shack Solar Panel #2770051
-
-    //xbyy_brick(2,16,lego_block_height/3);
-    //xbyy_knobrow(2,5,0,lego_block_height/3);
-    //xbyy_knobrow(2,2,0,lego_block_height/3);
-    //xbyy_knobedge_corner(4,2,0,lego_block_height/3);
-    //xbyy_knobedge_side(2,13,0,lego_block_height/3);
-
-    //xbyy_overhang(11,1.0,lego_block_height/3,0);
-    //xbyy_overhang(9,2.5,lego_block_height/3,0);
-    
-    //xbyy_overhang_corner(2,4,1.0,2.5,lego_block_height/3,0);
-    //xbyy_overhang_corner(4,2,2.5,1.0,lego_block_height/3,0);
-
-    //xbyy_overhang_corner(2,4,4.5,3.0,lego_block_height/3,1);
-    //xbyy_overhang_corner(4,2,3.0,4.5,lego_block_height/3,1);
-
-    //xbyy_overhang(15,3.0,lego_block_height/3,1);
-    //xbyy_overhang(5,4.5,lego_block_height/3,1);
-    
-    */
-    
-    
-    // nVidia Jetson TK1 Case
-    
-    //xbyy_knobedge_corner_stand(3,3,0,lego_block_height/3);
-    //xbyy_brick(1,12,lego_block_height/3);
-    //for (i=[0:3]){
-    //translate([i*(lego_length+5),0,0])    
-    //xbyy_brick(1,6,lego_block_height/3);
-    //}
-
-
-
-//x_wall_panel(14,4*lego_block_height);
-//lego_nvidia_jetson_io_panel();
-//lego_nvidia_jetson_jtag_panel();
-//lego_nvidia_jetson_rear_panel();
-
-
-//lego_nvidia_logo(14,14,lego_block_height/3);
-
-//lego_badge(9,9,lego_block_height/3);
-
-//xbyy_brick(2,18,lego_block_height/3);
-//xbyy_brick(2,14,lego_block_height/3);
-
-//x_wall_panel(16,lego_block_height);
-//x_wall_panel(10,lego_block_height);
-
-    //xbyy_wall_panel_corner(2,2,4*lego_block_height);
-    //xbyy_wall_panel_corner(4,4,1*lego_block_height);
-    
-//x_technic_brick(1,lego_block_height);
-//x_technic_brick(3,lego_block_height);
-
-
-
-//translate([0,0,lego_block_height/4+lego_knob_height*1.25])
-//xbyy_brick(2,3,lego_block_height/3);
-
-
 
 //      Technic Experiments
 
@@ -985,210 +930,3 @@ module lego_technic_axle_stopped(length,stop){
     translate([0,0,lego_length*stop-(lego_technic_axle_stop)/2])
     cylinder(lego_technic_axle_stop,lego_technic_axle_stop_width/2,lego_technic_axle_stop_width/2,$fn=knob_fineness);
 }
-
-//xbyy_brick(1,1,lego_block_height/3);
-//translate([-lego_length/2,0,1.5*lego_block_height/3])
-//xbyy_brick(2,1,lego_block_height/3);
-
-//translate([0,0,-1.5*lego_block_height/3])
-//xbyy_brick(2,2,lego_block_height/3);
-
-//lego_badge(8,8,lego_block_height/3);
-
-
-//x_technic_brick(4,lego_block_height);
-
-//lego_technic_axle_stopped(3,1);
-
-//minkowski(){
-  //  lego_technic_axle_end();
-   // sphere(0.1/8*lego_length,$fn=knob_fineness);
-//}
-
-//lego_technic_beam(3);
-
-
-//xbyy_brick(2,2,lego_block_height/3);
-
-// BRICK KERF TEST
-
-module brick_test(){
-xbyy_brick(2,1,lego_block_height/3);
-
-translate([lego_length,lego_length,0])
-rotate([0,0,180])
-translate([-lego_length,0,-1.5*lego_block_height/3])
-xbyy_brick(2,1,lego_block_height/3);
-
-translate([0,0,1.5*lego_block_height/3])
-xbyy_brick(2,2,lego_block_height/3);
-
-translate([0,0,3*lego_block_height/3])
-xbyy_brick(2,2,lego_block_height/3);
-
-translate([0,0,4.5*lego_block_height/3])
-xbyy_brick(1,1,lego_block_height/3);
-
-translate([-lego_length/2,-3*lego_length/2,6*lego_block_height/3])
-xbyy_brick(2,3,lego_block_height/3);
-
-translate([lego_length/2,0,-3*lego_block_height/3])
-xbyy_brick(1,1,lego_block_height/3);
-
-translate([0,0,7*lego_block_height/3])
-    lego_antenna(lego_block_height*2);
-    
-translate([0,0,8.5*lego_block_height/3])
-    lego_round_brick(lego_block_height/3,1);
-    
-    
-translate([-lego_length/2,-3*lego_length/2,11*lego_block_height/3])
-technic_xbyy_brick(2,3,lego_block_height/3);
-}
-
-module brick_test_print(){
-    
-xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([lego_length+5,0,0])
-xbyy_brick(2,1,lego_block_height/3);
-    
-    translate([0,lego_length+5,0])
-xbyy_brick(2,2,lego_block_height/3);
-    
-}
-
-module technic_test(){
-    
-
-    x_technic_brick(2,lego_block_height);
-    
-    translate([0,0,5.8/8*lego_length+0.5*lego_length])
-    rotate([-90,0,0])
-    translate([lego_length/2,0,-1.1*lego_block_height/3])
-    xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([0,0,lego_block_height])
-    x_technic_brick(1,lego_block_height);
-    translate([lego_length/2,-lego_length,5.8/8*lego_length+lego_block_height])
-rotate([-90,0,0])
-    lego_technic_axle_stopped(3,1);
-
-}
-
-module print_test_full(){
-    space=5/8*lego_length;
-    
-xbyy_brick(1,1,lego_block_height/3);
-    
-    translate([lego_length+space,0,0])
-xbyy_brick(2,1,lego_block_height/3);
-    
-    translate([0,lego_length+space,0])
-technic_xbyy_brick(2,2,lego_block_height/3);
-    
-    translate([lego_length*2+space,lego_length+space,0])
-    lego_round_brick(lego_block_height/3,1);
-    
-    translate([lego_length*2+space,lego_length*2+space*2,0])
-    x_technic_brick(1,lego_block_height);
-    
-    translate([0,lego_length*3+space*2,0])
-    lego_antenna(lego_block_height);
-    
-    translate([lego_length*3+space*2,0,0])
-    xbyy_brick(2,4,lego_block_height/3);
-    
-    translate([lego_length*1+space,lego_length*3+space*3,0])
-    xbyy_brick(4,1,lego_block_height/3);
-    
-}
-
-module print_callibration_test(length){
-    
-    %cube(size=[(2.5+length)*lego_length,(2.5+length)*lego_length,0.01]);
-    
-    translate([lego_length*2.5,0,0])
-    xbyy_brick(length,1,lego_block_height/3);
-    
-    translate([0,lego_length*2.5,0])
-    xbyy_brick(1,length,lego_block_height/3);
-    
-    diag=floor((sqrt(pow((length+2.5)*lego_length,2)+pow((length+2.5)*lego_length,2))-sqrt(pow(lego_length,2)/2)*2)/lego_length);
-    
-    offset=sqrt(pow( (sqrt(pow((length+2.5)*lego_length,2)*2)-diag*lego_length),2)/2)/2;
-    
-    echo("Diagonal length: ");
-    echo(diag);
-    
-    translate([offset,offset,0])
-    
-    rotate([0,0,45])
-    translate([0,-lego_length/2,0])
-    //cube(size=[(sqrt(pow((length+2.5)*lego_length,2)*2)-diag*lego_length)/2,1,1]);
-    xbyy_brick(diag,1,lego_block_height/3);
-    
-    
-}
-
-
-/*
-// CROSS SECTION TESTS
-//color([1,0,0,0.5])
-difference(){
-    union(){
-        //x_technic_brick(1,lego_block_height);
-        //translate([0,0,5.8/8*lego_length+.5*lego_length])
-        //rotate([-90,0,0])
-        //translate([0,0,-lego_block_height/3])
-        //lego_round_brick(lego_block_height/3,0);
-                
-        translate([0,0,lego_block_height/3])
-        lego_round_brick(lego_block_height/3,1);
-        
-        translate([0,0,lego_block_height/3*2])
-        xbyy_brick(1,2,lego_block_height/3);
-        //lego_round_brick(lego_block_height/3,1);
-        
-        lego_antenna(lego_block_height*2);
-        //translate([0,0,lego_block_height/3*4])
-        //lego_round_brick(lego_block_height/3,1);
-        
-        translate([0,0,lego_block_height])
-        xbyy_brick(1,1,lego_block_height/3);
-        
-    }
-    cube([lego_length/2,lego_length,lego_block_height*2]);
-    
-    }
-*/
-    
-        //x_technic_brick(1,lego_block_height);
-        //xbyy_brick(1,1,lego_block_height/3);
-        //xbyy_brick(2,2,lego_block_height/3);
-        //twobytwo_centerknob(lego_block_height/3);
-        /*
-        xbyy_knobs(2,2,0);
-        translate([lego_length/2,lego_length/2,0])
-        knob();
-        */
-        
-        //lego_antenna(lego_block_height*2);
-        //lego_round_brick(lego_block_height/3,1);
-//translate([0,0,-1.5*lego_block_height/3])
-//lego_round_brick(lego_block_height/3,0);
-//translate([0,0,1.5*lego_block_height/3])
-//xbyy_brick(1,1,lego_block_height/3);
-
-
-//xbyy_brick(1,18,lego_block_height/3);
-
-//brick_test();
-//technic_test();
-//brick_test_print();
-
-//scale([xy_shrink,xy_shrink,1])
-print_test_full();
-
-//print_callibration_test(10);
-
