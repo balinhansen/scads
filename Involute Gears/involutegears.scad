@@ -1,4 +1,5 @@
 inch=25.4;
+herring=45;
 
 
 function addendum()=[];
@@ -65,42 +66,46 @@ let(vec=rotvec([[x,y]],mang+gap*prop/4+t*360/teeth))
 
 
 
-function involutegear(rad,pin,pitch,teeth,t=0,result=[])=
+function involutegear(rad,pin,pitch,teeth,stub,t=0,result=[])=
 let(base=rad*cos(pitch))
 let(mod=(2*2*rad)/(teeth+pin))
-let(ad=rad+mod)
+let(ad=rad+(mod*stub))
 let(minv=maxinv(base,ad,teeth,t))
 let(mang=maxang(base,ad,teeth,t))
-(t<teeth)?concat(dedendum(base,ad,teeth,t,6),involutetooth(base,ad,teeth,t,0),addendum(),involutetoothrev(base,ad,teeth,t,minv),involutegear(rad,pin,pitch,teeth,t+1,result)):result;
+(t<teeth)?concat(dedendum(base,ad,teeth,t,6),involutetooth(base,ad,teeth,t,0),addendum(),involutetoothrev(base,ad,teeth,t,minv),involutegear(rad,pin,pitch,teeth,stub,t+1,result)):result;
 
 
 
 //echo(involutegear(inch,10,23));
 
 
+  
+function twistgear(r,t,h)=atan((t*tan(h))/r);
 
 
+    // FANCY HERRINGBONES
+    
+    color([1,0,0,1])
 difference(){
     gear=1*inch;
     hub=26+0.0035*inch; // 1/4*inch;
     ring=1/8*inch;
     corner=1/8*inch;
     sections=9;
-
-/*    
-    linear_extrude(25.4/4,convexity=48)
-    polygon(points=involutegear(25.4,32,20,64));
-*/
+    
 union(){
+    
+    geartwist=twistgear(inch, inch/8, 20);
+    
 rotate([0,0,$t*360+360/128])
-linear_extrude(25.4/8,twist=5, convexity=10,slices=10)
-polygon(points=involutegear(25.4,32,20,64));
+linear_extrude(25.4/8,twist=geartwist, convexity=10,slices=10)
+polygon(points=involutegear(25.4,32,20,64,0.8));
 
 //color([1,0,0,0.4])
 translate([0,0,1/8*inch])
-rotate([0,0,-5+360/128])
-linear_extrude(25.4/8,twist=-5, convexity=10,slices=10)
-polygon(points=involutegear(25.4,32,20,64));
+rotate([0,0,-geartwist+360/128])
+linear_extrude(25.4/8,twist=-geartwist, convexity=10,slices=10)
+polygon(points=involutegear(25.4,32,20,64,0.8));
 }
     translate([0,0,-0.1])
     cylinder(1/4*inch+0.2,hub/2,hub/2,$fn=240);
@@ -134,6 +139,51 @@ polygon(points=involutegear(25.4,32,20,64));
 }
 }
 
+    
+translate([1.5*inch,0,0])
+color([0,0,1,1])
+difference(){
+    gear=0.5*inch;
+    hub=12+0.0035*inch; // 1/4*inch;
+    ring=1/8*inch;
+    corner=1/8*inch;
+    sections=9;
+    
+    
+
+union(){
+    
+    geartwistb=twistgear(0.5*inch, inch/8, 20);
+    
+rotate([0,0,0])
+linear_extrude(25.4/8,twist=-geartwistb, convexity=10,slices=10)
+polygon(points=involutegear(25.4/2,32,20,32,0.8));
+
+translate([0,0,1/8*inch])
+rotate([0,0,geartwistb])
+linear_extrude(25.4/8,twist=geartwistb, convexity=10,slices=10)
+polygon(points=involutegear(25.4/2,32,20,32,0.8));
+}
+    translate([0,0,-0.1])
+    cylinder(1/4*inch+0.2,hub/2,hub/2,$fn=240);
+    
+    translate([0,0,-0.1])
+    for (i=[0:sections-1]){
+       
+    
+    
+        rotate([0,0,i*360/sections+360/(sections*2)])
+        translate([hub/2+ring,0,0])
+        cylinder(1/4*inch+0.2,corner/2,corner/2,$fn=48);
+        
+
+}
+}
+
+
+
+
+
 
 /*
 
@@ -153,30 +203,35 @@ polygon(points=involutegear(12.7,64,20,32));
 
 
 // HERRINGBONE GEARS
+
 /*
-//color([1,0,0,0.4])
+
+    geartwista=twistgear(inch, inch/8, 20);
+    geartwistb=twistgear(0.5*inch, inch/8, 20);
+    
+color([1,0,0,0.4])
 rotate([0,0,$t*360+360/128])
-linear_extrude(25.4/8,twist=5, convexity=10,slices=10)
-polygon(points=involutegear(25.4,32,20,64));
+linear_extrude(25.4/8,twist=geartwista, convexity=10,slices=10)
+polygon(points=involutegear(25.4,32,20,64,0.8));
 
-//color([1,0,0,0.4])
+color([1,0,0,0.4])
 translate([0,0,1/8*inch])
-rotate([0,0,-5+360/128])
-linear_extrude(25.4/8,twist=-5, convexity=10,slices=10)
-polygon(points=involutegear(25.4,32,20,64));
-*/
+rotate([0,0,-geartwista+360/128])
+linear_extrude(25.4/8,twist=-geartwista, convexity=10,slices=10)
+polygon(points=involutegear(25.4,32,20,64,0.8));
 
-/*
-//color([0,0,1,0.4])
+
+color([0,0,1,0.4])
 translate([inch*1.5,0,0])
-linear_extrude(25.4/8,twist=-10, convexity=10,slices=10)
-polygon(points=involutegear(12.7,64,20,32));
+linear_extrude(25.4/8,twist=-geartwistb, convexity=10,slices=10)
+polygon(points=involutegear(12.7,64,20,32,1));
 
-//color([0,0,1,0.4])
+color([0,0,1,0.4])
 translate([inch*1.5,0,1/8*inch])
-rotate([0,0,10])
-linear_extrude(25.4/8,twist=10, convexity=10,slices=10)
-polygon(points=involutegear(12.7,64,20,32));
+rotate([0,0,geartwistb])
+linear_extrude(25.4/8,twist=geartwistb, convexity=10,slices=10)
+polygon(points=involutegear(12.7,64,20,32,1));
+
 */
 
 
